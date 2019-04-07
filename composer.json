@@ -18,7 +18,16 @@
             "role": "Developer"
         }
     ],
+    "support": {
+        "issues": "https://github.com/nabu-3/lexer/issues",
+        "email": "contact@nabu-3.com",
+        "source": "https://github.com/nabu-3/lexer"
+    },
     "require": {
-        "nabu-3/composer-installer-plugin": ">=3.0"
+        "php": ">=7.2",
+        "ext-mbstring": ">=7.2"
+    },
+    "require-dev": {
+        "phpunit/phpunit": "^8"
     }
 }
