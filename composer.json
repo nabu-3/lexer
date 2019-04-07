@@ -1,0 +1,24 @@
+{
+    "type": "library",
+    "name": "nabu-3/lexer",
+    "description": "nabu-3 Lexer to generate and analize lexical expressions",
+    "keywords": [ "nabu-3", "nabu", "lexer", "parser", "mysql", "sql" ],
+    "repositories": [
+        {
+            "type": "git",
+            "url": "https://github.com/nabu-3/lexer"
+        }
+    ],
+    "version": "0.0.1",
+    "license": "Apache-2.0",
+    "authors": [
+        {
+            "name": "Rafael Gutierrez",
+            "email": "rgutierrez@nabu-3.com",
+            "role": "Developer"
+        }
+    ],
+    "require": {
+        "nabu-3/composer-installer-plugin": ">=3.0"
+    }
+}

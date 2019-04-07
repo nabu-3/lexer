@@ -1,0 +1,7 @@
+dist: trusty
+
+addons:
+    sonarcloud:
+        organization: "nabu-3-github"
+script:
+    - sonar-scanner
