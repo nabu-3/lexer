@@ -1,7 +1,7 @@
 {
     "type": "library",
     "name": "nabu-3/lexer",
-    "description": "nabu-3 Lexer to generate and analize lexical expressions",
+    "description": "nabu-3 Lexer library to generate and analize lexical expressions",
     "keywords": [ "nabu-3", "nabu", "lexer", "parser", "mysql", "sql" ],
     "repositories": [
         {
@@ -24,8 +24,7 @@
         "source": "https://github.com/nabu-3/lexer"
     },
     "require": {
-        "php": ">=7.2",
-        "ext-mbstring": ">=7.2"
+        "php": ">=7.2"
     },
     "require-dev": {
         "phpunit/phpunit": "^8"
