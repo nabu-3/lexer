@@ -26,8 +26,8 @@ use nabu\lexer\CNabuLexer;
  /**
   * Test class for @see CNabuLexer.
   * @author Rafael Gutierrez <rgutierrez@nabu-3.com>
-  * @since 0.0.1
-  * @version 0.0.1
+  * @since 0.0.2
+  * @version 0.0.2
   */
 class CNabuLexerTest extends TestCase
 {

@@ -25,8 +25,8 @@ namespace nabu\lexer;
  * Main class to implement a Lexer.
  * This class can also be extended by third party classes to inherit his functionality.
  * @author Rafael Gutierrez <rgutierrez@nabu-3.com>
- * @since 0.0.1
- * @version 0.0.1
+ * @since 0.0.2
+ * @version 0.0.2
  * @package \nabu\lexer
  */
 class CNabuLexer
