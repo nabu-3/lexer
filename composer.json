@@ -27,5 +27,15 @@
     },
     "require-dev": {
         "phpunit/phpunit": "^8"
+    },
+    "autoload": {
+        "classmap": [
+            "src/"
+        ]
+    },
+    "autoload-dev": {
+        "classmap": [
+            "tests/"
+        ]
     }
 }

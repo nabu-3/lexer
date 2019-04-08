@@ -2,3 +2,14 @@
 .remote-sync*
 .scannerwork
 .sonarlint
+.phpunit*
+composer.lock
+phpunit
+lib
+pub
+sdk
+tmp
+etc
+var
+test.sh
+vendor

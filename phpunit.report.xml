@@ -1,0 +1,5 @@
+<testsuites>
+    <testsuite name="Basic Lexer Tests">
+        <directory>tests/nabu/lexer</directory>
+    </testsuite>
+</testsuites>
