@@ -1,9 +1,9 @@
 dist: trusty
 
 php:
-    - 7.2
-    - 7.3
-    - 7.4snapshot
+    - '7.2'
+    - '7.3'
+    - '7.4snapshot'
 
 addons:
     sonarcloud:
