@@ -1,7 +1,19 @@
 dist: trusty
 
+language: php
+
+php:
+    - '7.2'
+    - '7.3'
+    - '7.4snapshot'
+
 addons:
     sonarcloud:
         organization: "nabu-3-github"
+
+install:
+    - travis_retry composer install
+
 script:
+    - ./vendor/bin/phpunit
     - sonar-scanner
