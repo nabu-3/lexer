@@ -19,11 +19,7 @@
  *  limitations under the License.
  */
 
-namespace nabu\lexer;
-
-use nabu\lexer\exceptions\ENabuLexerException;
-
-use nabu\lexer\rules\interfaces\INabuLexerRule;
+namespace nabu\lexer\rules\interfaces;
 
 /**
  * Main class to implement a Lexer.
@@ -33,24 +29,7 @@ use nabu\lexer\rules\interfaces\INabuLexerRule;
  * @version 0.0.2
  * @package \nabu\lexer
  */
-class CNabuLexer
+interface INabuLexerRule
 {
-    /**
-     * Creates the instance and sets initial attributes.
-     */
-    public function __construct()
-    {
-
-    }
-
-    /**
-     * Add a Rule to Lexer.
-     * @param INabuLexerRule $rule Rule instance to be added.
-     * @return bool Returns true if the rule is added.
-     * @throws ENabuLexerException Throws an exception if rule is wrong.
-     */
-    public function addRule(INabuLexerRule $rule) : bool
-    {
-        throw new ENabuLexerException();
-    }
+    
 }

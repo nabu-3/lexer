@@ -1,9 +1,5 @@
 <?php
 
-use PHPUnit\Framework\TestCase;
-
-use nabu\lexer\CNabuLexer;
-
 /** @license
  *  Copyright 2019-2011 Rafael Gutierrez Martinez
  *  Copyright 2012-2013 Welma WEB MKT LABS, S.L.
@@ -23,33 +19,25 @@ use nabu\lexer\CNabuLexer;
  *  limitations under the License.
  */
 
- /**
-  * Test class for @see CNabuLexer.
-  * @author Rafael Gutierrez <rgutierrez@nabu-3.com>
-  * @since 0.0.2
-  * @version 0.0.2
-  */
-class CNabuLexerTest extends TestCase
+namespace nabu\lexer\rules;
+
+use nabu\lexer\rules\interfaces\INabuLexerRule;
+
+/**
+ * Main class to implement a Lexer.
+ * This class can also be extended by third party classes to inherit his functionality.
+ * @author Rafael Gutierrez <rgutierrez@nabu-3.com>
+ * @since 0.0.2
+ * @version 0.0.2
+ * @package \nabu\lexer\rules
+ */
+abstract class CNabuLexerAbstractRule implements INabuLexerRule
 {
     /**
-     * @test __construct
-     * @return CNabuLexer Returns created instance to pass to next tests.
+     * Creates the instance and sets initial attributes.
      */
-    public function testConstruct() : CNabuLexer
+    public function __construct()
     {
-        $this->assertIsObject($lexer = new CNabuLexer());
 
-        return $lexer;
-    }
-
-    /**
-     * @test addRule
-     * @depends testConstruct
-     * @param CNabuLexer $lexer Lexer created in prior test
-     * @return CNabuLexer Returns created instance to pass to next tests.
-     */
-    public function testAddRule(CNabuLexer $lexer) : CNabuLexer
-    {
-        return $lexer;
     }
 }
