@@ -33,7 +33,7 @@
         </testsuite>
     </testsuites>
     <logging>
-        <log type="coverage-clover" target="tmp/php.coverage.xml"/>
+        <log type="coverage-clover" target="tmp/phpunit.coverage.xml"/>
     </logging>
     <filter>
         <whitelist addUncoveredFilesFromWhitelist="true">
@@ -41,11 +41,7 @@
         </whitelist>
     </filter>
     <php>
-        <includePath>.</includePath>
         <includePath>src</includePath>
-        <includePath>sdk</includePath>
-        <includePath>pub</includePath>
-        <includePath>lib</includePath>
         <includePath>vendor</includePath>
     </php>
 </phpunit>
