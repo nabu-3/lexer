@@ -22,6 +22,7 @@
 namespace nabu\lexer;
 
 use Error;
+use ReflectionClass;
 
 use nabu\lexer\exceptions\ENabuLexerException;
 
@@ -42,31 +43,176 @@ class CNabuLexer extends CNabuObject implements INabuLexer
     /** @var string Language MySQL */
     public const GRAMMAR_MYSQL = 'mysql';
 
+    /** @var string JSON Grammar branch name */
+    private const JSON_GRAMMAR_NODE = 'grammar';
+    /** @var string JSON Grammar Language leaf name */
+    private const JSON_LANGUAGE_NODE = 'language';
+    /** @var string JSON Grammar Version branch name */
+    private const JSON_VERSION_NODE = 'version';
+
     /** @var string Language name used by this Lexer. */
-    private $grammar_name = null;
-    /** @var string Language version used by this lexer. */
-    private $grammar_version = null;
+    protected static $grammar_name = null;
+    /** @var string Language minimum version used by this lexer. */
+    protected static $grammar_version_min = null;
+    /** @var string Language maximum version used by this lexer. */
+    protected static $grammar_version_max = null;
 
     /**
-     * Protected constructor invoqued from the getFactory instance.
-     * @param string $grammar_name Language name used in this Lexer.
-     * @param string $grammar_version Language version used by this Lexer.
+     * Protects the constructor to force to be invoqued from the getLexer method.
      */
-    protected function __construct(string $grammar_name, string $grammar_version)
+    protected function __construct()
     {
-        $this->grammar_name = $grammar_name;
-        $this->grammar_version = $grammar_version;
-    }
+        $caller = get_called_class();
 
-    public static function getLexer(string $grammar_name, string $grammar_version) : CNabuLexer
-    {
-        try {
-            $class_name = "nabu\\lexer\\grammar\\$grammar_name\\CNabuLexerLanguageProxy";
-            $proxy = new $class_name();
-        } catch (Error $e) {
-            throw new ENabuLexerException(ENabuLexerException::ERROR_LEXER_GRAMMAR_DOES_NOT_EXISTS, array($grammar_name));
+        if (is_string($caller::$grammar_version_min) &&
+            is_string($caller::$grammar_version_max) &&
+            version_compare($caller::$grammar_version_min, $caller::$grammar_version_max, '>')
+        ) {
+            throw new ENabuLexerException(
+                ENabuLexerException::ERROR_LEXER_GRAMMAR_INVALID_VERSIONS_RANGE,
+                array(
+                    $caller::$grammar_version_min,
+                    $caller::$grammar_version_max
+                )
+            );
         }
 
-        return $proxy->getLexer($grammar_version);
+        if (is_string(self::getGrammarName())) {
+            $this->preloadFileResources();
+        }
+    }
+
+    public static function getLexer(string $grammar_name = null, string $grammar_version = null) : INabuLexer
+    {
+        $lexer = null;
+
+        if ($grammar_name === null && $grammar_version === null && is_string(self::getGrammarName())) {
+            $caller = get_called_class();
+            $lexer = new $caller();
+        } else {
+            try {
+                $class_name = "nabu\\lexer\\grammar\\$grammar_name\\CNabuLexerGrammarProxy";
+                $proxy = new $class_name();
+            } catch (Error $e) {
+                throw new ENabuLexerException(
+                    ENabuLexerException::ERROR_LEXER_GRAMMAR_DOES_NOT_EXISTS,
+                    array(
+                        $grammar_name
+                    )
+                );
+            }
+            $lexer = $proxy->getLexer($grammar_version);
+        }
+
+        return $lexer;
+    }
+
+    public static function getGrammarName()
+    {
+        return get_called_class()::$grammar_name;
+    }
+
+    public static function getMinimumVersion()
+    {
+        return get_called_class()::$grammar_version_min;
+    }
+
+    public static function getMaximumVersion()
+    {
+        return get_called_class()::$grammar_version_max;
+    }
+
+    public static function isValidVersion(string $version): bool
+    {
+        $retval = true;
+
+        $caller = get_called_class();
+
+        if ((is_string($caller::$grammar_version_min) && version_compare($caller::$grammar_version_min, $version, '>')) ||
+            (is_string($caller::$grammar_version_max) && version_compare($caller::$grammar_version_max, $version, '<'))
+        ) {
+            $retval = false;
+        }
+
+        return $retval;
+    }
+
+    /**
+     * Load the default File Resource descriptor to prepare the Lexer.
+     * @throws ENabuLexerException Throws an exception if the file exists but their content is not valid.
+     */
+    protected function preloadFileResources()
+    {
+        $dirname = __DIR__ . NABU_LEXER_GRAMMAR_FOLDER . DIRECTORY_SEPARATOR . self::getGrammarName() .  NABU_LEXER_RESOURCE_FOLDER;
+        $class_name = (new ReflectionClass(get_called_class()))->getShortName();
+        $filename = realpath($dirname . DIRECTORY_SEPARATOR . $class_name . '.json');
+
+        $this->loadFileResources($filename);
+    }
+
+    public function loadFileResources(string $filename) : bool
+    {
+        $retval = false;
+
+        if (!file_exists($filename) ||
+            ($raw = file_get_contents($filename)) === false ||
+            !($json = json_decode($raw))
+        ) {
+            throw new ENabuLexerException(
+                ENabuLexerException::ERROR_INVALID_GRAMMAR_RESOURCE_FILE,
+                array(
+                    $filename
+                )
+            );
+        }
+
+        if (is_array($json)) {
+            $this->processJSONHeader($json);
+            $retval = $this->processJSONRules($json);
+        }
+
+        return $retval;
+    }
+
+    protected function processJSONHeader(array $json)
+    {
+        if (!array_key_exists(self::JSON_GRAMMAR_NODE, $json) ||
+            !is_array($grammar = $json[self::JSON_GRAMMAR_NODE]) ||
+            !array_key_exists(self::JSON_LANGUAGE_NODE, $grammar) ||
+            !is_string($language = $grammar[self::JSON_LANGUAGE_NODE]) ||
+            !array_key_exists(self::JSON_VERSION_NODE, $grammar) ||
+            !is_array($version = $grammar[self::JSON_VERSION_NODE]) ||
+            !array_key_exists('min', $version) ||
+            !(is_string($version_min = $version['min']) || is_null($version_min)) ||
+            !array_key_exists('max', $version) ||
+            !(is_string($version_max = $version['max']) || is_null($version_max))
+        ) {
+            throw new ENabuLexerException(ENabuLexerException::ERROR_RESOURCE_GRAMMAR_DESCRIPTION_MISSING);
+        }
+
+        if (!is_null(self::$grammar_name) && self::$grammar_name !== $language) {
+            throw new ENabuLexerException(
+                ENabuLexerException::ERROR_RESOURCE_GRAMMAR_LANGUAGE_NOT_MATCH,
+                array(
+                    self::$grammar_name,
+                    $language
+                )
+            );
+        }
+
+        if (!is_null($version_min) && !is_null($version_max) && version_compare($version_min, $version_max, '<')) {
+            throw new ENabuLexerException(
+                ENabuLexerException::ERROR_LEXER_GRAMMAR_INVALID_VERSIONS_RANGE,
+                array(
+                    $version_min,
+                    $version_max
+                )
+            );
+        }
+    }
+
+    protected function processJSONRules(array $json) : bool
+    {
+        return true;
     }
 }

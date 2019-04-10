@@ -21,8 +21,6 @@
 
 namespace nabu\lexer\interfaces;
 
-use nabu\lexer\CNabuLexer;
-
 use nabu\lexer\exceptions\ENabuLexerException;
 
 /**
@@ -35,11 +33,41 @@ use nabu\lexer\exceptions\ENabuLexerException;
 interface INabuLexer
 {
     /**
-     * Gets a valid Lexer for the grammar and versions requested.
-     * @param string $grammar_name Grammar name requested.
-     * @param string $grammar_version Grammar version requested.
-     * @return CNabuLexer Returns a new Lexer instance.
+     * Gets a valid Lexer for the grammar and versions requested. If no grammar nor version provided, then
+     * check if the Lexer instance is a final Lexer or the base class and returns a new instance in the first case
+     * or throws an exception in the second case.
+     * @param string|null $grammar_name Grammar name requested.
+     * @param string|null $grammar_version Grammar version requested.
+     * @return INabuLexer Returns a new Lexer instance.
      * @throws ENabuLexerException Throws an exception if no valid Lexer is found.
      */
-    public static function getLexer(string $grammar_name, string $grammar_version) : CNabuLexer;
+    public static function getLexer(string $grammar_name = null, string $grammar_version = null) : INabuLexer;
+    /**
+     * Get the Grammar Name as defined for each Language supported.
+     * @return string|null Returns the Grammar Name if defined or null otherwise.
+     */
+    public static function getGrammarName();
+    /**
+     * Get the Grammar minimum version as defined for each Language supported.
+     * @return string|null Returns the Grammar minimum version if defined or null otherwise.
+     */
+    public static function getMinimumVersion();
+    /**
+     * Get the Grammar maximum version as defined for each Language supported.
+     * @return string|null Returns the Grammar maximum version if defined or null otherwise.
+     */
+    public static function getMaximumVersion();
+    /**
+     * Check if an specific version is supported by this lexer.
+     * @param string $version Version string to check.
+     * @return bool Returns true if version is supported.
+     */
+    public static function isValidVersion(string $version) : bool;
+    /**
+     * Load and setup the Lexer from a File Resources descriptor containing all grammar rules to work.
+     * @param string $filename Name of file to load.
+     * @return bool Returns true if file is valid and resources are loaded, or false if file is empty or have no rules.
+     * @throws ENabuLexerException Throws an exception if the file does not exists or have errors.
+     */
+    public function loadFileResources(string $filename) : bool;
 }

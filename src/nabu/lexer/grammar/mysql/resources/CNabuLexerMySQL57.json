@@ -1,0 +1,12 @@
+{
+    "grammar": {
+        "language": "mysql",
+        "version": {
+            "min": "5.7",
+            "max": "5.7.9999"
+        }
+    },
+    "rules": {
+
+    }
+}

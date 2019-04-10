@@ -30,13 +30,17 @@ use nabu\lexer\grammar\CNabuAbstractLexerGrammarProxy;
  * @version 0.0.2
  * @package \nabu\lexer\grammar\mysql
  */
-class CNabuLexerLanguageProxy extends CNabuAbstractLexerGrammarProxy
+class CNabuLexerGrammarProxy extends CNabuAbstractLexerGrammarProxy
 {
+    protected static $grammar_name = 'mysql';
+
     public function __construct()
     {
-        $this->registerLexerVersionClasses(array(
-            '5.7' => CNabuLexerMySQL57::class,
-            '8.1' => CNabuLexerMySQL81::class
-        ));
+        $this->registerLexerVersionClasses(
+            array(
+                CNabuLexerMySQL57::class,
+                CNabuLexerMySQL81::class
+            )
+        );
     }
 }

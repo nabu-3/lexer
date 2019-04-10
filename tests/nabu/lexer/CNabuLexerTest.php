@@ -27,6 +27,11 @@ use PHPUnit\Framework\TestCase;
 
 use nabu\lexer\CNabuLexer;
 
+use nabu\lexer\exceptions\ENabuLexerException;
+
+use nabu\lexer\grammar\mysql\CNabuLexerMySQL57;
+use nabu\lexer\grammar\mysql\CNabuLexerMySQL81;
+
 /**
  * Test class for @see CNabuLexer.
  * @author Rafael Gutierrez <rgutierrez@nabu-3.com>
@@ -56,12 +61,49 @@ class CNabuLexerTest extends TestCase
 
     /**
      * @test getLexer
+     * @test preloadFileResources
+     * @test loadFileResources
+     * @test processJSONHeader
+     * @test processJSONRules
      */
-    public function testGetLexer()
+    public function testGetLexerSuccess()
     {
-        $this->assertIsObject(CNabuLexer::getLexer(CNabuLexer::GRAMMAR_MYSQL, '5.7'));
-        $this->assertIsObject(CNabuLexer::getLexer(CNabuLexer::GRAMMAR_MYSQL, '5.8'));
-        $this->assertIsObject(CNabuLexer::getLexer(CNabuLexer::GRAMMAR_MYSQL, '8.1'));
-        $this->assertIsObject(CNabuLexer::getLexer(CNabuLexer::GRAMMAR_MYSQL, '9.0'));
+        $this->assertInstanceOf(CNabuLexerMySQL57::class, CNabuLexer::getLexer(CNabuLexer::GRAMMAR_MYSQL, '5.7'), 'Test getting Lexer for MySQL v.5.7');
+        $this->assertInstanceOf(CNabuLexerMySQL57::class, CNabuLexer::getLexer(CNabuLexer::GRAMMAR_MYSQL, '5.7.24'), 'Test getting Lexer for MySQL v.5.7.24');
+        $this->assertInstanceOf(CNabuLexerMySQL81::class, CNabuLexer::getLexer(CNabuLexer::GRAMMAR_MYSQL, '8.1'), 'Test getting Lexer for MySQL v.8.1');
+        $this->assertInstanceOf(CNabuLexerMySQL81::class, CNabuLexer::getLexer(CNabuLexer::GRAMMAR_MYSQL, '9.0'), 'Test getting Lexer for MySQL v.9.0');
+    }
+
+    /**
+     * @test getLexer
+     */
+    public function testGetLexerFails()
+    {
+        $this->expectException(ENabuLexerException::class, 'Test getting Lexer for MySQL v.5.8');
+        CNabuLexer::getLexer(CNabuLexer::GRAMMAR_MYSQL, '5.8');
+    }
+
+    /**
+     * @test getGrammarName
+     */
+    public function testGetGrammarName()
+    {
+        $this->assertNull(CNabuLexer::getGrammarName());
+    }
+
+    /**
+     * @test getMinimumVersion
+     */
+    public function testGetMinimumVersion()
+    {
+        $this->assertNull(CNabuLexer::getMinimumVersion());
+    }
+
+    /**
+     * @test getMaximumVersion
+     */
+    public function testGetMaximumVersion()
+    {
+        $this->assertNull(CNabuLexer::getMaximumVersion());
     }
 }

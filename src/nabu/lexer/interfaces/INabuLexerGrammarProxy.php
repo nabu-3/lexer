@@ -21,6 +21,8 @@
 
 namespace nabu\lexer\interfaces;
 
+use nabu\lexer\exceptions\ENabuLexerException;
+
 /**
  * Interface of Lexer Language proxies.
  * @author Rafael Gutierrez <rgutierrez@nabu-3.com>
@@ -30,5 +32,16 @@ namespace nabu\lexer\interfaces;
  */
 interface INabuLexerGrammarProxy
 {
-
+    /**
+     * Gets a valid Lexer for the version requested.
+     * @param string $version Grammar version requested.
+     * @return INabuLexer Returns a new Lexer instance.
+     * @throws ENabuLexerException Throws an exception if no valid Lexer is found.
+     */
+    public function getLexer(string $version) : INabuLexer;
+    /**
+     * Returns the grammar name assigned to derived classes.
+     * @return string|null Returns the grammar name if assigned or null otherwise.
+     */
+    public static function getGrammarName();
 }

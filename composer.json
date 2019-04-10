@@ -32,6 +32,9 @@
     "autoload": {
         "classmap": [
             "src/"
+        ],
+        "files": [
+            "src/globals.php"
         ]
     },
     "autoload-dev": {

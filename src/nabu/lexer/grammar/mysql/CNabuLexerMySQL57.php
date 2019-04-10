@@ -23,8 +23,6 @@ namespace nabu\lexer\grammar\mysql;
 
 use nabu\lexer\CNabuLexer;
 
-use nabu\lexer\interfaces\INabuLexer;
-
 /**
  * MySQL Lexer version 5.7.
  * @author Rafael Gutierrez <rgutierrez@nabu-3.com>
@@ -34,5 +32,7 @@ use nabu\lexer\interfaces\INabuLexer;
  */
 class CNabuLexerMySQL57 extends CNabuLexer
 {
-
+    protected static $grammar_name = 'mysql';
+    protected static $grammar_version_min = '5.7';
+    protected static $grammar_version_max = '5.7.9999';
 }

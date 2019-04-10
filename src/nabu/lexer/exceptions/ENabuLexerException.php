@@ -38,17 +38,37 @@ class ENabuLexerException extends ENabuException
     public const ERROR_LEXER_CONSTRUCTOR_INVOQUED                   = 0x0001;
     /** @var int Lexer grammar does not exists. Requires the grammar name. */
     public const ERROR_LEXER_GRAMMAR_DOES_NOT_EXISTS                = 0x0002;
-    /** @var int Lexer invalid minimum language version. Requires the version number. */
-    public const ERROR_LEXER_GRAMMAR_INVALID_MIN_VERSION           = 0x0003;
+    /** @var int Lexer unsupported grammar version. Requires the version number. */
+    public const ERROR_LEXER_GRAMMAR_UNSUPPORTED_VERSION            = 0x0003;
+    /** @var int Lexer minimum version great than maximum version. Requires min and max version numbers. */
+    public const ERROR_LEXER_GRAMMAR_INVALID_VERSIONS_RANGE         = 0x0004;
+    /** @var int Invalid Lexer class. Requires class name. */
+    public const ERROR_INVALID_LEXER_CLASS                          = 0x0005;
+    /** @var int Invalid Grammar resource file. Requires the resource filename. */
+    public const ERROR_INVALID_GRAMMAR_RESOURCE_FILE                = 0x0006;
+    /** @var int Resource file does not contain grammar description. */
+    public const ERROR_RESOURCE_GRAMMAR_DESCRIPTION_MISSING         = 0x0007;
+    /** @var int Resource file language name does not match. Requires both language names. */
+    public const ERROR_RESOURCE_GRAMMAR_LANGUAGE_NOT_MATCH          = 0x0008;
 
     /** @var array English error messages array. */
     private static $error_messages = array(
         ENabuLexerException::ERROR_LEXER_CONSTRUCTOR_INVOQUED =>
             'Lexer constructor cannot be invoqued directly.',
         ENabuLexerException::ERROR_LEXER_GRAMMAR_DOES_NOT_EXISTS =>
-            'Lexer grammar does not exists [%s]',
-        ENabuLexerException::ERROR_LEXER_GRAMMAR_INVALID_MIN_VERSION =>
-            'Lexer invalid minimum grammar version [%s]'
+            'Lexer grammar does not exists [%s].',
+        ENabuLexerException::ERROR_LEXER_GRAMMAR_UNSUPPORTED_VERSION =>
+            'Lexer unsupported grammar version [%s].',
+        ENabuLexerException::ERROR_LEXER_GRAMMAR_INVALID_VERSIONS_RANGE =>
+            'Lexer invalid versions range [%s - %s].',
+        ENabuLexerException::ERROR_INVALID_LEXER_CLASS =>
+            'Invalid Lexer class [%s].',
+        ENabuLexerException::ERROR_INVALID_GRAMMAR_RESOURCE_FILE =>
+            'Invalid Grammar Resource file [%s].',
+        ENabuLexerException::ERROR_RESOURCE_GRAMMAR_DESCRIPTION_MISSING =>
+            'Resource file does not contain grammar description, is empty or incomplete.',
+        ENabuLexerException::ERROR_RESOURCE_GRAMMAR_LANGUAGE_NOT_MATCH =>
+            'Resource file Grammar Language name does not match [%s - %s]'
     );
 
     /**
