@@ -21,9 +21,13 @@
 
 namespace nabu\lexer;
 
+use Error;
+
 use nabu\lexer\exceptions\ENabuLexerException;
 
-use nabu\lexer\rules\interfaces\INabuLexerRule;
+use nabu\lexer\interfaces\INabuLexer;
+
+use nabu\min\CNabuObject;
 
 /**
  * Main class to implement a Lexer.
@@ -33,24 +37,36 @@ use nabu\lexer\rules\interfaces\INabuLexerRule;
  * @version 0.0.2
  * @package \nabu\lexer
  */
-class CNabuLexer
+class CNabuLexer extends CNabuObject implements INabuLexer
 {
-    /**
-     * Creates the instance and sets initial attributes.
-     */
-    public function __construct()
-    {
+    /** @var string Language MySQL */
+    public const GRAMMAR_MYSQL = 'mysql';
 
+    /** @var string Language name used by this Lexer. */
+    private $grammar_name = null;
+    /** @var string Language version used by this lexer. */
+    private $grammar_version = null;
+
+    /**
+     * Protected constructor invoqued from the getFactory instance.
+     * @param string $grammar_name Language name used in this Lexer.
+     * @param string $grammar_version Language version used by this Lexer.
+     */
+    protected function __construct(string $grammar_name, string $grammar_version)
+    {
+        $this->grammar_name = $grammar_name;
+        $this->grammar_version = $grammar_version;
     }
 
-    /**
-     * Add a Rule to Lexer.
-     * @param INabuLexerRule $rule Rule instance to be added.
-     * @return bool Returns true if the rule is added.
-     * @throws ENabuLexerException Throws an exception if rule is wrong.
-     */
-    public function addRule(INabuLexerRule $rule) : bool
+    public static function getLexer(string $grammar_name, string $grammar_version) : CNabuLexer
     {
-        throw new ENabuLexerException();
+        try {
+            $class_name = "nabu\\lexer\\grammar\\$grammar_name\\CNabuLexerLanguageProxy";
+            $proxy = new $class_name();
+        } catch (Error $e) {
+            throw new ENabuLexerException(ENabuLexerException::ERROR_LEXER_GRAMMAR_DOES_NOT_EXISTS, array($grammar_name));
+        }
+
+        return $proxy->getLexer($grammar_version);
     }
 }

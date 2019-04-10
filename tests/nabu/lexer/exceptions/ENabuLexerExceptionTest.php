@@ -19,49 +19,43 @@
  *  limitations under the License.
  */
 
-namespace nabu\lexer;
-
-use Error;
+namespace nabu\lexer\exceptions;
 
 use PHPUnit\Framework\TestCase;
 
-use nabu\lexer\CNabuLexer;
-
 /**
- * Test class for @see CNabuLexer.
+ * Test class for @see ENabuLexerException.
  * @author Rafael Gutierrez <rgutierrez@nabu-3.com>
  * @since 0.0.2
  * @version 0.0.2
  * @package nabu\lexer
  */
-class CNabuLexerTest extends TestCase
+class ENabuLexerExceptionTest extends TestCase
 {
     /**
      * @test __construct
      */
-    public function testConstruct_1()
+    public function testConstruct_ERROR_LEXER_CONSTRUCTOR_INVOQUED()
     {
-        $this->expectException(Error::class);
-        new CNabuLexer();
+        $this->expectException('nabu\lexer\exceptions\ENabuLexerException');
+        throw new ENabuLexerException(ENabuLexerException::ERROR_LEXER_CONSTRUCTOR_INVOQUED);
     }
 
     /**
      * @test __construct
      */
-    public function testConstruct_2()
+    public function testConstruct_ERROR_LEXER_GRAMMAR_DOES_NOT_EXISTS()
     {
-        $this->expectException(Error::class);
-        new CNabuLexer(CNabuLexer::GRAMMAR_MYSQL, '5.7');
+        $this->expectException('nabu\lexer\exceptions\ENabuLexerException');
+        throw new ENabuLexerException(ENabuLexerException::ERROR_LEXER_GRAMMAR_DOES_NOT_EXISTS);
     }
 
     /**
-     * @test getLexer
+     * @test __construct
      */
-    public function testGetLexer()
+    public function testConstruct_ERROR_LEXER_GRAMMAR_INVALID_MIN_VERSION()
     {
-        $this->assertIsObject(CNabuLexer::getLexer(CNabuLexer::GRAMMAR_MYSQL, '5.7'));
-        $this->assertIsObject(CNabuLexer::getLexer(CNabuLexer::GRAMMAR_MYSQL, '5.8'));
-        $this->assertIsObject(CNabuLexer::getLexer(CNabuLexer::GRAMMAR_MYSQL, '8.1'));
-        $this->assertIsObject(CNabuLexer::getLexer(CNabuLexer::GRAMMAR_MYSQL, '9.0'));
+        $this->expectException('nabu\lexer\exceptions\ENabuLexerException');
+        throw new ENabuLexerException(ENabuLexerException::ERROR_LEXER_GRAMMAR_INVALID_MIN_VERSION);
     }
 }
