@@ -82,7 +82,7 @@ class ENabuLexerException extends ENabuException
         if (array_key_exists($code, self::$error_messages)) {
             parent::__construct(self::$error_messages[$code], $code, $values);
         } else {
-            parent::__construct('Invalid exception code [%s]', array($code));
+            parent::__construct('Invalid exception code [%s]', 0, array($code));
         }
     }
 }

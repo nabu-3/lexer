@@ -35,9 +35,18 @@ class ENabuLexerExceptionTest extends TestCase
     /**
      * @test __construct
      */
+    public function testConstruct_Invalid_Exception_Code()
+    {
+        $this->expectException(ENabuLexerException::class);
+        throw new ENabuLexerException(0);
+    }
+    
+    /**
+     * @test __construct
+     */
     public function testConstruct_ERROR_LEXER_CONSTRUCTOR_INVOQUED()
     {
-        $this->expectException('nabu\lexer\exceptions\ENabuLexerException');
+        $this->expectException(ENabuLexerException::class);
         throw new ENabuLexerException(ENabuLexerException::ERROR_LEXER_CONSTRUCTOR_INVOQUED);
     }
 
@@ -46,7 +55,7 @@ class ENabuLexerExceptionTest extends TestCase
      */
     public function testConstruct_ERROR_LEXER_GRAMMAR_DOES_NOT_EXISTS()
     {
-        $this->expectException('nabu\lexer\exceptions\ENabuLexerException');
+        $this->expectException(ENabuLexerException::class);
         throw new ENabuLexerException(
             ENabuLexerException::ERROR_LEXER_GRAMMAR_DOES_NOT_EXISTS,
             array(
@@ -60,7 +69,7 @@ class ENabuLexerExceptionTest extends TestCase
      */
     public function testConstruct_ERROR_LEXER_GRAMMAR_UNSUPPORTED_VERSION()
     {
-        $this->expectException('nabu\lexer\exceptions\ENabuLexerException');
+        $this->expectException(ENabuLexerException::class);
         throw new ENabuLexerException(
             ENabuLexerException::ERROR_LEXER_GRAMMAR_UNSUPPORTED_VERSION,
             array(
@@ -74,7 +83,7 @@ class ENabuLexerExceptionTest extends TestCase
      */
     public function testConstruct_ERROR_LEXER_GRAMMAR_INVALID_VERSIONS_RANGE()
     {
-        $this->expectException('nabu\lexer\exceptions\ENabuLexerException');
+        $this->expectException(ENabuLexerException::class);
         throw new ENabuLexerException(
             ENabuLexerException::ERROR_LEXER_GRAMMAR_INVALID_VERSIONS_RANGE,
             array(
@@ -89,7 +98,7 @@ class ENabuLexerExceptionTest extends TestCase
      */
     public function testConstruct_ERROR_INVALID_LEXER_CLASS()
     {
-        $this->expectException('nabu\lexer\exceptions\ENabuLexerException');
+        $this->expectException(ENabuLexerException::class);
         throw new ENabuLexerException(
             ENabuLexerException::ERROR_INVALID_LEXER_CLASS,
             array(
@@ -103,7 +112,7 @@ class ENabuLexerExceptionTest extends TestCase
      */
     public function testConstruct_ERROR_ERROR_INVALID_GRAMMAR_RESOURCE_FILE()
     {
-        $this->expectException('nabu\lexer\exceptions\ENabuLexerException');
+        $this->expectException(ENabuLexerException::class);
         throw new ENabuLexerException(
             ENabuLexerException::ERROR_INVALID_GRAMMAR_RESOURCE_FILE,
             array(
@@ -117,7 +126,7 @@ class ENabuLexerExceptionTest extends TestCase
      */
     public function testConstruct_ERROR_RESOURCE_GRAMMAR_DESCRIPTION_MISSING()
     {
-        $this->expectException('nabu\lexer\exceptions\ENabuLexerException');
+        $this->expectException(ENabuLexerException::class);
         throw new ENabuLexerException(ENabuLexerException::ERROR_RESOURCE_GRAMMAR_DESCRIPTION_MISSING);
     }
 
@@ -126,7 +135,7 @@ class ENabuLexerExceptionTest extends TestCase
      */
     public function testConstruct_ERROR_RESOURCE_GRAMMAR_LANGUAGE_NOT_MATCH()
     {
-        $this->expectException('nabu\lexer\exceptions\ENabuLexerException');
+        $this->expectException(ENabuLexerException::class);
         throw new ENabuLexerException(
             ENabuLexerException::ERROR_RESOURCE_GRAMMAR_LANGUAGE_NOT_MATCH,
             array(
