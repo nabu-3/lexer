@@ -32,5 +32,42 @@ use PHPUnit\Framework\TestCase;
  */
 class CNabuLexerRuleProxyTest extends TestCase
 {
-    
+    /**
+     * @test createRuleFromDescriptor
+     * @return CNabuLexerRuleGroup Returns created rule for tests.
+     */
+    public function testCreateRuleFromDescriptorRuleGroup() : CNabuLexerRuleGroup
+    {
+        $rule = CNabuLexerRuleProxy::createRuleFromDescriptor(
+            array(
+                "starter" => true,
+                "case_sensitive" => false,
+                "method" => "case",
+                "group" => array(
+                    "CREATE", "DROP"
+                )
+            )
+        );
+        $this->assertInstanceOf(CNabuLexerRuleGroup::class, $rule);
+
+        return $rule;
+    }
+
+    /**
+     * @test applyRuleToContent
+     * @test getValue
+     * @test setValue
+     * @test clearValue
+     * @depends testCreateRuleFromDescriptorRuleGroup
+     * @param CNabuLexerRuleGroup $rule Rule created in previous test.
+     */
+    public function testApplyRuleToContentRuleGroup(CNabuLexerRuleGroup $rule)
+    {
+        $this->assertTrue($rule->applyRuleToContent('CREATE TABLE'));
+        $this->assertSame('CREATE', $rule->getValue());
+        $this->assertTrue($rule->applyRuleToContent('DROP TABLE'));
+        $this->assertSame('DROP', $rule->getValue());
+        $this->assertFalse($rule->applyRuleToContent('ALTER TABLE'));
+        $this->assertNull($rule->getValue());
+    }
 }

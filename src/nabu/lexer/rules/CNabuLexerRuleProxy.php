@@ -36,8 +36,10 @@ use nabu\min\CNabuObject;
  */
 class CNabuLexerRuleProxy extends CNabuObject
 {
-    /** @var string Descriptor keywords node literal. */
-    private const DESCRIPTOR_KEYWORDS_NODE = 'keywords';
+    /** @var string Descriptor group node literal. */
+    private const DESCRIPTOR_GROUP_NODE = 'group';
+    /** @var string Descriptor keyword node literal. */
+    private const DESCRIPTOR_KEYWORD_NODE = 'keyword';
     /**
      * Create a Rule depending on a descriptor array structure.
      * @param array $descriptor The descriptor array.
@@ -46,8 +48,18 @@ class CNabuLexerRuleProxy extends CNabuObject
      */
     public static function createRuleFromDescriptor(array $descriptor) : INabuLexerRule
     {
-        if (array_key_exists(self::DESCRIPTOR_KEYWORDS_NODE, $descriptor)) {
+        $rule = null;
 
+        if (array_key_exists(self::DESCRIPTOR_GROUP_NODE, $descriptor)) {
+            $rule = CNabuLexerRuleGroup::createFromDescriptor($descriptor);
+        } elseif (array_key_exists(self::DESCRIPTOR_KEYWORD_NODE, $descriptor)) {
+            $rule = CNabuLexerRuleKeyword::createFromDescriptor($descriptor);
         }
+
+        if (is_null($rule)) {
+            throw new ENabuLexerException(ENabuLexerException::ERROR_RULE_NOT_FOUND_FOR_DESCRIPTOR);
+        }
+
+        return $rule;
     }
 }

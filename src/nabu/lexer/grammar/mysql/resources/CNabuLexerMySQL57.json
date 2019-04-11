@@ -25,11 +25,38 @@
                 }
             ]
         },
+        "if_not_exists": {
+            "starter": false,
+            "case_sensitive": false,
+            "method": "sequence",
+            "separator": {
+                "rule": "separator"
+            },
+            "group": [
+                "IF", "NOT", "EXISTS"
+            ]
+        },
         "create_table": {
             "starter": true,
             "case_sesnsitive": false,
-            "keywords": [
-                "CREATE"
+            "method": "sequence",
+            "separator": {
+                "rule": "separator"
+            },
+            "group": [
+                {
+                    "keyword": "CREATE"
+                },
+                {
+                    "keyword": "TEMPORARY",
+                    "repeat": "0..1"
+                },
+                {
+                    "keyword": "TABLE"
+                },
+                {
+                    "rule": "if_not_exists"
+                }
             ]
         }
     }

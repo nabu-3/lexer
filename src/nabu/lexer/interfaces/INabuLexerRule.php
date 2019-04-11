@@ -21,6 +21,8 @@
 
 namespace nabu\lexer\interfaces;
 
+use nabu\lexer\exceptions\ENabuLexerException;
+
 /**
  * Interface of Lexer Rule.
  * @author Rafael Gutierrez <rgutierrez@nabu-3.com>
@@ -30,5 +32,47 @@ namespace nabu\lexer\interfaces;
  */
 interface INabuLexerRule
 {
-    
+    /**
+     * Creates a Rule using a descriptor array info.
+     * @param array $descriptor Descriptor information.
+     * @return INabuLexerRule Returns a rule instance parametrized matching the descriptor.
+     * @throws ENabuLexerException Throws an exception if the descriptor is invalid.
+     */
+    public static function createFromDescriptor(array $descriptor) : INabuLexerRule;
+    /**
+     * Init the instance using a descriptor array info.
+     * @param array $descriptor The descriptor array to init the instance.
+     * @throws ENabuLexerException Throws an exception if the descriptor is not valod.
+     */
+    public function initFromDescriptor(array $descriptor);
+    /**
+     * Applies the rule to a content string.
+     * @param string $content The content to be analized.
+     * @return bool Returns true if the Rule is successful applied.
+     */
+    public function applyRuleToContent(string $content) : bool;
+    /**
+     * Returns the value stored in the last execution of the rule.
+     * @return mixed Returns the value according to rule specifications. If case of no value setted, then returns null.
+     */
+    public function getValue();
+    /**
+     * Set the value of the rule.
+     * @param mixed $value The value to be stored. It can be of any type.
+     */
+    public function setValue($value);
+    /**
+     * Clear previous stored value of the rule.
+     */
+    public function clearValue();
+    /**
+     * Check if the rule is a starter rule or could be placed in any moment.
+     * @return bool Returns true if it is a starter rule.
+     */
+    public function isStarter() : bool;
+    /**
+     * Check it hte rule is case sensitive.
+     * @return bool Returns true if it is case sensitive.
+     */
+    public function isCaseSensitive() : bool;
 }

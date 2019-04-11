@@ -21,7 +21,9 @@
 
 namespace nabu\lexer\rules;
 
-use nabu\lexer\rules\interfaces\INabuLexerRule;
+use nabu\lexer\exceptions\ENabuLexerException;
+
+use nabu\lexer\interfaces\INabuLexerRule;
 
 /**
  * Main class to implement a Lexer.
@@ -33,11 +35,166 @@ use nabu\lexer\rules\interfaces\INabuLexerRule;
  */
 abstract class CNabuLexerAbstractRule implements INabuLexerRule
 {
+    /** @var string Descriptor starter node literal. */
+    const DESCRIPTOR_STARTER_NODE = 'starter';
+    /** @var string Descriptor case sensitive node literal. */
+    const DESCRIPTOR_CASE_SENSITIVE_NODE = 'case_sensitive';
+
+    /** @var bool If true, the Rule is an starter rule and can be placed at the begin of a sequence. */
+    private $starter = false;
+    /** @var bool If true, the Rule is case sensitive. */
+    private $case_sensitive = false;
+
+    /** @var mixed $value Rule value extrated from content. */
+    private $value = null;
+
     /**
      * Creates the instance and sets initial attributes.
      */
     public function __construct()
     {
 
+    }
+
+    public static function createFromDescriptor(array $descriptor): INabuLexerRule
+    {
+        $caller = get_called_class();
+        $rule = new $caller();
+        $rule->initFromDescriptor($descriptor);
+
+        return $rule;
+    }
+
+    public function initFromDescriptor(array $descriptor)
+    {
+        $this->starter = $this->checkBooleanLeaf($descriptor, self::DESCRIPTOR_STARTER_NODE);
+        $this->case_sensitive = $this->checkBooleanLeaf($descriptor, self::DESCRIPTOR_CASE_SENSITIVE_NODE);
+    }
+
+    public function getValue()
+    {
+        return $this->value;
+    }
+
+    public function setValue($value)
+    {
+        $this->value = $value;
+    }
+
+    public function clearValue()
+    {
+        $this->value = null;
+    }
+
+    public function isStarter(): bool
+    {
+        return $this->starter;
+    }
+
+    public function isCaseSensitive(): bool
+    {
+        return $this->case_sensitive;
+    }
+
+    /**
+     * Check if a leaf have a boolean value and returns the value detected if it is valid.
+     * @param array $descriptor The descriptor fragment to be analized. The leaf needs to be in the root of the array.
+     * @param string $name Name of the leaf.
+     * @param bool $def_value Boolean default value in case that the leaf does not exists.
+     * @param bool $raise_exception If true, throws an exception if the leaf des not exists.
+     * @return bool Returns the detected value.
+     * @throws ENabuLexerException Throws an exception if value does not exists or is invalid.
+     */
+    protected function checkBooleanLeaf(
+        array $descriptor, string $name, bool $def_value = false, bool $raise_exception = false
+    ): bool {
+        $boolValue = $def_value;
+
+        if (array_key_exists($name, $descriptor)) {
+            if (is_bool($descriptor[$name])) {
+                $boolValue = $descriptor[$name];
+            } else {
+                throw new ENabuLexerException(ENabuLexerException::ERROR_RULE_NODE_INVALID_VALUE, array($name, 'bool'));
+            }
+        } elseif ($raise_exception) {
+            throw new ENabuLexerException(ENabuLexerException::ERROR_RULE_NODE_NOT_FOUND_IN_DESCRIPTOR, array($name));
+        }
+
+        return $boolValue;
+    }
+
+    /**
+     * Check if a leaf have a string value and returns the value detected if it is valid.
+     * @param array $descriptor The descriptor fragment to be analized. The leaf needs to be in the root of the array.
+     * @param string $name Name of the leaf.
+     * @param string|null $def_value Boolean default value in case that the leaf does not exists.
+     * @param bool $nullable If true, the node can contain a null value.
+     * @param bool $raise_exception If true, throws an exception if the leaf des not exists.
+     * @return bool Returns the detected value.
+     * @throws ENabuLexerException Throws an exception if value does not exists or is invalid.
+     */
+    protected function checkStringLeaf(
+        array $descriptor, string $name, string $def_value = null, bool $nullable = true, bool $raise_exception = false
+    ): bool {
+        $stringValue = $def_value;
+
+        if (array_key_exists($name, $descriptor)) {
+            if (is_string($descriptor[$name]) || ($nullable && is_null($descriptor[$name]))) {
+                $stringValue = $descriptor[$name];
+            } elseif ($raise_exception) {
+                if ($nullable) {
+                    throw new ENabuLexerException(
+                        ENabuLexerException::ERROR_RULE_NODE_INVALID_VALUE,
+                        array($name, 'string, null')
+                    );
+                } else {
+                    throw new ENabuLexerException(
+                        ENabuLexerException::ERROR_RULE_NODE_INVALID_VALUE,
+                        array($name, 'string')
+                    );
+                }
+            }
+        } elseif ($raise_exception) {
+            throw new ENabuLexerException(ENabuLexerException::ERROR_RULE_NODE_NOT_FOUND_IN_DESCRIPTOR, array($name));
+        }
+
+        return $stringValue;
+    }
+
+    /**
+     * Check if a node is an array and returns the array found.
+     * @param array $descriptor The descriptor fragment to be analized. The node needs to be in the root of the array.
+     * @param string $name Name of the leaf.
+     * @param array|null $def_value Boolean default value in case that the leaf does not exists.
+     * @param bool $nullable If true, allows the node to be null.
+     * @param bool $raise_exception If true, throws an exception if the node des not exists.
+     * @return bool Returns the array found or null if allowed.
+     * @throws ENabuLexerException Throws an exception if value does not exists or is invalid.
+     */
+    protected function checkArrayNode(array $descriptor, string $name, array $def_value = null, bool $nullable = true, bool $raise_exception = false)
+    {
+        $arrayValue = $def_value;
+
+        if (array_key_exists($name, $descriptor)) {
+            if (is_array($descriptor[$name]) || ($nullable && is_null($descriptor[$name]))) {
+                $arrayValue = $descriptor[$name];
+            } elseif ($raise_exception) {
+                if ($nullable) {
+                    throw new ENabuLexerException(
+                        ENabuLexerException::ERROR_RULE_NODE_INVALID_VALUE,
+                        array($name, 'array, null')
+                    );
+                } else {
+                    throw new ENabuLexerException(
+                        ENabuLexerException::ERROR_RULE_NODE_INVALID_VALUE,
+                        array($name, 'array')
+                    );
+                }
+            }
+        } elseif ($raise_exception) {
+            throw new ENabuLexerException(ENabuLexerException::ERROR_RULE_NOT_FOUND_FOR_DESCRIPTOR, array($name));
+        }
+
+        return $arrayValue;
     }
 }

@@ -50,6 +50,12 @@ class ENabuLexerException extends ENabuException
     public const ERROR_RESOURCE_GRAMMAR_DESCRIPTION_MISSING         = 0x0007;
     /** @var int Resource file language name does not match. Requires both language names. */
     public const ERROR_RESOURCE_GRAMMAR_LANGUAGE_NOT_MATCH          = 0x0008;
+    /** @var int Rule not found for descriptor. */
+    public const ERROR_RULE_NOT_FOUND_FOR_DESCRIPTOR                = 0x0009;
+    /** @var int Rule node not found in descriptor. Requires the node name. */
+    public const ERROR_RULE_NODE_NOT_FOUND_IN_DESCRIPTOR            = 0x000a;
+    /** @var int Rule node invalid value. Requires the node name and type expected. */
+    public const ERROR_RULE_NODE_INVALID_VALUE                      = 0x000b;
 
     /** @var array English error messages array. */
     private static $error_messages = array(
@@ -68,7 +74,13 @@ class ENabuLexerException extends ENabuException
         ENabuLexerException::ERROR_RESOURCE_GRAMMAR_DESCRIPTION_MISSING =>
             'Resource file does not contain grammar description, is empty or incomplete.',
         ENabuLexerException::ERROR_RESOURCE_GRAMMAR_LANGUAGE_NOT_MATCH =>
-            'Resource file Grammar Language name does not match [%s - %s]'
+            'Resource file Grammar Language name does not match [%s - %s]',
+        ENabuLexerException::ERROR_RULE_NOT_FOUND_FOR_DESCRIPTOR =>
+            'Rule not found to match descriptor.',
+        ENabuLexerException::ERROR_RULE_NODE_NOT_FOUND_IN_DESCRIPTOR =>
+            'Rule node [%s] not found in descriptor.',
+        ENabuLexerException::ERROR_RULE_NODE_INVALID_VALUE =>
+            'Rule node [%s] contains an invalid nor unexpected value. Allowed are [%s].'
     );
 
     /**
