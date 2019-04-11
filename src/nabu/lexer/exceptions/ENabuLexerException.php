@@ -56,6 +56,10 @@ class ENabuLexerException extends ENabuException
     public const ERROR_RULE_NODE_NOT_FOUND_IN_DESCRIPTOR            = 0x000a;
     /** @var int Rule node invalid value. Requires the node name and type expected. */
     public const ERROR_RULE_NODE_INVALID_VALUE                      = 0x000b;
+    /** @var int Invalid Rule method. Requires the method name. */
+    public const ERROR_INVALID_RULE_METHOD                          = 0x000c;
+    /** @var int Group Role is empty. */
+    public const ERROR_EMPTY_GROUP_RULE                             = 0x000d;
 
     /** @var array English error messages array. */
     private static $error_messages = array(
@@ -80,7 +84,11 @@ class ENabuLexerException extends ENabuException
         ENabuLexerException::ERROR_RULE_NODE_NOT_FOUND_IN_DESCRIPTOR =>
             'Rule node [%s] not found in descriptor.',
         ENabuLexerException::ERROR_RULE_NODE_INVALID_VALUE =>
-            'Rule node [%s] contains an invalid nor unexpected value. Allowed are [%s].'
+            'Rule node [%s] contains an invalid nor unexpected value. Allowed are [%s].',
+        ENabuLexerException::ERROR_INVALID_RULE_METHOD =>
+            'Invalid Rule method [$s].',
+        ENabuLexerException::ERROR_EMPTY_GROUP_RULE =>
+            'Group Rule is empty.'
     );
 
     /**

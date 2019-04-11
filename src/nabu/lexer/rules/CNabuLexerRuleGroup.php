@@ -21,6 +21,8 @@
 
 namespace nabu\lexer\rules;
 
+use nabu\lexer\exceptions\ENabuLexerException;
+
 /**
  * MySQL Lexer Rule to parse a group of rules.
  * @author Rafael Gutierrez <rgutierrez@nabu-3.com>
@@ -39,6 +41,11 @@ class CNabuLexerRuleGroup extends CNabuLexerAbstractRule
     const METHOD_CASE = 'case';
     /** @var string Method sequence literal. */
     const METHOD_SEQUENCE = 'sequence';
+    /** @var array Methods list. */
+    const METHOD_LIST = array(
+        self::METHOD_CASE,
+        self::METHOD_SEQUENCE
+    );
 
     /** @var string $method Method used to apply keywords. */
     private $method = null;
@@ -49,7 +56,9 @@ class CNabuLexerRuleGroup extends CNabuLexerAbstractRule
     {
         parent::initFromDescriptor($descriptor);
 
-        $this->method = $this->checkStringLeaf($descriptor, self::DESCRIPTOR_METHOD_NODE, null, false, true);
+        $this->method = $this->checkEnumLeaf(
+            $descriptor, self::DESCRIPTOR_METHOD_NODE, self::METHOD_LIST,  null, false, true
+        );
         $group_desc = $this->checkArrayNode($descriptor, self::DESCRIPTOR_GROUP_NODE, null, false, true);
 
         $this->group = array();
@@ -70,6 +79,44 @@ class CNabuLexerRuleGroup extends CNabuLexerAbstractRule
 
     public function applyRuleToContent(string $content): bool
     {
-        return true;
+        $this->clearValue();
+
+        if (!is_array($this->group) || count($this->group) === 0) {
+            throw new ENabuLexerException(ENabuLexerException::ERROR_EMPTY_GROUP_RULE);
+        }
+
+        $retval = false;
+
+        switch ($this->method) {
+            case self::METHOD_CASE:
+                $retval = $this->applyRuleToContentAsCase($content);
+                break;
+            case self::METHOD_SEQUENCE:
+                $retval = $this->applyRuleToContentAsSequence($content);
+                break;
+            default:
+                throw new ENabuLexerException(ENabuLexerException::ERROR_INVALID_RULE_METHOD, array($this->method));
+        }
+
+        return $retval;
+    }
+
+    /**
+     * Applies the group as a switch/case structure.
+     * @param string $content The content to be analized.
+     * @return bool Return true if some of cases are found.
+     */
+    private function applyRuleToContentAsCase(string $content): bool
+    {
+        $retval = false;
+
+        foreach ($this->group as $rule) {
+            if ($retval = $rule->applyRuleToContent($content)) {
+                $this->setValue($rule->getValue());
+                break;
+            }
+        }
+
+        return $retval;
     }
 }

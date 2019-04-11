@@ -63,7 +63,7 @@ class CNabuLexerRuleKeyword extends CNabuLexerAbstractRule
                 $case = $this->keyword;
             }
             if (nb_strStartsWith($fragment, $case)) {
-                $this->setValue(mb_substr($content, 0, mb_strlen($keyword)));
+                $this->setValue(mb_substr($content, 0, mb_strlen($this->keyword)));
                 $result = true;
             }
         }

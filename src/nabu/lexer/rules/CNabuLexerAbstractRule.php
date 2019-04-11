@@ -130,12 +130,12 @@ abstract class CNabuLexerAbstractRule implements INabuLexerRule
      * @param string|null $def_value Boolean default value in case that the leaf does not exists.
      * @param bool $nullable If true, the node can contain a null value.
      * @param bool $raise_exception If true, throws an exception if the leaf des not exists.
-     * @return bool Returns the detected value.
+     * @return string|null Returns the detected value.
      * @throws ENabuLexerException Throws an exception if value does not exists or is invalid.
      */
     protected function checkStringLeaf(
         array $descriptor, string $name, string $def_value = null, bool $nullable = true, bool $raise_exception = false
-    ): bool {
+    ) {
         $stringValue = $def_value;
 
         if (array_key_exists($name, $descriptor)) {
@@ -162,17 +162,62 @@ abstract class CNabuLexerAbstractRule implements INabuLexerRule
     }
 
     /**
+     * Check if a leaf have a scalar value contained in an enumeration of values and returns the value detected
+     * if it is valid.
+     * @param array $descriptor The descriptor fragment to be analized. The leaf needs to be in the root of the array.
+     * @param string $name Name of the leaf.
+     * @param array $enum_values Array of possible enumerated values.
+     * @param mixed|null $def_value Boolean default value in case that the leaf does not exists.
+     * @param bool $nullable If true, the node can contain a null value.
+     * @param bool $raise_exception If true, throws an exception if the leaf des not exists.
+     * @return mixed Returns the detected value.
+     * @throws ENabuLexerException Throws an exception if value does not exists or is invalid.
+     */
+    protected function checkEnumLeaf(
+        array $descriptor, string $name, array $enum_values, $def_value = null, bool $nullable = false,
+        bool $raise_exception = false
+    ) {
+        $enumValue = $def_value;
+
+        if (array_key_exists($name, $descriptor)) {
+            if (is_string($descriptor[$name]) ||
+                ($nullable && is_null($descriptor[$name]) ||
+                in_array($descriptor[$name], $enum_values))
+            ) {
+                $enumValue = $descriptor[$name];
+            } elseif ($raise_exception) {
+                if ($nullable) {
+                    throw new ENabuLexerException(
+                        ENabuLexerException::ERROR_RULE_NODE_INVALID_VALUE,
+                        array($name, 'array, null')
+                    );
+                } else {
+                    throw new ENabuLexerException(
+                        ENabuLexerException::ERROR_RULE_NODE_INVALID_VALUE,
+                        array($name, 'array')
+                    );
+                }
+            }
+        } elseif ($raise_exception) {
+            throw new  ENabuLexerException(ENabuLexerException::ERROR_RULE_NODE_NOT_FOUND_IN_DESCRIPTOR, array($name));
+        }
+
+        return $enumValue;
+    }
+
+    /**
      * Check if a node is an array and returns the array found.
      * @param array $descriptor The descriptor fragment to be analized. The node needs to be in the root of the array.
      * @param string $name Name of the leaf.
      * @param array|null $def_value Boolean default value in case that the leaf does not exists.
      * @param bool $nullable If true, allows the node to be null.
      * @param bool $raise_exception If true, throws an exception if the node des not exists.
-     * @return bool Returns the array found or null if allowed.
+     * @return array|null Returns the array found or null if allowed.
      * @throws ENabuLexerException Throws an exception if value does not exists or is invalid.
      */
-    protected function checkArrayNode(array $descriptor, string $name, array $def_value = null, bool $nullable = true, bool $raise_exception = false)
-    {
+    protected function checkArrayNode(
+        array $descriptor, string $name, array $def_value = null, bool $nullable = true, bool $raise_exception = false
+    ) {
         $arrayValue = $def_value;
 
         if (array_key_exists($name, $descriptor)) {
