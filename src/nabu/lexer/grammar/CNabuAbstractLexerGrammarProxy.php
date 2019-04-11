@@ -92,7 +92,10 @@ abstract class CNabuAbstractLexerGrammarProxy extends CNabuObject implements INa
         }
 
         if ($lexer === null) {
-            throw new ENabuLexerException(ENabuLexerException::ERROR_LEXER_GRAMMAR_UNSUPPORTED_VERSION, array($version));
+            throw new ENabuLexerException(
+                ENabuLexerException::ERROR_LEXER_GRAMMAR_UNSUPPORTED_VERSION,
+                array($version)
+            );
         }
 
         return $lexer;

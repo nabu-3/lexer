@@ -19,29 +19,16 @@
  *  limitations under the License.
  */
 
-namespace nabu\lexer\grammar\mysql;
-
-use nabu\lexer\grammar\CNabuAbstractLexerGrammarProxy;
+namespace nabu\lexer\interfaces;
 
 /**
- * MySQL Lexer Language proxy.
+ * Interface of Lexer Rule.
  * @author Rafael Gutierrez <rgutierrez@nabu-3.com>
  * @since 0.0.2
  * @version 0.0.2
- * @package \nabu\lexer\grammar\mysql
+ * @package \nabu\lexer\interfaces
  */
-class CNabuLexerGrammarProxy extends CNabuAbstractLexerGrammarProxy
+interface INabuLexerRule
 {
-    /** @var string|null Grammar name of this proxy. */
-    protected static $grammar_name = 'mysql';
-
-    public function __construct()
-    {
-        $this->registerLexerVersionClasses(
-            array(
-                CNabuLexerMySQL57::class,
-                CNabuLexerMySQL81::class
-            )
-        );
-    }
+    
 }

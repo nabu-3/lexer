@@ -68,10 +68,26 @@ class CNabuLexerTest extends TestCase
      */
     public function testGetLexerSuccess()
     {
-        $this->assertInstanceOf(CNabuLexerMySQL57::class, CNabuLexer::getLexer(CNabuLexer::GRAMMAR_MYSQL, '5.7'), 'Test getting Lexer for MySQL v.5.7');
-        $this->assertInstanceOf(CNabuLexerMySQL57::class, CNabuLexer::getLexer(CNabuLexer::GRAMMAR_MYSQL, '5.7.24'), 'Test getting Lexer for MySQL v.5.7.24');
-        $this->assertInstanceOf(CNabuLexerMySQL81::class, CNabuLexer::getLexer(CNabuLexer::GRAMMAR_MYSQL, '8.1'), 'Test getting Lexer for MySQL v.8.1');
-        $this->assertInstanceOf(CNabuLexerMySQL81::class, CNabuLexer::getLexer(CNabuLexer::GRAMMAR_MYSQL, '9.0'), 'Test getting Lexer for MySQL v.9.0');
+        $this->assertInstanceOf(
+            CNabuLexerMySQL57::class,
+            CNabuLexer::getLexer(CNabuLexer::GRAMMAR_MYSQL, '5.7'),
+            'Test getting Lexer for MySQL v.5.7'
+        );
+        $this->assertInstanceOf(
+            CNabuLexerMySQL57::class,
+            CNabuLexer::getLexer(CNabuLexer::GRAMMAR_MYSQL, '5.7.24'),
+            'Test getting Lexer for MySQL v.5.7.24'
+        );
+        $this->assertInstanceOf(
+            CNabuLexerMySQL81::class,
+            CNabuLexer::getLexer(CNabuLexer::GRAMMAR_MYSQL, '8.1'),
+            'Test getting Lexer for MySQL v.8.1'
+        );
+        $this->assertInstanceOf(
+            CNabuLexerMySQL81::class,
+            CNabuLexer::getLexer(CNabuLexer::GRAMMAR_MYSQL, '9.0'),
+            'Test getting Lexer for MySQL v.9.0'
+        );
     }
 
     /**

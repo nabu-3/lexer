@@ -19,29 +19,35 @@
  *  limitations under the License.
  */
 
-namespace nabu\lexer\grammar\mysql;
+namespace nabu\lexer\rules;
 
-use nabu\lexer\grammar\CNabuAbstractLexerGrammarProxy;
+use nabu\lexer\exceptions\ENabuLexerException;
+
+use nabu\lexer\interfaces\INabuLexerRule;
+
+use nabu\min\CNabuObject;
 
 /**
- * MySQL Lexer Language proxy.
+ * MySQL Lexer Rule Proxy.
  * @author Rafael Gutierrez <rgutierrez@nabu-3.com>
  * @since 0.0.2
  * @version 0.0.2
- * @package \nabu\lexer\grammar\mysql
+ * @package \nabu\lexer\rules
  */
-class CNabuLexerGrammarProxy extends CNabuAbstractLexerGrammarProxy
+class CNabuLexerRuleProxy extends CNabuObject
 {
-    /** @var string|null Grammar name of this proxy. */
-    protected static $grammar_name = 'mysql';
-
-    public function __construct()
+    /** @var string Descriptor keywords node literal. */
+    private const DESCRIPTOR_KEYWORDS_NODE = 'keywords';
+    /**
+     * Create a Rule depending on a descriptor array structure.
+     * @param array $descriptor The descriptor array.
+     * @return INabuLexerRule Returns an specialized rule to dispatch grammar using the descriptor.
+     * @throws ENabuLexerException Throws an exception if no rule applicable for descriptor.
+     */
+    public static function createRuleFromDescriptor(array $descriptor) : INabuLexerRule
     {
-        $this->registerLexerVersionClasses(
-            array(
-                CNabuLexerMySQL57::class,
-                CNabuLexerMySQL81::class
-            )
-        );
+        if (array_key_exists(self::DESCRIPTOR_KEYWORDS_NODE, $descriptor)) {
+
+        }
     }
 }

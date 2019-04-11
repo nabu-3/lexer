@@ -7,6 +7,30 @@
         }
     },
     "rules": {
-
+        "comment": {
+            "starter": true,
+            "case_sensitive": false,
+            "group": [
+                {
+                    "tokenizer": {
+                        "start": "/*",
+                        "end": "*/"
+                    }
+                },
+                {
+                    "tokenizer": {
+                        "start": "\\-\\-\\s",
+                        "end": "\n"
+                    }
+                }
+            ]
+        },
+        "create_table": {
+            "starter": true,
+            "case_sesnsitive": false,
+            "keywords": [
+                "CREATE"
+            ]
+        }
     }
 }
