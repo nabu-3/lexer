@@ -38,10 +38,14 @@
     </testsuites>
     <logging>
         <log type="coverage-clover" target="tmp/phpunit.coverage.xml"/>
+        <log type="testdox-html" target="tmp/testdox.html"/>
     </logging>
     <filter>
         <whitelist addUncoveredFilesFromWhitelist="true">
             <directory>./src</directory>
+            <exclude>
+                <file>./src/globals.php</file>
+            </exclude>
         </whitelist>
     </filter>
     <php>
