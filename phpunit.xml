@@ -32,6 +32,9 @@
         <testsuite name="Basic Lexer Tests">
             <directory>./tests/nabu/lexer</directory>
         </testsuite>
+        <testsuite name="Global Lexer Tests">
+            <file>./tests/CNabuLexerGlobalsTest.php</file>
+        </testsuite>
     </testsuites>
     <logging>
         <log type="coverage-clover" target="tmp/phpunit.coverage.xml"/>
