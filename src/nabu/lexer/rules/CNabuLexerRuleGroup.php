@@ -67,7 +67,7 @@ class CNabuLexerRuleGroup extends CNabuLexerAbstractRule
             if (is_string($rule_desc)) {
                 $this->group[] = CNabuLexerRuleKeyword::createFromDescriptor(
                     array(
-                        'method' => 'direct',
+                        'method' => 'literal',
                         'keyword' => $rule_desc
                     )
                 );
@@ -112,7 +112,7 @@ class CNabuLexerRuleGroup extends CNabuLexerAbstractRule
 
         foreach ($this->group as $rule) {
             if ($retval = $rule->applyRuleToContent($content)) {
-                $this->setValue($rule->getValue());
+                $this->setValue($rule->getValue(), $rule->getSourceLength());
                 break;
             }
         }

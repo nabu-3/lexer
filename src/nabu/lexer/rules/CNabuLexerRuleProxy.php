@@ -40,6 +40,8 @@ class CNabuLexerRuleProxy extends CNabuObject
     private const DESCRIPTOR_GROUP_NODE = 'group';
     /** @var string Descriptor keyword node literal. */
     private const DESCRIPTOR_KEYWORD_NODE = 'keyword';
+    /** @var string Descriptor match node literal. */
+    private const DESCRIPTOR_MATCH_NODE = 'match';
     /**
      * Create a Rule depending on a descriptor array structure.
      * @param array $descriptor The descriptor array.
@@ -54,6 +56,8 @@ class CNabuLexerRuleProxy extends CNabuObject
             $rule = CNabuLexerRuleGroup::createFromDescriptor($descriptor);
         } elseif (array_key_exists(self::DESCRIPTOR_KEYWORD_NODE, $descriptor)) {
             $rule = CNabuLexerRuleKeyword::createFromDescriptor($descriptor);
+        } elseif (array_key_exists(self::DESCRIPTOR_MATCH_NODE, $descriptor)) {
+            $rule = CNabuLexerRuleRegEx::createFromDescriptor($descriptor);
         }
 
         if (is_null($rule)) {

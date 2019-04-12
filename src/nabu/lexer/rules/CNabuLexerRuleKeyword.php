@@ -22,7 +22,7 @@
 namespace nabu\lexer\rules;
 
 /**
- * MySQL Lexer Rule to parse a list of keywords.
+ * MySQL Lexer Rule to parse a keyword.
  * @author Rafael Gutierrez <rgutierrez@nabu-3.com>
  * @since 0.0.2
  * @version 0.0.2
@@ -35,16 +35,64 @@ class CNabuLexerRuleKeyword extends CNabuLexerAbstractRule
     /** @var string Descriptor keywords node literal. */
     const DESCRIPTOR_KEYWORD_NODE = 'keyword';
 
+    /** @var string Method Literal literal. */
+    const METHOD_LITERAL = 'literal';
+    /** @var string Descriptor ignore case sensitive node literal. */
+    const METHOD_IGNORE_CASE = 'ignore case';
+    /** @var array Methods list. */
+    const METHOD_LIST = array(
+        self::METHOD_LITERAL,
+        self::METHOD_IGNORE_CASE
+    );
+
     /** @var string $method Method used to apply keywords. */
     private $method = null;
     /** @var string $keyword Keyword applicable. */
     private $keyword = null;
 
+    /**
+     * Get the method attribute.
+     * @return string|null Returns the value of method attribute.
+     */
+    public function getMethod()
+    {
+        return $this->method;
+    }
+
+    /**
+     * Test if Rule is Case Sensitive.
+     * @return bool Return true if it is.
+     */
+    public function isCaseIgnored(): bool
+    {
+        return $this->method === self::METHOD_IGNORE_CASE;
+    }
+
+    /**
+     * Test if Rule is Literal.
+     * @return bool Return true if it is.
+     */
+    public function isLiteral(): bool
+    {
+        return $this->method === self::METHOD_LITERAL;
+    }
+
+    /**
+     * Get the keyword attribute.
+     * @return string|null Returns the value of keyword attribute.
+     */
+    public function getKeyword()
+    {
+        return $this->keyword;
+    }
+
     public function initFromDescriptor(array $descriptor)
     {
         parent::initFromDescriptor($descriptor);
 
-        $this->method = $this->checkStringLeaf($descriptor, self::DESCRIPTOR_METHOD_NODE, null, false, true);
+        $this->method = $this->checkEnumLeaf(
+            $descriptor, self::DESCRIPTOR_METHOD_NODE, self::METHOD_LIST, null, false, true
+        );
         $this->keyword = $this->checkStringLeaf($descriptor, self::DESCRIPTOR_KEYWORD_NODE, null, false, true);
     }
 
@@ -56,14 +104,14 @@ class CNabuLexerRuleKeyword extends CNabuLexerAbstractRule
         if (is_string($this->keyword)) {
             $len = mb_strlen($this->keyword);
             $fragment = mb_substr($content, 0, $len);
-            if ($this->isCaseSensitive()) {
+            if ($this->isCaseIgnored()) {
                 $fragment = mb_strtoupper($fragment);
                 $case = mb_strtoupper($this->keyword);
             } else {
                 $case = $this->keyword;
             }
             if (nb_strStartsWith($fragment, $case)) {
-                $this->setValue(mb_substr($content, 0, mb_strlen($this->keyword)));
+                $this->setValue(mb_substr($content, 0, $len), $len);
                 $result = true;
             }
         }

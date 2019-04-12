@@ -37,16 +37,15 @@ abstract class CNabuLexerAbstractRule implements INabuLexerRule
 {
     /** @var string Descriptor starter node literal. */
     const DESCRIPTOR_STARTER_NODE = 'starter';
-    /** @var string Descriptor case sensitive node literal. */
-    const DESCRIPTOR_CASE_SENSITIVE_NODE = 'case_sensitive';
 
     /** @var bool If true, the Rule is an starter rule and can be placed at the begin of a sequence. */
     private $starter = false;
-    /** @var bool If true, the Rule is case sensitive. */
-    private $case_sensitive = false;
 
     /** @var mixed $value Rule value extrated from content. */
     private $value = null;
+
+    /** @var int $sourceLength Length of original string needed to detect the value. */
+    private $sourceLength = 0;
 
     /**
      * Creates the instance and sets initial attributes.
@@ -68,7 +67,6 @@ abstract class CNabuLexerAbstractRule implements INabuLexerRule
     public function initFromDescriptor(array $descriptor)
     {
         $this->starter = $this->checkBooleanLeaf($descriptor, self::DESCRIPTOR_STARTER_NODE);
-        $this->case_sensitive = $this->checkBooleanLeaf($descriptor, self::DESCRIPTOR_CASE_SENSITIVE_NODE);
     }
 
     public function getValue()
@@ -76,24 +74,26 @@ abstract class CNabuLexerAbstractRule implements INabuLexerRule
         return $this->value;
     }
 
-    public function setValue($value)
+    public function getSourceLength(): int
+    {
+        return $this->sourceLength;
+    }
+
+    public function setValue($value, int $sourceLength)
     {
         $this->value = $value;
+        $this->sourceLength = $sourceLength;
     }
 
     public function clearValue()
     {
         $this->value = null;
+        $this->sourceLength = 0;
     }
 
     public function isStarter(): bool
     {
         return $this->starter;
-    }
-
-    public function isCaseSensitive(): bool
-    {
-        return $this->case_sensitive;
     }
 
     /**
@@ -180,21 +180,20 @@ abstract class CNabuLexerAbstractRule implements INabuLexerRule
         $enumValue = $def_value;
 
         if (array_key_exists($name, $descriptor)) {
-            if (is_string($descriptor[$name]) ||
-                ($nullable && is_null($descriptor[$name]) ||
-                in_array($descriptor[$name], $enum_values))
+            if (($nullable && is_null($descriptor[$name])) ||
+                (is_scalar($descriptor[$name]) && in_array($descriptor[$name], $enum_values))
             ) {
                 $enumValue = $descriptor[$name];
             } elseif ($raise_exception) {
                 if ($nullable) {
                     throw new ENabuLexerException(
                         ENabuLexerException::ERROR_RULE_NODE_INVALID_VALUE,
-                        array($name, 'array, null')
+                        array($name, implode(', ', $enum_values) . ', null')
                     );
                 } else {
                     throw new ENabuLexerException(
                         ENabuLexerException::ERROR_RULE_NODE_INVALID_VALUE,
-                        array($name, 'array')
+                        array($name, implode(', ', $enum_values))
                     );
                 }
             }

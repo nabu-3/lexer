@@ -41,6 +41,24 @@ class CNabuLexerRuleProxyTest extends TestCase
         $rule = CNabuLexerRuleProxy::createRuleFromDescriptor(
             array(
                 "starter" => true,
+                "method" => "literal",
+                "keyword" => "test"
+            )
+        );
+        $this->assertInstanceOf(CNabuLexerRuleKeyword::class, $rule);
+        
+        $rule = CNabuLexerRuleProxy::createRuleFromDescriptor(
+            array(
+                "starter" => true,
+                "method" => "literal",
+                "match" => "(.*)"
+            )
+        );
+        $this->assertInstanceOf(CNabuLexerRuleRegEx::class, $rule);
+
+        $rule = CNabuLexerRuleProxy::createRuleFromDescriptor(
+            array(
+                "starter" => true,
                 "case_sensitive" => false,
                 "method" => "case",
                 "group" => array(
@@ -51,23 +69,5 @@ class CNabuLexerRuleProxyTest extends TestCase
         $this->assertInstanceOf(CNabuLexerRuleGroup::class, $rule);
 
         return $rule;
-    }
-
-    /**
-     * @test applyRuleToContent
-     * @test getValue
-     * @test setValue
-     * @test clearValue
-     * @depends testCreateRuleFromDescriptorRuleGroup
-     * @param CNabuLexerRuleGroup $rule Rule created in previous test.
-     */
-    public function testApplyRuleToContentRuleGroup(CNabuLexerRuleGroup $rule)
-    {
-        $this->assertTrue($rule->applyRuleToContent('CREATE TABLE'));
-        $this->assertSame('CREATE', $rule->getValue());
-        $this->assertTrue($rule->applyRuleToContent('DROP TABLE'));
-        $this->assertSame('DROP', $rule->getValue());
-        $this->assertFalse($rule->applyRuleToContent('ALTER TABLE'));
-        $this->assertNull($rule->getValue());
     }
 }

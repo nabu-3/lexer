@@ -57,10 +57,16 @@ interface INabuLexerRule
      */
     public function getValue();
     /**
+     * Returns the amount of characters needed in the source string to detect and extract the value.
+     * @return int Returns the amount.
+     */
+    public function getSourceLength() : int;
+    /**
      * Set the value of the rule.
      * @param mixed $value The value to be stored. It can be of any type.
+     * @param int $source_length Amount of characters used to detect and extract the value in the source string.
      */
-    public function setValue($value);
+    public function setValue($value, int $source_length);
     /**
      * Clear previous stored value of the rule.
      */
@@ -70,9 +76,4 @@ interface INabuLexerRule
      * @return bool Returns true if it is a starter rule.
      */
     public function isStarter() : bool;
-    /**
-     * Check it hte rule is case sensitive.
-     * @return bool Returns true if it is case sensitive.
-     */
-    public function isCaseSensitive() : bool;
 }
