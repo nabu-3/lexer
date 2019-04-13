@@ -112,31 +112,38 @@ class CNabuLexerRuleRegEx extends CNabuLexerAbstractRule
         $this->extract = $this->checkRegExLeaf($descriptor, self::DESCRIPTOR_EXTRACT_NODE);
     }
 
+    private function sintesizeRegExResult(array &$result)
+    {
+        if (count($result) > 2) {
+            array_shift($result);
+            $final_value = $result;
+        } elseif (count($result) === 2) {
+            $final_value = $result[1];
+        } else {
+            $final_value = $result[0];
+        }
+
+        return $final_value;
+    }
+
     public function applyRuleToContent(string $content): bool
     {
         $result = false;
         $this->clearValue();
 
         $matches = null;
+        $regex_modif = ($this->isCaseIgnored() ? 'i' : '');
 
         if (is_string($this->match) &&
-            preg_match("/^$this->match/" . ($this->isCaseIgnored() ? 'i' : ''), $content, $matches) &&
-            count($matches) > 1
+            preg_match("/^$this->match/$regex_modif", $content, $matches)
         ) {
-            $extracted = null;
-            if (is_string($this->extract) &&
-                preg_match("/^$this->extract$/" . ($this->isCaseIgnored() ? 'i' : ''), $matches[1], $extracted) &&
-                count($extracted) > 1
-            ) {
-                if (count($extracted) > 2) {
-                    $final_value = array_shift($extracted);
-                } else {
-                    $final_value = $extracted[1];
-                }
-
-                $this->setValue($final_value, mb_strlen($matches[1]));
+            $len = mb_strlen($matches[0]);
+            $cnt = count($matches);
+            if ($cnt < 3) {
+                $this->setValue($matches[-1 + $cnt], $len);
             } else {
-                $this->setValue($matches[1], mb_strlen($matches[1]));
+                array_shift($matches);
+                $this->setValue($matches, $len);
             }
             $result = true;
         } else {

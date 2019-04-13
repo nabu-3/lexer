@@ -80,21 +80,21 @@ class CNabuLexerRuleKeywordTest extends TestCase
     /**
      * Private method to create a Descriptor structure by parameters.
      * @param bool|null $starter If null acts as not declared.
-     * @param bool|null $case_sensitive If null acts as not declared.
+     * @param bool|null $case_ignored If null acts as not declared.
      * @param string|null $method If null acts as not declared.
      * @param string|null $keyword If null acts as not declared.
      * @return array|null If, at least, one parameter is different than null, then returns a well formed descriptor.
      * Otherwise, returns null.
      */
     private function createDescriptor(
-        bool $starter = null, bool $case_sensitive = null, string $method = null, string $keyword = null
+        bool $starter = null, bool $case_ignored = null, string $method = null, string $keyword = null
     ) {
         $params = array();
         if (is_bool($starter)) {
             $params['starter'] = $starter;
         }
-        if (is_bool($case_sensitive)) {
-            $params['case_sensitive'] = $case_sensitive;
+        if (is_bool($case_ignored)) {
+            $params['case_ignored'] = $case_ignored;
         }
         if (is_string($method)) {
             $params['method'] = $method;
@@ -117,7 +117,7 @@ class CNabuLexerRuleKeywordTest extends TestCase
      * @dataProvider dataProviderCreateInitFromDescriptor
      * @param bool $throwable If true expects that this test throws an exception in any moment.
      * @param bool|null $starter If null acts as not declared.
-     * @param bool|null $case_sensitive If null acts as not declared.
+     * @param bool|null $case_ignored If null acts as not declared.
      * @param string|null $method If null acts as not declared.
      * @param string|null $keyword If null acts as not declared.
      * @param string|null $content Content to test case.
@@ -125,11 +125,11 @@ class CNabuLexerRuleKeywordTest extends TestCase
      * @param bool $passed Apply Rule is passed.
      */
     public function testCreateInitFromDescriptor(
-        bool $throwable, bool $starter = null, bool $case_sensitive = null,
+        bool $throwable, bool $starter = null, bool $case_ignored = null,
         string $method = null, string $keyword = null, string $content = null, string $result = null,
         bool $passed = false
     ) {
-        $params = $this->createDescriptor($starter, $case_sensitive, $method, $keyword);
+        $params = $this->createDescriptor($starter, $case_ignored, $method, $keyword);
 
         if ($throwable) {
             $this->expectException(ENabuLexerException::class);
@@ -144,10 +144,16 @@ class CNabuLexerRuleKeywordTest extends TestCase
             $this->assertFalse($rule->isStarter());
         }
 
-        if (is_bool($case_sensitive)) {
-            $this->assertSame($case_sensitive, $rule->isCaseIgnored());
+        if ($method === CNabuLexerRuleKeyword::METHOD_IGNORE_CASE) {
+            $this->assertTrue($rule->isCaseIgnored());
         } else {
             $this->assertFalse($rule->isCaseIgnored());
+        }
+
+        if ($method === CNabuLexerRuleKeyword::METHOD_LITERAL) {
+            $this->assertTrue($rule->isLiteral());
+        } else {
+            $this->assertFalse($rule->isLiteral());
         }
 
         $this->assertSame($method, $rule->getMethod());
@@ -164,7 +170,7 @@ class CNabuLexerRuleKeywordTest extends TestCase
      * @dataProvider dataProviderCreateInitFromDescriptor
      * @param bool $throwable If true expects that this test throws an exception in any moment.
      * @param bool|null $starter If null acts as not declared.
-     * @param bool|null $case_sensitive If null acts as not declared.
+     * @param bool|null $case_ignored If null acts as not declared.
      * @param string|null $method If null acts as not declared.
      * @param string|null $keyword If null acts as not declared.
      * @param string|null $content Content to test case.
@@ -172,7 +178,7 @@ class CNabuLexerRuleKeywordTest extends TestCase
      * @param bool $passed Apply Rule is passed.
      */
     public function testApplyRuleToContent(
-        bool $throwable, bool $starter = null, bool $case_sensitive = null,
+        bool $throwable, bool $starter = null, bool $case_ignored = null,
         string $method = null, string $keyword = null, string $content = null, string $result = null,
         bool $passed = false
     ) {
@@ -181,7 +187,7 @@ class CNabuLexerRuleKeywordTest extends TestCase
         } else {
             try {
                 $rule = CNabuLexerRuleKeyword::createFromDescriptor(
-                    $this->createDescriptor($starter, $case_sensitive, $method, $keyword)
+                    $this->createDescriptor($starter, $case_ignored, $method, $keyword)
                 );
             } catch (Exception $ex) {
                 $this->assertInstanceOf(ENabuLexerException::class, $ex);

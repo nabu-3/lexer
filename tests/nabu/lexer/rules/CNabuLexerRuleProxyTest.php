@@ -23,6 +23,8 @@ namespace nabu\lexer\rules;
 
 use PHPUnit\Framework\TestCase;
 
+use nabu\lexer\exceptions\ENabuLexerException;
+
 /**
  * Test class for @see CNabuLexerRuleProxy.
  * @author Rafael Gutierrez <rgutierrez@nabu-3.com>
@@ -36,7 +38,7 @@ class CNabuLexerRuleProxyTest extends TestCase
      * @test createRuleFromDescriptor
      * @return CNabuLexerRuleGroup Returns created rule for tests.
      */
-    public function testCreateRuleFromDescriptorRuleGroup() : CNabuLexerRuleGroup
+    public function testCreateRuleFromDescriptor() : CNabuLexerRuleGroup
     {
         $rule = CNabuLexerRuleProxy::createRuleFromDescriptor(
             array(
@@ -46,7 +48,7 @@ class CNabuLexerRuleProxyTest extends TestCase
             )
         );
         $this->assertInstanceOf(CNabuLexerRuleKeyword::class, $rule);
-        
+
         $rule = CNabuLexerRuleProxy::createRuleFromDescriptor(
             array(
                 "starter" => true,
@@ -68,6 +70,11 @@ class CNabuLexerRuleProxyTest extends TestCase
         );
         $this->assertInstanceOf(CNabuLexerRuleGroup::class, $rule);
 
-        return $rule;
+        $this->expectException(ENabuLexerException::class);
+        CNabuLexerRuleProxy::createRuleFromDescriptor(
+            array(
+                'starter' => true
+            )
+        );
     }
 }
