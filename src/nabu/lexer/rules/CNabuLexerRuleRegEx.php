@@ -112,20 +112,6 @@ class CNabuLexerRuleRegEx extends CNabuLexerAbstractRule
         $this->extract = $this->checkRegExLeaf($descriptor, self::DESCRIPTOR_EXTRACT_NODE);
     }
 
-    private function sintesizeRegExResult(array &$result)
-    {
-        if (count($result) > 2) {
-            array_shift($result);
-            $final_value = $result;
-        } elseif (count($result) === 2) {
-            $final_value = $result[1];
-        } else {
-            $final_value = $result[0];
-        }
-
-        return $final_value;
-    }
-
     public function applyRuleToContent(string $content): bool
     {
         $result = false;

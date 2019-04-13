@@ -93,10 +93,19 @@ class CNabuLexerTest extends TestCase
     /**
      * @test getLexer
      */
-    public function testGetLexerFails()
+    public function testGetLexerFails1()
     {
         $this->expectException(ENabuLexerException::class, 'Test getting Lexer for MySQL v.5.8');
         CNabuLexer::getLexer(CNabuLexer::GRAMMAR_MYSQL, '5.8');
+    }
+
+    /**
+     * @test getLexer
+     */
+    public function testGetLexerFails2()
+    {
+        $this->expectException(ENabuLexerException::class);
+        CNabuLexer::getLexer('unittests', '5.6');
     }
 
     /**
