@@ -21,6 +21,8 @@
 
 namespace nabu\lexer\rules;
 
+use Exception;
+
 use nabu\lexer\exceptions\ENabuLexerException;
 
 /**
@@ -154,7 +156,9 @@ class CNabuLexerRuleRegEx extends CNabuLexerAbstractRule
     ) {
         $regex = $this->checkStringLeaf($descriptor, $name, $def_value, $nullable, $raise_exception);
 
-        if (is_string($regex) && preg_match("/$regex/", 'test pattern') === false) {
+        try {
+            is_string($regex) && preg_match("/$regex/", 'test pattern');
+        } catch (Exception $ex) {
             if ($raise_exception) {
                 throw new ENabuLexerException(
                     ENabuLexerException::ERROR_RULE_NODE_INVALID_VALUE,
