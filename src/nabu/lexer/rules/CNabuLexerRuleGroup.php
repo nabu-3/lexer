@@ -71,8 +71,8 @@ class CNabuLexerRuleGroup extends CNabuLexerAbstractRule
             if (is_string($separator)) {
                 $this->tokenizer = CNabuLexerRuleKeyword::createFromDescriptor(
                     array(
-                        'method' => 'literal',
-                        'keyword' => $separator
+                        CNabuLexerRuleKeyword::DESCRIPTOR_METHOD_NODE => CNabuLexerRuleKeyword::METHOD_LITERAL,
+                        CNabuLexerRuleKeyword::DESCRIPTOR_KEYWORD_NODE => $separator
                     )
                 );
             } elseif (is_array($separator)) {
@@ -96,8 +96,8 @@ class CNabuLexerRuleGroup extends CNabuLexerAbstractRule
             if (is_string($rule_desc)) {
                 $this->group[] = CNabuLexerRuleKeyword::createFromDescriptor(
                     array(
-                        'method' => 'literal',
-                        'keyword' => $rule_desc
+                        CNabuLexerRuleKeyword::DESCRIPTOR_METHOD_NODE => CNabuLexerRuleKeyword::METHOD_LITERAL,
+                        CNabuLexerRuleKeyword::DESCRIPTOR_KEYWORD_NODE => $rule_desc
                     )
                 );
             } else {

@@ -43,8 +43,9 @@ class CNabuLexerRuleGroupTest extends TestCase
     /**
      * @test createFromDescriptor
      * @test initFromDescriptor
+     * @return CNabuLexerRuleGroup Returns created rule to pass to next step
      */
-    public function testCreateInitFromDescriptor()
+    public function testCreateInitFromDescriptor(): CNabuLexerRuleGroup
     {
         $rule = CNabuLexerRuleGroup::createFromDescriptor(
             array(
@@ -62,6 +63,29 @@ class CNabuLexerRuleGroupTest extends TestCase
         );
 
         $this->assertInstanceOf(CNabuLexerRuleGroup::class, $rule);
+
+        return $rule;
     }
 
+    /**
+     * @test applyRuleToContent
+     * @test applyRuleToContentAsCase
+     * @depends testCreateInitFromDescriptor
+     * @param CNabuLexerRuleGroup $rule Rule passed from previous test.
+     */
+    public function testApplyRuleToContent(CNabuLexerRuleGroup $rule)
+    {
+        $this->assertTrue($rule->applyRuleToContent('CREATE TABLE'));
+        $this->assertSame('CREATE', $rule->getValue());
+        $this->assertSame(6, $rule->getSourceLength());
+        $this->assertTrue($rule->applyRuleToContent('ALTER TABLE'));
+        $this->assertSame('ALTER', $rule->getValue());
+        $this->assertSame(5, $rule->getSourceLength());
+        $this->assertTrue($rule->applyRuleToContent('DELETE FROM TABLE'));
+        $this->assertSame('DELETE', $rule->getValue());
+        $this->assertSame(6, $rule->getSourceLength());
+        $this->assertTrue($rule->applyRuleToContent('DROP TABLE'));
+        $this->assertSame('DROP', $rule->getValue());
+        $this->assertSame(4, $rule->getSourceLength());
+    }
 }
