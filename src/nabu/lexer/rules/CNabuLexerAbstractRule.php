@@ -85,6 +85,18 @@ abstract class CNabuLexerAbstractRule implements INabuLexerRule
         $this->sourceLength = $sourceLength;
     }
 
+    public function appendValue($value, int $sourceLength)
+    {
+        if (is_null($this->value)) {
+            $this->value = $value;
+        } elseif (is_array($this->value)) {
+            $this->value[] = $value;
+        } else {
+            $this->value = array($this->value, $value);
+        }
+        $this->sourceLength += $sourceLength;
+    }
+
     public function clearValue()
     {
         $this->value = null;

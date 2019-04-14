@@ -67,7 +67,7 @@ class CNabuLexerRuleGroup extends CNabuLexerAbstractRule
         );
 
         if ($this->method === self::METHOD_SEQUENCE) {
-            $separator = $this->checkMixedValue($descriptor, self::DESCRIPTOR_TOKENIZER_NODE, null, false, true);
+            $separator = $this->checkMixedNode($descriptor, self::DESCRIPTOR_TOKENIZER_NODE, null, false, true);
             if (is_string($separator)) {
                 $this->tokenizer = CNabuLexerRuleKeyword::createFromDescriptor(
                     array(
@@ -138,11 +138,45 @@ class CNabuLexerRuleGroup extends CNabuLexerAbstractRule
     private function applyRuleToContentAsCase(string $content): bool
     {
         $retval = false;
+        $this->clearValue();
 
         foreach ($this->group as $rule) {
             if ($retval = $rule->applyRuleToContent($content)) {
                 $this->setValue($rule->getValue(), $rule->getSourceLength());
                 break;
+            }
+        }
+
+        return $retval;
+    }
+
+    /**
+     * Applies the group as a sequence structure.
+     * @param string $content The content to be analized.
+     * @return bool Return true if some of cases are found.
+     */
+    private function applyRuleToContentAsSequence(string $content): bool
+    {
+        $retval = false;
+        $this->clearValue();
+
+        if (is_array($this->group) && count($this->group) > 0 && mb_strlen($content) > 0) {
+            foreach ($this->group as $rule) {
+                if ($this->tokenizer instanceof INabuLexerRule &&
+                    mb_strlen($content) > 0 &&
+                    $this->tokenizer->applyRuleToContent($content)
+                ) {
+                    $content = mb_substr($content, $this->tokenizer->getSourceLength());
+                }
+                if ($rule->applyRuleToContent($content)) {
+                    $len = $rule->getSourceLength();
+                    $this->appendValue($rule->getValue(), $len);
+                    $content = mb_substr($content, $len);
+                    $retval = true;
+                } else {
+                    $retval = false;
+                    break;
+                }
             }
         }
 

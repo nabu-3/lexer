@@ -45,7 +45,7 @@ class CNabuLexerRuleGroupTest extends TestCase
      * @test initFromDescriptor
      * @return CNabuLexerRuleGroup Returns created rule to pass to next step
      */
-    public function testCreateInitFromDescriptor(): CNabuLexerRuleGroup
+    public function testCreateInitFromDescriptorCase(): CNabuLexerRuleGroup
     {
         $rule = CNabuLexerRuleGroup::createFromDescriptor(
             array(
@@ -57,7 +57,14 @@ class CNabuLexerRuleGroupTest extends TestCase
                     'match' => '\s+'
                 ),
                 'group' => array(
-                    'CREATE', 'ALTER', 'DELETE', 'DROP'
+                    'CREATE',
+                    'ALTER',
+                    'DELETE',
+                    array(
+                        'starter' => false,
+                        'method' => 'literal',
+                        'keyword' => 'DROP'
+                    )
                 )
             )
         );
@@ -70,10 +77,10 @@ class CNabuLexerRuleGroupTest extends TestCase
     /**
      * @test applyRuleToContent
      * @test applyRuleToContentAsCase
-     * @depends testCreateInitFromDescriptor
+     * @depends testCreateInitFromDescriptorCase
      * @param CNabuLexerRuleGroup $rule Rule passed from previous test.
      */
-    public function testApplyRuleToContent(CNabuLexerRuleGroup $rule)
+    public function testApplyRuleToContentCase(CNabuLexerRuleGroup $rule)
     {
         $this->assertTrue($rule->applyRuleToContent('CREATE TABLE'));
         $this->assertSame('CREATE', $rule->getValue());
@@ -87,5 +94,56 @@ class CNabuLexerRuleGroupTest extends TestCase
         $this->assertTrue($rule->applyRuleToContent('DROP TABLE'));
         $this->assertSame('DROP', $rule->getValue());
         $this->assertSame(4, $rule->getSourceLength());
+    }
+
+    /**
+     * @test createFromDescriptor
+     * @test initFromDescriptor
+     * @return CNabuLexerRuleGroup Returns created rule to pass to next step
+     */
+    public function testCreateInitFromDescriptorSequence(): CNabuLexerRuleGroup
+    {
+        $rule = CNabuLexerRuleGroup::createFromDescriptor(
+            array(
+                'starter' => false,
+                'method' => CNabuLexerRuleGroup::METHOD_SEQUENCE,
+                'tokenizer' => array(
+                    'starter' => false,
+                    'method' => CNabuLexerRuleRegEx::METHOD_LITERAL,
+                    'match' => '\s+'
+                ),
+                'group' => array(
+                    'CREATE',
+                    'TABLE',
+                    'IF',
+                    array(
+                        'starter' => false,
+                        'method' => 'literal',
+                        'keyword' => 'NOT'
+                    ),
+                    array(
+                        'starter' => false,
+                        'method' => 'literal',
+                        'keyword' => 'EXISTS'
+                    )
+                )
+            )
+        );
+
+        $this->assertInstanceOf(CNabuLexerRuleGroup::class, $rule);
+
+        return $rule;
+    }
+
+    /**
+     * @test applyRuleToContent
+     * @test applyRuleToContentAsSequence
+     * @depends testCreateInitFromDescriptorSequence
+     * @param CNabuLexerRuleGroup $rule Rule passed from previous test.
+     */
+    public function testApplyRuleToContentSequence(CNabuLexerRuleGroup $rule)
+    {
+        $this->assertTrue($rule->applyRuleToContent('CREATE TABLE IF NOT EXISTS'));
+        $this->assertSame(array('CREATE', 'TABLE', 'IF', 'NOT', 'EXISTS'), $rule->getValue());
     }
 }
