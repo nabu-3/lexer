@@ -13,6 +13,7 @@ addons:
 cache:
     directories:
         - $HOME/.composer
+        - $HOME/.sonar
         - $HOME/.sonarscanner
         - $HOME/build/nabu-3/lexer/vendor
 
