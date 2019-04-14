@@ -241,4 +241,34 @@ abstract class CNabuLexerAbstractRule implements INabuLexerRule
 
         return $arrayValue;
     }
+
+    /**
+     * Check if a node have a mixed value and returns the value found.
+     * @param array $descriptor The descriptor fragment to be analized. The node needs to be in the root of the array.
+     * @param string $name Name of the leaf.
+     * @param mixed|null $def_value Boolean default value in case that the leaf does not exists.
+     * @param bool $nullable If true, allows the node to be null.
+     * @param bool $raise_exception If true, throws an exception if the node des not exists.
+     * @return array|null Returns the array found or null if allowed.
+     * @throws ENabuLexerException Throws an exception if value does not exists or is invalid.
+     */
+    protected function checkMixedNode(
+        array $descriptor, string $name, $def_value = null, bool $nullable = false, bool $raise_exception = false
+    ) {
+        $mixedValue = $def_value;
+
+        if (array_key_exists($name, $descriptor)) {
+            if ((is_null($descriptor[$name]) && $nullable) || !is_null($descriptor[$name])) {
+                $mixedValue = $descriptor[$name];
+            } elseif ($raise_exception) {
+                throw new ENabuLexerException(
+                    ENabuLexerException::ERROR_RULE_NODE_INVALID_VALUE, array($name, 'mixed')
+                );
+            }
+        } elseif ($raise_exception) {
+            throw new ENabuLexerException(ENabuLexerException::ERROR_RULE_NOT_FOUND_FOR_DESCRIPTOR, array($name));
+        }
+
+        return $mixedValue;
+    }
 }

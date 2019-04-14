@@ -38,8 +38,6 @@ class CNabuLexerRuleRegEx extends CNabuLexerAbstractRule
     const DESCRIPTOR_METHOD_NODE = 'method';
     /** @var string Descriptor match node literal. */
     const DESCRIPTOR_MATCH_NODE = 'match';
-    /** @var string Descriptor extract node literal. */
-    const DESCRIPTOR_EXTRACT_NODE = 'extract';
 
     /** @var string Method Literal literal. */
     const METHOD_LITERAL = 'literal';
@@ -55,8 +53,6 @@ class CNabuLexerRuleRegEx extends CNabuLexerAbstractRule
     private $method = null;
     /** @var string $match Match Regular Expression to apply. */
     private $match = null;
-    /** @var string $extract Extractor Regular Expression to apply. */
-    private $extract = null;
 
     /**
      * Get the method attribute.
@@ -94,15 +90,6 @@ class CNabuLexerRuleRegEx extends CNabuLexerAbstractRule
         return $this->match;
     }
 
-    /**
-     * Get the Extract Regular Expression of this Rule.
-     * @return string|null Returns the Extract Regular Expression if assigned or null otherwise.
-     */
-    public function getExtractRegularExpression()
-    {
-        return $this->extract;
-    }
-
     public function initFromDescriptor(array $descriptor)
     {
         parent::initFromDescriptor($descriptor);
@@ -111,7 +98,6 @@ class CNabuLexerRuleRegEx extends CNabuLexerAbstractRule
             $descriptor, self::DESCRIPTOR_METHOD_NODE, self::METHOD_LIST, null, false, true
         );
         $this->match = $this->checkRegExLeaf($descriptor, self::DESCRIPTOR_MATCH_NODE, null, false, true);
-        $this->extract = $this->checkRegExLeaf($descriptor, self::DESCRIPTOR_EXTRACT_NODE);
     }
 
     public function applyRuleToContent(string $content): bool

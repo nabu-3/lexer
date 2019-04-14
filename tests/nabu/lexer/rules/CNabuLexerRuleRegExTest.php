@@ -51,15 +51,15 @@ class CNabuLexerRuleRegExTest extends TestCase
      public function dataProviderCreateInitFromDescriptor()
      {
          return [
-             [false, false, false, 'literal', "^''|'(.*?[^\\\\])'", "'(.*)'",
+             [false, false, false, 'literal', "^''|'(.*?[^\\\\])'",
                 "'test \'with single quotes\' inside #0' and more test", "test \'with single quotes\' inside #0", 39, true],
-             [false, false, false, 'literal', "^'()'|'(.*?[^\\\\])'", "'(.*)'",
+             [false, false, false, 'literal', "^'()'|'(.*?[^\\\\])'",
                 "'' and more test", "", 2, true],
-             [false, false, false, 'literal', "('\\s*'|'.*?[^\\\\]')", null,
+             [false, false, false, 'literal', "('\\s*'|'.*?[^\\\\]')",
                 "'test \'with single quotes\' inside #1' and more test", "'test \'with single quotes\' inside #1'", 39, true],
-             [false, false, false, 'literal', '([a-z]+) ([A-Z]+)', null,
+             [false, false, false, 'literal', '([a-z]+) ([A-Z]+)',
                 "test CASE with multiple params", array('test', 'CASE'), 9, true],
-             [true, false, false, 'literal', '([a-z+', null,
+             [true, false, false, 'literal', '([a-z+',
                 "test CASE", array('test'), 4, true]
          ];
      }
@@ -70,12 +70,11 @@ class CNabuLexerRuleRegExTest extends TestCase
       * @param bool|null $case_ignored If null acts as not declared.
       * @param string|null $method If null acts as not declared.
       * @param string|null $match If null acts as not declared.
-      * @param string|null $extract If null acts as not declared.
       * @return array|null If, at least, one parameter is different than null, then returns a well formed descriptor.
       * Otherwise, returns null.
       */
      private function createDescriptor(
-         bool $starter = null, bool $case_ignored = null, string $method = null, string $match = null, string $extract = null
+         bool $starter = null, bool $case_ignored = null, string $method = null, string $match = null
      ) {
          $params = array();
          if (is_bool($starter)) {
@@ -89,9 +88,6 @@ class CNabuLexerRuleRegExTest extends TestCase
          }
          if (is_string($match)) {
              $params['match'] = $match;
-         }
-         if (is_string($extract)) {
-             $params['extract'] = $extract;
          }
          if (count($params) === 0) {
              $params = null;
@@ -111,7 +107,6 @@ class CNabuLexerRuleRegExTest extends TestCase
       * @param bool|null $case_ignored If null acts as not declared.
       * @param string|null $method If null acts as not declared.
       * @param string|null $match If null acts as not declared.
-      * @param string|null $extract If null acts as not declared.
       * @param string|null $content Content to test case.
       * @param mixed|null $result Expected result.
       * @param int $length Source length expected result.
@@ -119,10 +114,10 @@ class CNabuLexerRuleRegExTest extends TestCase
       */
      public function testCreateInitFromDescriptor(
          bool $throwable, bool $starter = null, bool $case_ignored = null,
-         string $method = null, string $match = null, string $extract = null, string $content = null,
+         string $method = null, string $match = null, string $content = null,
          $result = null, int $length = 0, bool $passed = false
      ) {
-         $params = $this->createDescriptor($starter, $case_ignored, $method, $match, $extract);
+         $params = $this->createDescriptor($starter, $case_ignored, $method, $match);
 
          if ($throwable) {
              $this->expectException(ENabuLexerException::class);
@@ -151,7 +146,6 @@ class CNabuLexerRuleRegExTest extends TestCase
 
          $this->assertSame($method, $rule->getMethod());
          $this->assertSame($match, $rule->getMatchRegularExpression());
-         $this->assertSame($extract, $rule->getExtractRegularExpression());
 
          if ($throwable) {
              $this->expectException(null);
@@ -169,7 +163,6 @@ class CNabuLexerRuleRegExTest extends TestCase
       * @param bool|null $case_ignored If null acts as not declared.
       * @param string|null $method If null acts as not declared.
       * @param string|null $match If null acts as not declared.
-      * @param string|null $extract If null acts as not declared.
       * @param string|null $content Content to test case.
       * @param mixed|null $result Expected result.
       * @param int $length Source length expected result.
@@ -177,7 +170,7 @@ class CNabuLexerRuleRegExTest extends TestCase
       */
      public function testApplyRuleToContent(
          bool $throwable, bool $starter = null, bool $case_ignored = null,
-         string $method = null, string $match = null, string $extract = null, string $content = null,
+         string $method = null, string $match = null, string $content = null,
          $result = null, int $length = 0, bool $passed = false
      ) {
          if ($throwable) {
@@ -185,7 +178,7 @@ class CNabuLexerRuleRegExTest extends TestCase
          } else {
              try {
                  $rule = CNabuLexerRuleRegEx::createFromDescriptor(
-                     $this->createDescriptor($starter, $case_ignored, $method, $match, $extract)
+                     $this->createDescriptor($starter, $case_ignored, $method, $match)
                  );
              } catch (Exception $ex) {
                  $this->assertInstanceOf(ENabuLexerException::class, $ex);

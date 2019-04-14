@@ -23,6 +23,8 @@ namespace nabu\lexer\rules;
 
 use nabu\lexer\exceptions\ENabuLexerException;
 
+use nabu\lexer\interfaces\INabuLexerRule;
+
 /**
  * MySQL Lexer Rule to parse a group of rules.
  * @author Rafael Gutierrez <rgutierrez@nabu-3.com>
@@ -36,6 +38,8 @@ class CNabuLexerRuleGroup extends CNabuLexerAbstractRule
     const DESCRIPTOR_METHOD_NODE = 'method';
     /** @var string Descriptor group node literal. */
     const DESCRIPTOR_GROUP_NODE = 'group';
+    /** @var string Descriptor tokenizer node literal. */
+    const DESCRIPTOR_TOKENIZER_NODE = 'tokenizer';
 
     /** @var string Method Case literal. */
     const METHOD_CASE = 'case';
@@ -49,6 +53,8 @@ class CNabuLexerRuleGroup extends CNabuLexerAbstractRule
 
     /** @var string $method Method used to apply keywords. */
     private $method = null;
+    /** @var INabuLexerRule $tokenizer Rule that acts as separator between sequenced items. */
+    private $tokenizer = null;
     /** @var array $group Rule list applicable. */
     private $group = null;
 
@@ -59,6 +65,29 @@ class CNabuLexerRuleGroup extends CNabuLexerAbstractRule
         $this->method = $this->checkEnumLeaf(
             $descriptor, self::DESCRIPTOR_METHOD_NODE, self::METHOD_LIST,  null, false, true
         );
+
+        if ($this->method === self::METHOD_SEQUENCE) {
+            $separator = $this->checkMixedValue($descriptor, self::DESCRIPTOR_TOKENIZER_NODE, null, false, true);
+            if (is_string($separator)) {
+                $this->tokenizer = CNabuLexerRuleKeyword::createFromDescriptor(
+                    array(
+                        'method' => 'literal',
+                        'keyword' => $separator
+                    )
+                );
+            } elseif (is_array($separator)) {
+                $this->tokenizer = CNabuLexerRuleProxy::createRuleFromDescriptor($separator);
+            } else {
+                throw new ENabuLexerException(
+                    ENabuLexerException::ERROR_RULE_NODE_INVALID_VALUE,
+                    array(
+                        self::DESCRIPTOR_TOKENIZER_NODE,
+                        'string, rule'
+                    )
+                );
+            }
+        }
+
         $group_desc = $this->checkArrayNode($descriptor, self::DESCRIPTOR_GROUP_NODE, null, false, true);
 
         $this->group = array();
