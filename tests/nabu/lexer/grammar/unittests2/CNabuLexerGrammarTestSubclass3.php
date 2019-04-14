@@ -19,34 +19,20 @@
  *  limitations under the License.
  */
 
-namespace nabu\lexer\grammar\unittests2;
+namespace nabu\lexer\grammar\unittests;
 
-use nabu\lexer\grammar\CNabuAbstractLexerGrammarProxy;
-
-use nabu\lexer\grammar\unittests\CNabuLexerGrammarTestSubclass1;
-use nabu\lexer\grammar\unittests\CNabuLexerGrammarTestSubclass2;
-use nabu\lexer\grammar\unittests\CNabuLexerGrammarTestSubclass3;
+use nabu\lexer\CNabuLexer;
 
 /**
- * MySQL Lexer Language proxy.
+ * Test class to check if safety policies loading grammars works fine.
  * @author Rafael Gutierrez <rgutierrez@nabu-3.com>
  * @since 0.0.2
  * @version 0.0.2
- * @package \nabu\lexer\grammar\mysql
+ * @package nabu\lexer\grammar\unittests
  */
-class CNabuLexerGrammarProxy extends CNabuAbstractLexerGrammarProxy
+class CNabuLexerGrammarTestSubclass3 extends CNabuLexer
 {
-    /** @var string|null Grammar name of this proxy. */
-    protected static $grammar_name = 'unittests2';
-
-    public function __construct()
-    {
-        $this->registerLexerVersionClasses(
-            array(
-                CNabuLexerGrammarTestSubclass1::class,
-                CNabuLexerGrammarTestSubclass2::class,
-                CNabuLexerGrammarTestSubclass3::class
-            )
-        );
-    }
+    protected static $grammar_name = 'unittests';
+    protected static $grammar_version_min = '3.9999.9999';
+    protected static $grammar_version_max = '3.0';
 }
