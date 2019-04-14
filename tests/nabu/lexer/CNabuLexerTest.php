@@ -109,6 +109,15 @@ class CNabuLexerTest extends TestCase
     }
 
     /**
+     * @test getLexer
+     */
+    public function testGetLexerFails3()
+    {
+        $this->expectException(ENabuLexerException::class);
+        CNabuLexer::getLexer('unittests2', '1.8');
+    }
+
+    /**
      * @test getGrammarName
      */
     public function testGetGrammarName()
