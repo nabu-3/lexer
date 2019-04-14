@@ -10,9 +10,18 @@ addons:
     sonarcloud:
         organization: "nabu-3-github"
 
+cache:
+    directories:
+        - $HOME/.composer
+        - $HOME/.sonarscanner
+        - $HOME/build/nabu-3/lexer/composer.lock
+        - $HOME/build/nabu-3/lexer/vendor
+
 install:
     - travis_retry composer install
 
 script:
+    - composer require sebastian/global-state
+    - composer require phpunit/php-invoker
     - ./vendor/bin/phpunit
     - sonar-scanner
