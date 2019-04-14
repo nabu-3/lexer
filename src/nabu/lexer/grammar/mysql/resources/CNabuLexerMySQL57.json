@@ -1,0 +1,63 @@
+{
+    "grammar": {
+        "language": "mysql",
+        "version": {
+            "min": "5.7",
+            "max": "5.7.9999"
+        }
+    },
+    "rules": {
+        "comment": {
+            "starter": true,
+            "case_sensitive": false,
+            "group": [
+                {
+                    "tokenizer": {
+                        "start": "/*",
+                        "end": "*/"
+                    }
+                },
+                {
+                    "tokenizer": {
+                        "start": "\\-\\-\\s",
+                        "end": "\n"
+                    }
+                }
+            ]
+        },
+        "if_not_exists": {
+            "starter": false,
+            "case_sensitive": false,
+            "method": "sequence",
+            "separator": {
+                "rule": "separator"
+            },
+            "group": [
+                "IF", "NOT", "EXISTS"
+            ]
+        },
+        "create_table": {
+            "starter": true,
+            "case_sesnsitive": false,
+            "method": "sequence",
+            "separator": {
+                "rule": "separator"
+            },
+            "group": [
+                {
+                    "keyword": "CREATE"
+                },
+                {
+                    "keyword": "TEMPORARY",
+                    "repeat": "0..1"
+                },
+                {
+                    "keyword": "TABLE"
+                },
+                {
+                    "rule": "if_not_exists"
+                }
+            ]
+        }
+    }
+}

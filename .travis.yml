@@ -3,17 +3,25 @@ dist: trusty
 language: php
 
 php:
-    - '7.2'
-    - '7.3'
-    - '7.4snapshot'
+    - 7.2
+    - 7.3
 
 addons:
     sonarcloud:
         organization: "nabu-3-github"
 
+cache:
+    directories:
+        - $HOME/.composer
+        - $HOME/.sonar
+        - $HOME/.sonarscanner
+        - $HOME/build/nabu-3/lexer/vendor
+
 install:
     - travis_retry composer install
 
 script:
+    - composer require sebastian/global-state
+    - composer require phpunit/php-invoker
     - ./vendor/bin/phpunit
     - sonar-scanner

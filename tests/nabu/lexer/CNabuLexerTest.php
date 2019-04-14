@@ -1,9 +1,5 @@
 <?php
 
-use PHPUnit\Framework\TestCase;
-
-use nabu\lexer\CNabuLexer;
-
 /** @license
  *  Copyright 2019-2011 Rafael Gutierrez Martinez
  *  Copyright 2012-2013 Welma WEB MKT LABS, S.L.
@@ -23,19 +19,146 @@ use nabu\lexer\CNabuLexer;
  *  limitations under the License.
  */
 
- /**
-  * Test class for @see CNabuLexer.
-  * @author Rafael Gutierrez <rgutierrez@nabu-3.com>
-  * @since 0.0.2
-  * @version 0.0.2
-  */
+namespace nabu\lexer;
+
+use Error;
+
+use PHPUnit\Framework\TestCase;
+
+use nabu\lexer\CNabuLexer;
+
+use nabu\lexer\exceptions\ENabuLexerException;
+
+use nabu\lexer\grammar\mysql\CNabuLexerMySQL57;
+use nabu\lexer\grammar\mysql\CNabuLexerMySQL81;
+
+use nabu\lexer\grammar\unittests2\CNabuLexerGrammarTestSubclass3;
+
+/**
+ * Test class for @see CNabuLexer.
+ * @author Rafael Gutierrez <rgutierrez@nabu-3.com>
+ * @since 0.0.2
+ * @version 0.0.2
+ * @package nabu\lexer
+ */
 class CNabuLexerTest extends TestCase
 {
     /**
      * @test __construct
      */
-    public function testConstruct()
+    public function testConstruct_1()
     {
-        $this->assertIsObject($lexer = new CNabuLexer());
+        $this->expectException(Error::class);
+        new CNabuLexer();
+    }
+
+    /**
+     * @test __construct
+     * @test getLexer
+     */
+    public function testConstruct_2()
+    {
+        $this->expectException(ENabuLexerException::class);
+        CNabuLexerGrammarTestSubclass3::getLexer();
+    }
+
+    /**
+     * @test getLexer
+     * @test preloadFileResources
+     * @test loadFileResources
+     * @test processJSONHeader
+     * @test processJSONRules
+     */
+    public function testGetLexerSuccess()
+    {
+        $this->assertInstanceOf(
+            CNabuLexerMySQL57::class,
+            CNabuLexer::getLexer(CNabuLexer::GRAMMAR_MYSQL, '5.7'),
+            'Test getting Lexer for MySQL v.5.7'
+        );
+        $this->assertInstanceOf(
+            CNabuLexerMySQL57::class,
+            CNabuLexer::getLexer(CNabuLexer::GRAMMAR_MYSQL, '5.7.24'),
+            'Test getting Lexer for MySQL v.5.7.24'
+        );
+        $this->assertInstanceOf(
+            CNabuLexerMySQL81::class,
+            CNabuLexer::getLexer(CNabuLexer::GRAMMAR_MYSQL, '8.1'),
+            'Test getting Lexer for MySQL v.8.1'
+        );
+        $this->assertInstanceOf(
+            CNabuLexerMySQL81::class,
+            CNabuLexer::getLexer(CNabuLexer::GRAMMAR_MYSQL, '9.0'),
+            'Test getting Lexer for MySQL v.9.0'
+        );
+    }
+
+    /**
+     * @test getLexer
+     */
+    public function testGetLexerFails1()
+    {
+        $this->expectException(ENabuLexerException::class, 'Test getting Lexer for MySQL v.5.8');
+        CNabuLexer::getLexer(CNabuLexer::GRAMMAR_MYSQL, '5.8');
+    }
+
+    /**
+     * @test getLexer
+     */
+    public function testGetLexerFails2()
+    {
+        $this->expectException(ENabuLexerException::class);
+        CNabuLexer::getLexer('unittests', '5.6');
+    }
+
+    /**
+     * @test getLexer
+     */
+    public function testGetLexerFails3()
+    {
+        $this->expectException(ENabuLexerException::class);
+        CNabuLexer::getLexer('unittests2', '1.8');
+    }
+
+    /**
+     * @test getLexer
+     */
+    public function testGetLexerFails4()
+    {
+        $this->expectException(ENabuLexerException::class);
+        CNabuLexer::getLexer('unittests2', '3.2');
+    }
+
+    /**
+     * @test getLexer
+     */
+    public function testGetLexerFails5()
+    {
+        $this->expectException(ENabuLexerException::class);
+        CNabuLexer::getLexer('unittests3', '3.2');
+    }
+
+    /**
+     * @test getGrammarName
+     */
+    public function testGetGrammarName()
+    {
+        $this->assertNull(CNabuLexer::getGrammarName());
+    }
+
+    /**
+     * @test getMinimumVersion
+     */
+    public function testGetMinimumVersion()
+    {
+        $this->assertNull(CNabuLexer::getMinimumVersion());
+    }
+
+    /**
+     * @test getMaximumVersion
+     */
+    public function testGetMaximumVersion()
+    {
+        $this->assertNull(CNabuLexer::getMaximumVersion());
     }
 }
