@@ -19,7 +19,7 @@
  *  limitations under the License.
  */
 
-namespace nabu\lexer\grammar\unittests;
+namespace nabu\lexer\grammar\unittests2;
 
 use nabu\lexer\CNabuLexer;
 
@@ -32,7 +32,7 @@ use nabu\lexer\CNabuLexer;
  */
 class CNabuLexerGrammarTestSubclass2 extends CNabuLexer
 {
-    protected static $grammar_name = 'unittests';
+    protected static $grammar_name = 'unittests2';
     protected static $grammar_version_min = '2.0';
     protected static $grammar_version_max = '2.9999.9999';
 }

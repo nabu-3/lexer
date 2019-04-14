@@ -32,6 +32,8 @@ use nabu\lexer\exceptions\ENabuLexerException;
 use nabu\lexer\grammar\mysql\CNabuLexerMySQL57;
 use nabu\lexer\grammar\mysql\CNabuLexerMySQL81;
 
+use nabu\lexer\grammar\unittests2\CNabuLexerGrammarTestSubclass3;
+
 /**
  * Test class for @see CNabuLexer.
  * @author Rafael Gutierrez <rgutierrez@nabu-3.com>
@@ -52,11 +54,12 @@ class CNabuLexerTest extends TestCase
 
     /**
      * @test __construct
+     * @test getLexer
      */
     public function testConstruct_2()
     {
-        $this->expectException(Error::class);
-        new CNabuLexer(CNabuLexer::GRAMMAR_MYSQL, '5.7');
+        $this->expectException(ENabuLexerException::class);
+        CNabuLexerGrammarTestSubclass3::getLexer();
     }
 
     /**

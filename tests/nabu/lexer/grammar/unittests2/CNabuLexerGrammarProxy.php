@@ -23,10 +23,6 @@ namespace nabu\lexer\grammar\unittests2;
 
 use nabu\lexer\grammar\CNabuAbstractLexerGrammarProxy;
 
-use nabu\lexer\grammar\unittests\CNabuLexerGrammarTestSubclass1;
-use nabu\lexer\grammar\unittests\CNabuLexerGrammarTestSubclass2;
-use nabu\lexer\grammar\unittests\CNabuLexerGrammarTestSubclass3;
-
 /**
  * MySQL Lexer Language proxy.
  * @author Rafael Gutierrez <rgutierrez@nabu-3.com>
