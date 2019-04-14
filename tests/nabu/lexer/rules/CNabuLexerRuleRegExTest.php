@@ -59,8 +59,9 @@ class CNabuLexerRuleRegExTest extends TestCase
                 "'test \'with single quotes\' inside #1' and more test", "'test \'with single quotes\' inside #1'", 39, true],
              [false, false, false, 'literal', '([a-z]+) ([A-Z]+)',
                 "test CASE with multiple params", array('test', 'CASE'), 9, true],
-             [true, false, false, 'literal', '([a-z+',
-                "test CASE", array('test'), 4, true]
+                
+             [false, false, false, 'literal', '([a-z]+)', "123456", null, 0, false],
+             [true, false, false, 'literal', '([a-z+', "test CASE", array('test'), 4, true]
          ];
      }
 
