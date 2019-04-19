@@ -34,11 +34,12 @@ interface INabuLexerRule
 {
     /**
      * Creates a Rule using a descriptor array info.
+     * @param INabuLexer $lexer Lexer that governs this Rule.
      * @param array $descriptor Descriptor information.
      * @return INabuLexerRule Returns a rule instance parametrized matching the descriptor.
      * @throws ENabuLexerException Throws an exception if the descriptor is invalid.
      */
-    public static function createFromDescriptor(array $descriptor) : INabuLexerRule;
+    public static function createFromDescriptor(INabuLexer $lexer, array $descriptor) : INabuLexerRule;
     /**
      * Init the instance using a descriptor array info.
      * @param array $descriptor The descriptor array to init the instance.
@@ -76,4 +77,14 @@ interface INabuLexerRule
      * @return bool Returns true if it is a starter rule.
      */
     public function isStarter() : bool;
+    /**
+     * Get the path of the value repressenting this rule.
+     * @return string|null Returns the path if setted or null otherwise.
+     */
+    public function getPath();
+    /**
+     * Get the Lexer that governs this Rule.
+     * @return INabuLexer Returns assigned Lexer.
+     */
+    public function getLexer(): INabuLexer;
 }

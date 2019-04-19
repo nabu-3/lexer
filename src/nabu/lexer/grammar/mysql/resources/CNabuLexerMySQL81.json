@@ -1,1 +1,11 @@
-{}
+{
+    "grammar": {
+        "language": "mysql",
+        "version": {
+            "min": "8.0",
+            "max": null
+        }
+    },
+    "rules": {
+    }
+}

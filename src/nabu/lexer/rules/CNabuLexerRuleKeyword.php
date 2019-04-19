@@ -30,10 +30,10 @@ namespace nabu\lexer\rules;
  */
 class CNabuLexerRuleKeyword extends CNabuLexerAbstractRule
 {
-    /** @var string Descriptor method node literal. */
-    const DESCRIPTOR_METHOD_NODE = 'method';
     /** @var string Descriptor keywords node literal. */
     const DESCRIPTOR_KEYWORD_NODE = 'keyword';
+    /** @var string Descriptor method node literal. */
+    const DESCRIPTOR_METHOD_NODE = 'method';
 
     /** @var string Method Literal literal. */
     const METHOD_LITERAL = 'literal';

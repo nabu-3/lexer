@@ -21,8 +21,11 @@
 
 namespace nabu\lexer\rules;
 
+use nabu\lexer\CNabuLexer;
+
 use nabu\lexer\exceptions\ENabuLexerException;
 
+use nabu\lexer\interfaces\INabuLexer;
 use nabu\lexer\interfaces\INabuLexerRule;
 
 use nabu\min\CNabuObject;
@@ -36,34 +39,87 @@ use nabu\min\CNabuObject;
  */
 class CNabuLexerRuleProxy extends CNabuObject
 {
-    /** @var string Descriptor group node literal. */
-    private const DESCRIPTOR_GROUP_NODE = 'group';
-    /** @var string Descriptor keyword node literal. */
-    private const DESCRIPTOR_KEYWORD_NODE = 'keyword';
-    /** @var string Descriptor match node literal. */
-    private const DESCRIPTOR_MATCH_NODE = 'match';
+    /** @var string Descriptor rule node literal. */
+    const DESCRIPTOR_RULE_NODE = 'rule';
+
+    /** @var CNabuLexer $lexer Lexer associated to this Proxy. */
+    private $lexer = null;
+
+    /** @var array $inventory Rules inventory associated to this Proxy instance. */
+    private $inventory = null;
+
+    public function __construct(CNabuLexer $lexer)
+    {
+        $this->lexer = $lexer;
+    }
+
     /**
      * Create a Rule depending on a descriptor array structure.
+     * @param INabuLexer $lexer Lexeer that will govern described rule.
      * @param array $descriptor The descriptor array.
      * @return INabuLexerRule Returns an specialized rule to dispatch grammar using the descriptor.
      * @throws ENabuLexerException Throws an exception if no rule applicable for descriptor.
      */
-    public static function createRuleFromDescriptor(array $descriptor) : INabuLexerRule
+    public static function createRuleFromDescriptor(INabuLexer $lexer, array $descriptor) : INabuLexerRule
     {
         $rule = null;
 
-        if (array_key_exists(self::DESCRIPTOR_GROUP_NODE, $descriptor)) {
-            $rule = CNabuLexerRuleGroup::createFromDescriptor($descriptor);
-        } elseif (array_key_exists(self::DESCRIPTOR_KEYWORD_NODE, $descriptor)) {
-            $rule = CNabuLexerRuleKeyword::createFromDescriptor($descriptor);
-        } elseif (array_key_exists(self::DESCRIPTOR_MATCH_NODE, $descriptor)) {
-            $rule = CNabuLexerRuleRegEx::createFromDescriptor($descriptor);
+        if (array_key_exists(CNabuLexerRuleGroup::DESCRIPTOR_GROUP_NODE, $descriptor)) {
+            $rule = CNabuLexerRuleGroup::createFromDescriptor($lexer, $descriptor);
+        } elseif (array_key_exists(CNabuLexerRuleKeyword::DESCRIPTOR_KEYWORD_NODE, $descriptor)) {
+            $rule = CNabuLexerRuleKeyword::createFromDescriptor($lexer, $descriptor);
+        } elseif (array_key_exists(CNabuLexerRuleRegEx::DESCRIPTOR_MATCH_NODE, $descriptor)) {
+            $rule = CNabuLexerRuleRegEx::createFromDescriptor($lexer, $descriptor);
+        } elseif (array_key_exists(CNabuLexerRuleRepeat::DESCRIPTOR_REPEAT_NODE, $descriptor)) {
+            $rule = CNabuLexerRuleRepeat::createFromDescriptor($lexer, $descriptor);
+        } elseif (array_key_exists(self::DESCRIPTOR_RULE_NODE, $descriptor)) {
+            if (is_string($descriptor[self::DESCRIPTOR_RULE_NODE])) {
+                $rule = $lexer->getRule($descriptor[self::DESCRIPTOR_RULE_NODE]);
+            } else {
+                $rule = self::createRuleFromDescriptor($lexer, $descriptor[self::DESCRIPTOR_RULE_NODE]);
+            }
         }
 
         if (is_null($rule)) {
-            throw new ENabuLexerException(ENabuLexerException::ERROR_RULE_NOT_FOUND_FOR_DESCRIPTOR);
+            throw new ENabuLexerException(
+                ENabuLexerException::ERROR_RULE_NOT_FOUND_FOR_DESCRIPTOR,
+                array(var_export($descriptor, true))
+            );
         }
 
         return $rule;
     }
+
+    /**
+     * Register a Rule associated to a key.
+     * @param string $key Key to identify the Rule.
+     * @param INabuLexerRule $rule Rule to register.
+     * @throws ENabuLexerException Throws an exception if the rule already exists.
+     */
+    public function registerRule(string $key, INabuLexerRule $rule)
+    {
+        if (is_null($this->inventory)) {
+            $this->inventory = array( $key => $rule);
+        } elseif (!array_key_exists($key, $this->inventory)) {
+            $this->inventory[$key] = $rule;
+        } else {
+            throw new ENabuLexerException(ENabuLexerException::ERROR_RULE_ALREADY_EXISTS, array($key));
+        }
+    }
+
+    /**
+     * Get a Rule by his key.
+     * @param string $key Key to identify the Rule.
+     * @return INabuLexerRule Returns the Rule identified by the key.
+     * @throws ENabuLexerException Throws an exception if the Rule does not exists.
+     */
+    public function getRule(string $key): INabuLexerRule
+    {
+        if (!is_array($this->inventory) || !array_key_exists($key, $this->inventory)) {
+            throw new ENabuLexerException(ENabuLexerException::ERROR_RULE_DOES_NOT_EXIST, array($key));
+        }
+
+        return $this->inventory[$key];
+    }
+
 }

@@ -23,6 +23,8 @@ namespace nabu\lexer\rules;
 
 use PHPUnit\Framework\TestCase;
 
+use nabu\lexer\CNabuCustomLexer;
+
 /**
  * Test class for @see CNabuLexerRuleGroup.
  * @author Rafael Gutierrez <rgutierrez@nabu-3.com>
@@ -37,7 +39,9 @@ class CNabuLexerRuleGroupTest extends TestCase
      */
     public function testConstructor()
     {
-        $this->assertInstanceOf(CNabuLexerRuleGroup::class, new CNabuLexerRuleGroup());
+        $lexer = CNabuCustomLexer::getLexer();
+        $this->assertInstanceOf(CNabuCustomLexer::class, $lexer);
+        $this->assertInstanceOf(CNabuLexerRuleGroup::class, new CNabuLexerRuleGroup($lexer));
     }
 
     /**
@@ -47,7 +51,9 @@ class CNabuLexerRuleGroupTest extends TestCase
      */
     public function testCreateInitFromDescriptorCase(): CNabuLexerRuleGroup
     {
+        $lexer = CNabuCustomLexer::getLexer();
         $rule = CNabuLexerRuleGroup::createFromDescriptor(
+            $lexer,
             array(
                 'starter' => false,
                 'method' => CNabuLexerRuleGroup::METHOD_CASE,
@@ -65,7 +71,8 @@ class CNabuLexerRuleGroupTest extends TestCase
                         'method' => 'literal',
                         'keyword' => 'DROP'
                     )
-                )
+                ),
+                'path' => 'method'
             )
         );
 
@@ -103,7 +110,9 @@ class CNabuLexerRuleGroupTest extends TestCase
      */
     public function testCreateInitFromDescriptorSequence(): CNabuLexerRuleGroup
     {
+        $lexer = CNabuCustomLexer::getLexer();
         $rule = CNabuLexerRuleGroup::createFromDescriptor(
+            $lexer,
             array(
                 'starter' => false,
                 'method' => CNabuLexerRuleGroup::METHOD_SEQUENCE,

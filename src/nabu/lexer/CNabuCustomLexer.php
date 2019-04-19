@@ -19,16 +19,17 @@
  *  limitations under the License.
  */
 
-namespace nabu\lexer\grammar\unittests3;
+namespace nabu\lexer;
 
 /**
- * Test class to check if safety policies loading grammars works fine.
+ * Custom Lexer to perform customizable Lexer analysis.
  * @author Rafael Gutierrez <rgutierrez@nabu-3.com>
  * @since 0.0.2
  * @version 0.0.2
- * @package nabu\lexer\grammar\unittests
+ * @package \nabu\lexer
  */
-class CNabuLexerGrammarTestSubclass1
+class CNabuCustomLexer extends CNabuLexer
 {
-
+    /** @var string Language name used by this Lexer. */
+    protected static $grammar_name = 'custom';
 }

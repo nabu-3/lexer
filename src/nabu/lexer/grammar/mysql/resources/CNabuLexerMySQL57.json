@@ -9,28 +9,27 @@
     "rules": {
         "comment": {
             "starter": true,
-            "case_sensitive": false,
-            "group": [
-                {
-                    "tokenizer": {
-                        "start": "/*",
-                        "end": "*/"
+            "repeat": "1..n",
+            "rule": {
+                "method": "case",
+                "group": [
+                    {
+                        "method": "literal",
+                        "match": "\\/\\*(.*?)\\*\\/"
+                    },
+                    {
+                        "method": "literal",
+                        "match": "\\-\\-\\s+(.*?)\n"
                     }
-                },
-                {
-                    "tokenizer": {
-                        "start": "\\-\\-\\s",
-                        "end": "\n"
-                    }
-                }
-            ]
+                ]
+            }
         },
         "if_not_exists": {
             "starter": false,
-            "case_sensitive": false,
+            "ignore case": true,
             "method": "sequence",
-            "separator": {
-                "rule": "separator"
+            "tokenizer": {
+                "rule": "comment"
             },
             "group": [
                 "IF", "NOT", "EXISTS"
@@ -38,20 +37,23 @@
         },
         "create_table": {
             "starter": true,
-            "case_sesnsitive": false,
             "method": "sequence",
-            "separator": {
-                "rule": "separator"
+            "tokenizer": {
+                "rule": "comment"
             },
             "group": [
                 {
+                    "method": "ignore case",
                     "keyword": "CREATE"
                 },
                 {
-                    "keyword": "TEMPORARY",
-                    "repeat": "0..1"
+                    "repeat": "0..1",
+                    "rule": [
+                        "TEMPORARY"
+                    ]
                 },
                 {
+                    "method": "ignore case",
                     "keyword": "TABLE"
                 },
                 {

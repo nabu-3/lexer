@@ -34,10 +34,10 @@ use nabu\lexer\exceptions\ENabuLexerException;
  */
 class CNabuLexerRuleRegEx extends CNabuLexerAbstractRule
 {
-    /** @var string Descriptor method node literal. */
-    const DESCRIPTOR_METHOD_NODE = 'method';
     /** @var string Descriptor match node literal. */
     const DESCRIPTOR_MATCH_NODE = 'match';
+    /** @var string Descriptor method node literal. */
+    const DESCRIPTOR_METHOD_NODE = 'method';
 
     /** @var string Method Literal literal. */
     const METHOD_LITERAL = 'literal';

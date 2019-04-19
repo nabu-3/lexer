@@ -26,7 +26,7 @@
     "require": {
         "php": ">=7.2",
         "ext-mbstring": ">=7.2",
-        "nabu-3/minimal-class": "dev-Version-3.0.2"
+        "nabu-3/minimal-class": "dev-master"
     },
     "require-dev": {
         "phpunit/phpunit": "^8"

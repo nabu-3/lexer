@@ -34,10 +34,10 @@ use nabu\lexer\interfaces\INabuLexerRule;
  */
 class CNabuLexerRuleGroup extends CNabuLexerAbstractRule
 {
-    /** @var string Descriptor method node literal. */
-    const DESCRIPTOR_METHOD_NODE = 'method';
     /** @var string Descriptor group node literal. */
     const DESCRIPTOR_GROUP_NODE = 'group';
+    /** @var string Descriptor method node literal. */
+    const DESCRIPTOR_METHOD_NODE = 'method';
     /** @var string Descriptor tokenizer node literal. */
     const DESCRIPTOR_TOKENIZER_NODE = 'tokenizer';
 
@@ -58,6 +58,24 @@ class CNabuLexerRuleGroup extends CNabuLexerAbstractRule
     /** @var array $group Rule list applicable. */
     private $group = null;
 
+    /**
+     * Get the method attribute.
+     * @return string|null Returns the value of method attribute.
+     */
+    public function getMethod()
+    {
+        return $this->method;
+    }
+
+    /**
+     * Get the tokenizer attribute.
+     * @return string|null Returns the value of tokenizer attribute.
+     */
+    public function getTokenizer()
+    {
+        return $this->tokenizer;
+    }
+
     public function initFromDescriptor(array $descriptor)
     {
         parent::initFromDescriptor($descriptor);
@@ -70,13 +88,14 @@ class CNabuLexerRuleGroup extends CNabuLexerAbstractRule
             $separator = $this->checkMixedNode($descriptor, self::DESCRIPTOR_TOKENIZER_NODE, null, false, true);
             if (is_string($separator)) {
                 $this->tokenizer = CNabuLexerRuleKeyword::createFromDescriptor(
+                    $this->getLexer(),
                     array(
                         CNabuLexerRuleKeyword::DESCRIPTOR_METHOD_NODE => CNabuLexerRuleKeyword::METHOD_LITERAL,
                         CNabuLexerRuleKeyword::DESCRIPTOR_KEYWORD_NODE => $separator
                     )
                 );
             } elseif (is_array($separator)) {
-                $this->tokenizer = CNabuLexerRuleProxy::createRuleFromDescriptor($separator);
+                $this->tokenizer = CNabuLexerRuleProxy::createRuleFromDescriptor($this->getLexer(), $separator);
             } else {
                 throw new ENabuLexerException(
                     ENabuLexerException::ERROR_RULE_NODE_INVALID_VALUE,
@@ -95,13 +114,14 @@ class CNabuLexerRuleGroup extends CNabuLexerAbstractRule
         foreach ($group_desc as $rule_desc) {
             if (is_string($rule_desc)) {
                 $this->group[] = CNabuLexerRuleKeyword::createFromDescriptor(
+                    $this->getLexer(),
                     array(
                         CNabuLexerRuleKeyword::DESCRIPTOR_METHOD_NODE => CNabuLexerRuleKeyword::METHOD_LITERAL,
                         CNabuLexerRuleKeyword::DESCRIPTOR_KEYWORD_NODE => $rule_desc
                     )
                 );
             } else {
-                $this->group[] = CNabuLexerRuleProxy::createRuleFromDescriptor($rule_desc);
+                $this->group[] = CNabuLexerRuleProxy::createRuleFromDescriptor($this->getLexer(), $rule_desc);
             }
         }
     }

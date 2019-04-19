@@ -32,6 +32,7 @@ use nabu\lexer\exceptions\ENabuLexerException;
 use nabu\lexer\grammar\mysql\CNabuLexerMySQL57;
 use nabu\lexer\grammar\mysql\CNabuLexerMySQL81;
 
+use nabu\lexer\grammar\unittests2\CNabuLexerGrammarTestSubclass1;
 use nabu\lexer\grammar\unittests2\CNabuLexerGrammarTestSubclass3;
 
 /**
@@ -114,10 +115,9 @@ class CNabuLexerTest extends TestCase
     /**
      * @test getLexer
      */
-    public function testGetLexerFails3()
+    public function testGetLexerLoadWithoutResourcesFile()
     {
-        $this->expectException(ENabuLexerException::class);
-        CNabuLexer::getLexer('unittests2', '1.8');
+        $this->assertInstanceOf(CNabuLexerGrammarTestSubclass1::class, CNabuLexer::getLexer('unittests2', '1.8'));
     }
 
     /**

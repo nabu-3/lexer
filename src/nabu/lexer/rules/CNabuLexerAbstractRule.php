@@ -21,8 +21,13 @@
 
 namespace nabu\lexer\rules;
 
+use Exception;
+
+use nabu\lexer\CNabuLexer;
+
 use nabu\lexer\exceptions\ENabuLexerException;
 
+use nabu\lexer\interfaces\INabuLexer;
 use nabu\lexer\interfaces\INabuLexerRule;
 
 /**
@@ -37,9 +42,14 @@ abstract class CNabuLexerAbstractRule implements INabuLexerRule
 {
     /** @var string Descriptor starter node literal. */
     const DESCRIPTOR_STARTER_NODE = 'starter';
+    /** @var string Descriptor path node literal. */
+    const DESCRIPTOR_PATH_NODE = 'path';
 
     /** @var bool If true, the Rule is an starter rule and can be placed at the begin of a sequence. */
     private $starter = false;
+
+    /** @var string Path to store extracted value. */
+    private $path = null;
 
     /** @var mixed $value Rule value extrated from content. */
     private $value = null;
@@ -47,18 +57,22 @@ abstract class CNabuLexerAbstractRule implements INabuLexerRule
     /** @var int $sourceLength Length of original string needed to detect the value. */
     private $sourceLength = 0;
 
+    /** @var CNabuLexer $lexer Lexer that manages this rule. */
+    private $lexer = null;
+
     /**
      * Creates the instance and sets initial attributes.
+     * @param CNabuLexer $lexer Lexer that governs this Rule,
      */
-    public function __construct()
+    public function __construct(CNabuLexer $lexer)
     {
-
+        $this->lexer = $lexer;
     }
 
-    public static function createFromDescriptor(array $descriptor): INabuLexerRule
+    public static function createFromDescriptor(INabuLexer $lexer, array $descriptor): INabuLexerRule
     {
         $caller = get_called_class();
-        $rule = new $caller();
+        $rule = new $caller($lexer);
         $rule->initFromDescriptor($descriptor);
 
         return $rule;
@@ -67,6 +81,7 @@ abstract class CNabuLexerAbstractRule implements INabuLexerRule
     public function initFromDescriptor(array $descriptor)
     {
         $this->starter = $this->checkBooleanLeaf($descriptor, self::DESCRIPTOR_STARTER_NODE);
+        $this->path = $this->checkStringLeaf($descriptor, self::DESCRIPTOR_PATH_NODE);
     }
 
     public function getValue()
@@ -106,6 +121,16 @@ abstract class CNabuLexerAbstractRule implements INabuLexerRule
     public function isStarter(): bool
     {
         return $this->starter;
+    }
+
+    public function getPath()
+    {
+        return $this->path;
+    }
+
+    public function getLexer(): INabuLexer
+    {
+        return $this->lexer;
     }
 
     /**
@@ -282,5 +307,50 @@ abstract class CNabuLexerAbstractRule implements INabuLexerRule
         }
 
         return $mixedValue;
+    }
+
+    /**
+     * Check if a leaf have a range value and returns the range detected if it is valid.
+     * @param array $descriptor The descriptor fragment to be analized. The leaf needs to be in the root of the array.
+     * @param string $name Name of the leaf.
+     * @param string|null $def_value Boolean default value in case that the leaf does not exists.
+     * @param bool $nullable If true, the node can contain a null value.
+     * @param bool $raise_exception If true, throws an exception if the leaf des not exists.
+     * @return array Returns the detected value. He can be received as a list assignement.
+     * @throws ENabuLexerException Throws an exception if value does not exists or is invalid.
+     */
+    protected function checkRangeLeaf(
+        array $descriptor, string $name, string $def_value = null, bool $nullable = true, bool $raise_exception = false
+    ) {
+        $range = null;
+        $str_range = $this->checkStringLeaf($descriptor, $name, $def_value, $nullable, $raise_exception);
+
+        try {
+            $match = null;
+            if (is_string($str_range) &&
+                preg_match("/^((0|[1-9][0-9]*)\\.\\.(n|[1-9][0-9]*)|(0|[1-9][0-9]*))$/i", $str_range, $match) &&
+                is_array($match) &&
+                count($match) === 4
+            ) {
+                if (is_numeric($match[2]) && is_numeric($match[3]) && $match[2] > $match[3]) {
+                    throw new ENabuLexerException(
+                        ENabuLexerException::ERROR_INVALID_RANGE_VALUES,
+                        array($str_range)
+                    );
+                }
+                $range = array($match[2], $match[3]);
+            }
+        } catch (Exception $ex) {
+            if ($raise_exception) {
+                throw new ENabuLexerException(
+                    ENabuLexerException::ERROR_RULE_NODE_INVALID_VALUE,
+                    array($name, 'Range m..n')
+                );
+            } else {
+                $range = $def_value;
+            }
+        }
+
+        return $range;
     }
 }
