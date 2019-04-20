@@ -51,7 +51,10 @@ class ENabuLexerExceptionTest extends TestCase
             [ENabuLexerException::ERROR_RULE_NODE_NOT_FOUND_IN_DESCRIPTOR, array('test_node')],
             [ENabuLexerException::ERROR_RULE_NODE_INVALID_VALUE, array('node', 'value', 'mixed')],
             [ENabuLexerException::ERROR_INVALID_RULE_METHOD, array('method_name')],
-            [ENabuLexerException::ERROR_EMPTY_GROUP_RULE, null]
+            [ENabuLexerException::ERROR_EMPTY_GROUP_RULE, null],
+            [ENabuLexerException::ERROR_RULE_ALREADY_EXISTS, array('rule key')],
+            [ENabuLexerException::ERROR_RULE_DOES_NOT_EXISTS, array('rule_key')],
+            [ENabuLexerException::ERROR_INVALID_RANGE_VALUES, array('2..1')]
         ];
     }
 
