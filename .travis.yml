@@ -23,5 +23,6 @@ install:
 script:
     - composer require sebastian/global-state
     - composer require phpunit/php-invoker
+    - chmod a-r ./nabu-3/lexer/tests/nabu/lexer/resources/test-write-only-file.json
     - ./vendor/bin/phpunit
     - sonar-scanner
