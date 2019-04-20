@@ -21,7 +21,7 @@
 
 namespace nabu\lexer\interfaces;
 
-use nabu\lexer\CNabuLexerData;
+use nabu\lexer\data\CNabuLexerData;
 
 use nabu\lexer\exceptions\ENabuLexerException;
 
@@ -87,7 +87,7 @@ interface INabuLexer
     /**
      * Set the data instance used by the Lexer.
      * @param CNabuLexerData $data Data to be setted.
-     * @return INabuLexer Returns the self pointer to grant setter cascade calls.
+     * @return INabuLexer Returns the self pointer to grant fluent implementation.
      */
-    public function setData(CNabuLexerData $data);
+    public function setData(CNabuLexerData $data): INabuLexer;
 }

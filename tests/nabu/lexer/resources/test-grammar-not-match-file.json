@@ -1,0 +1,9 @@
+{
+    "grammar": {
+        "language": "not custom",
+        "version": {
+            "min": "1.0",
+            "max": null
+        }
+    }
+}

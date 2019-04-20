@@ -22,7 +22,10 @@
 namespace nabu\lexer;
 
 use Error;
+use Exception;
 use ReflectionClass;
+
+use nabu\lexer\data\CNabuLexerData;
 
 use nabu\lexer\exceptions\ENabuLexerException;
 
@@ -140,9 +143,11 @@ class CNabuLexer extends CNabuObject implements INabuLexer
         return $this->data;
     }
 
-    public function setData(CNabuLexerData $data)
+    public function setData(CNabuLexerData $data): INabuLexer
     {
         $this->data = $data;
+
+        return $this;
     }
 
     public static function isValidVersion(string $version): bool
@@ -182,9 +187,20 @@ class CNabuLexer extends CNabuObject implements INabuLexer
         $retval = false;
 
         if (file_exists($filename)) {
-            if (($raw = file_get_contents($filename)) === false ||
-                !($json = json_decode($raw, JSON_OBJECT_AS_ARRAY))
-            ) {
+            try {
+                if (($raw = file_get_contents($filename)) === false ||
+                    !($json = json_decode($raw, JSON_OBJECT_AS_ARRAY))
+                ) {
+                    throw new ENabuLexerException(
+                        ENabuLexerException::ERROR_INVALID_GRAMMAR_RESOURCE_FILE,
+                        array(
+                            $filename
+                        )
+                    );
+                }
+            } catch (ENabuLexerException $ex) {
+                throw $ex;
+            } catch (Exception $e) {
                 throw new ENabuLexerException(
                     ENabuLexerException::ERROR_INVALID_GRAMMAR_RESOURCE_FILE,
                     array(
@@ -223,7 +239,7 @@ class CNabuLexer extends CNabuObject implements INabuLexer
             throw new ENabuLexerException(ENabuLexerException::ERROR_RESOURCE_GRAMMAR_DESCRIPTION_MISSING);
         }
 
-        if (!is_null(self::$grammar_name) && self::$grammar_name !== $language) {
+        if (!is_null(self::getGrammarName()) && self::getGrammarName() !== $language) {
             throw new ENabuLexerException(
                 ENabuLexerException::ERROR_RESOURCE_GRAMMAR_LANGUAGE_NOT_MATCH,
                 array(
