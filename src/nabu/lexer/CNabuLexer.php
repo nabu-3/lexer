@@ -169,6 +169,13 @@ class CNabuLexer extends CNabuObject implements INabuLexer
         return $this->rules_proxy->getRule($key);
     }
 
+    public function registerRule(string $key, INabuLexerRule $rule): INabuLexer
+    {
+        $this->rules_proxy->registerRule($key, $rule);
+
+        return $this;
+    }
+
     /**
      * Load the default File Resource descriptor to prepare the Lexer.
      * @throws ENabuLexerException Throws an exception if the file exists but their content is not valid.

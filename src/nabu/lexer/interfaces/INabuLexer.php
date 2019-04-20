@@ -73,6 +73,13 @@ interface INabuLexer
      */
     public function getRule(string $key): INabuLexerRule;
     /**
+     * Register a Rule associated with a key. The @see { getRule() } method could get this stored rule using same key.
+     * @param string $key Key to identify the Rule.
+     * @param INabuLexerRule $rule Rule to be registered.
+     * @return INabuLexer Returns self pointer to grant fluent interface.
+     */
+    public function registerRule(string $key, INabuLexerRule $rule): INabuLexer;
+    /**
      * Load and setup the Lexer from a File Resources descriptor containing all grammar rules to work.
      * @param string $filename Name of file to load.
      * @return bool Returns true if file is valid and resources are loaded, or false if file is empty or have no rules.
