@@ -45,6 +45,25 @@ abstract class CNabuLexerAbstractRule implements INabuLexerRule
     /** @var string Descriptor path node literal. */
     const DESCRIPTOR_PATH_NODE = 'path';
 
+    /** @var string Range regular expression to extract parts. */
+    private const RANGE_REGEX = "/^(((0|[1-9][0-9]*)(\\.\\.|\\-|,)(n|infinity|inf|∞|[1-9][0-9]*))|(n|infinity|inf|∞|[1-9][0-9]*))$/i";
+    /** @var string Infinite range value represented by 'n'. */
+    const RANGE_N = 'n';
+    /** @var string Infinite value represented by 'inf'. */
+    private const RANGE_INF = 'inf';
+    /** @var string Infinite value represented by 'infinity'. */
+    private const RANGE_INFINITE = 'infinity';
+    /** @var string Infinite value represented by '∞'. */
+    private const RANGE_INFINITE_SYMBOL = '∞';
+    /** @var array Array of allowed values to represent infinity. */
+    private const RANGE_INFINITE_VALUES = Array(
+        self::RANGE_N,
+        self::RANGE_INF,
+        self::RANGE_INFINITE,
+        self::RANGE_INFINITE_SYMBOL,
+    );
+
+
     /** @var bool If true, the Rule is an starter rule and can be placed at the begin of a sequence. */
     private $starter = false;
 
@@ -62,9 +81,9 @@ abstract class CNabuLexerAbstractRule implements INabuLexerRule
 
     /**
      * Creates the instance and sets initial attributes.
-     * @param CNabuLexer $lexer Lexer that governs this Rule,
+     * @param INabuLexer $lexer Lexer that governs this Rule,
      */
-    public function __construct(CNabuLexer $lexer)
+    public function __construct(INabuLexer $lexer)
     {
         $this->lexer = $lexer;
     }
@@ -214,23 +233,23 @@ abstract class CNabuLexerAbstractRule implements INabuLexerRule
         array $descriptor, string $name, array $enum_values, $def_value = null, bool $nullable = false,
         bool $raise_exception = false
     ) {
-        $enumValue = $def_value;
+        $enum_val = $def_value;
 
         if (array_key_exists($name, $descriptor)) {
             if (($nullable && is_null($descriptor[$name])) ||
                 (is_scalar($descriptor[$name]) && in_array($descriptor[$name], $enum_values))
             ) {
-                $enumValue = $descriptor[$name];
+                $enum_val = $descriptor[$name];
             } elseif ($raise_exception) {
                 if ($nullable) {
                     throw new ENabuLexerException(
                         ENabuLexerException::ERROR_RULE_NODE_INVALID_VALUE,
-                        array($name, implode(', ', $enum_values) . ', null')
+                        array($name, $enum_val, implode(', ', $enum_values) . ', null')
                     );
                 } else {
                     throw new ENabuLexerException(
                         ENabuLexerException::ERROR_RULE_NODE_INVALID_VALUE,
-                        array($name, implode(', ', $enum_values))
+                        array($name, $enum_val, implode(', ', $enum_values))
                     );
                 }
             }
@@ -238,7 +257,7 @@ abstract class CNabuLexerAbstractRule implements INabuLexerRule
             throw new  ENabuLexerException(ENabuLexerException::ERROR_RULE_NODE_NOT_FOUND_IN_DESCRIPTOR, array($name));
         }
 
-        return $enumValue;
+        return $enum_val;
     }
 
     /**
@@ -328,23 +347,29 @@ abstract class CNabuLexerAbstractRule implements INabuLexerRule
         try {
             $match = null;
             if (is_string($str_range) &&
-                preg_match("/^((0|[1-9][0-9]*)\\.\\.(n|[1-9][0-9]*)|(0|[1-9][0-9]*))$/i", $str_range, $match) &&
+                preg_match(self::RANGE_REGEX, $str_range, $match) &&
                 is_array($match) &&
-                count($match) === 4
+                (($c = count($match)) === 6 || $c === 7)
             ) {
-                if (is_numeric($match[2]) && is_numeric($match[3]) && $match[2] > $match[3]) {
-                    throw new ENabuLexerException(
-                        ENabuLexerException::ERROR_INVALID_RANGE_VALUES,
-                        array($str_range)
-                    );
+                if ($c === 7) {
+                    $range = $this->checkRangeLeafSingleValue($str_range, $match);
+                } else {
+                    $range = $this->checkRangeLeafTupla($str_range, $match);
                 }
-                $range = array($match[2], $match[3]);
+            } else {
+                error_log($str_range . ' ' . $c . ' ' .var_export($match, true));
+                throw new ENabuLexerException(
+                    ENabuLexerException::ERROR_INVALID_RANGE_VALUES,
+                    array($str_range)
+                );
             }
+        } catch (ENabuLexerException $ex) {
+            throw $ex;
         } catch (Exception $ex) {
             if ($raise_exception) {
                 throw new ENabuLexerException(
                     ENabuLexerException::ERROR_RULE_NODE_INVALID_VALUE,
-                    array($name, 'Range m..n')
+                    array($name, $str_range, 'Range m..n')
                 );
             } else {
                 $range = $def_value;
@@ -352,5 +377,58 @@ abstract class CNabuLexerAbstractRule implements INabuLexerRule
         }
 
         return $range;
+    }
+
+    /**
+     * Parse a range expressed as a single value. This value could be a number or a repressentation of infinity.
+     * If the range is numeric, return value is (n, n) where n is the value expressed in the range.
+     * If the range is invinite, return value is (1, n) where n is the literal repressenting infinity value.
+     * @param string $str_range String parsed. Provided on to throw the exception if value is not valid.
+     * @param array $match Match fragments to parse.
+     * @return array Returns an array with min and max values of the range.
+     */
+    private function checkRangeLeafSingleValue(string $str_range, array $match): array
+    {
+        if (is_numeric($match[6])) {
+            $range = array($match[6], $match[6]);
+        } elseif (is_string($match[6]) && in_array(mb_strtolower($match[6]), self::RANGE_INFINITE_VALUES)) {
+            $range = array(1, self::RANGE_N);
+        } else {
+            throw new ENabuLexerException(
+                ENabuLexerException::ERROR_INVALID_RANGE_VALUES,
+                array($str_range)
+            );
+        }
+
+        return $range;
+    }
+
+    /**
+     * Parse a range expressed as a tupla.
+     * The first value will always be a number.
+     * The second value could be a number or an infinity repressentation.
+     * If the range is numeric, return value is (n, n) where n is the value expressed in the range.
+     * If the range is invinite, return value is (1, n) where n is the literal repressenting infinity value.
+     * @param string $str_range String parsed. Provided on to throw the exception if value is not valid.
+     * @param array $match Match fragments to parse.
+     * @return array Returns an array with min and max values of the range.
+     */
+    private function checkRangeLeafTupla(string $str_range, array $match): array
+    {
+        if ((is_numeric($match[3]) && is_numeric($match[5]) && $match[3] > $match[5]) ||
+            (!is_numeric($match[5]) && is_string($match[5]) &&
+             !in_array(mb_strtolower($match[5]), self::RANGE_INFINITE_VALUES)
+            )
+        ) {
+            throw new ENabuLexerException(
+                ENabuLexerException::ERROR_INVALID_RANGE_VALUES,
+                array($str_range)
+            );
+        }
+        if (in_array($match[5], self::RANGE_INFINITE_VALUES)) {
+            $match[5] = self::RANGE_N;
+        }
+
+        return array($match[3], $match[5]);
     }
 }
