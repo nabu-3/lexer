@@ -50,11 +50,11 @@ class ENabuLexerException extends ENabuException
     public const ERROR_RESOURCE_GRAMMAR_DESCRIPTION_MISSING         = 0x0007;
     /** @var int Resource file language name does not match. Requires both language names. */
     public const ERROR_RESOURCE_GRAMMAR_LANGUAGE_NOT_MATCH          = 0x0008;
-    /** @var int Rule not found for descriptor. */
+    /** @var int Rule not found for descriptor. Requires descriptor content with var_export. */
     public const ERROR_RULE_NOT_FOUND_FOR_DESCRIPTOR                = 0x0009;
     /** @var int Rule node not found in descriptor. Requires the node name. Requires descriptor dump */
     public const ERROR_RULE_NODE_NOT_FOUND_IN_DESCRIPTOR            = 0x000a;
-    /** @var int Rule node invalid value. Requires the node name and type expected. */
+    /** @var int Rule node invalid value. Requires the node name, value and type expected. */
     public const ERROR_RULE_NODE_INVALID_VALUE                      = 0x000b;
     /** @var int Invalid Rule method. Requires the method name. */
     public const ERROR_INVALID_RULE_METHOD                          = 0x000c;
@@ -90,7 +90,7 @@ class ENabuLexerException extends ENabuException
         ENabuLexerException::ERROR_RULE_NODE_NOT_FOUND_IN_DESCRIPTOR =>
             'Rule node [%s] not found in descriptor.',
         ENabuLexerException::ERROR_RULE_NODE_INVALID_VALUE =>
-            'Rule node [%s] contains an invalid nor unexpected value. Allowed are [%s].',
+            'Rule node [%s] contains an invalid or unexpected value [%s]. Allowed are [%s].',
         ENabuLexerException::ERROR_INVALID_RULE_METHOD =>
             'Invalid Rule method [$s].',
         ENabuLexerException::ERROR_EMPTY_GROUP_RULE =>

@@ -48,9 +48,10 @@
                 },
                 {
                     "repeat": "0..1",
-                    "rule": [
-                        "TEMPORARY"
-                    ]
+                    "rule": {
+                            "method": "ignore case",
+                            "keyword": "TEMPORARY"
+                    }
                 },
                 {
                     "method": "ignore case",

@@ -148,7 +148,7 @@ class CNabuLexerRuleRegEx extends CNabuLexerAbstractRule
             if ($raise_exception) {
                 throw new ENabuLexerException(
                     ENabuLexerException::ERROR_RULE_NODE_INVALID_VALUE,
-                    array($name, 'Regular Expression')
+                    array($name, $regex, 'Regular Expression')
                 );
             } else {
                 $regex = $def_value;
