@@ -76,7 +76,10 @@ class CNabuLexerRuleProxy extends CNabuObject
             if (is_string($descriptor[self::DESCRIPTOR_RULE_NODE])) {
                 $rule = $lexer->getRule($descriptor[self::DESCRIPTOR_RULE_NODE]);
             } else {
-                $rule = self::createRuleFromDescriptor($lexer, $descriptor[self::DESCRIPTOR_RULE_NODE]);
+                throw new ENabuLexerException(
+                    ENabuLexerException::ERROR_RULE_NOT_FOUND_FOR_DESCRIPTOR,
+                    array(var_export($descriptor[self::DESCRIPTOR_RULE_NODE], true))
+                );
             }
         }
 
@@ -116,7 +119,7 @@ class CNabuLexerRuleProxy extends CNabuObject
     public function getRule(string $key): INabuLexerRule
     {
         if (!is_array($this->inventory) || !array_key_exists($key, $this->inventory)) {
-            throw new ENabuLexerException(ENabuLexerException::ERROR_RULE_DOES_NOT_EXIST, array($key));
+            throw new ENabuLexerException(ENabuLexerException::ERROR_RULE_DOES_NOT_EXISTS, array($key));
         }
 
         return $this->inventory[$key];
