@@ -188,7 +188,7 @@ abstract class CNabuLexerAbstractRule implements INabuLexerRule
         } elseif ($raise_exception) {
             throw new ENabuLexerException(
                 ENabuLexerException::ERROR_RULE_NODE_NOT_FOUND_IN_DESCRIPTOR,
-                array($name, var_export($boolValue, true))
+                array($name, var_export($descriptor, true))
             );
         }
 
@@ -237,7 +237,7 @@ abstract class CNabuLexerAbstractRule implements INabuLexerRule
         } elseif ($raise_exception) {
             throw new ENabuLexerException(
                 ENabuLexerException::ERROR_RULE_NODE_NOT_FOUND_IN_DESCRIPTOR,
-                array($name, var_export($stringValue, true))
+                array($name, var_export($descriptor, true))
             );
         }
 
@@ -271,19 +271,19 @@ abstract class CNabuLexerAbstractRule implements INabuLexerRule
                 if ($nullable) {
                     throw new ENabuLexerException(
                         ENabuLexerException::ERROR_RULE_NODE_INVALID_VALUE,
-                        array($name, var_export($enum_val, true), implode(', ', $enum_values) . ', null')
+                        array($name, var_export($descriptor[$name], true), implode(', ', $enum_values) . ', null')
                     );
                 } else {
                     throw new ENabuLexerException(
                         ENabuLexerException::ERROR_RULE_NODE_INVALID_VALUE,
-                        array($name, var_export($enum_val, true), implode(', ', $enum_values))
+                        array($name, var_export($descriptor[$name], true), implode(', ', $enum_values))
                     );
                 }
             }
         } elseif ($raise_exception) {
             throw new ENabuLexerException(
                 ENabuLexerException::ERROR_RULE_NODE_NOT_FOUND_IN_DESCRIPTOR,
-                array($name, var_export($enum_val, true))
+                array($name, var_export($descriptor, true))
             );
         }
 
@@ -312,12 +312,12 @@ abstract class CNabuLexerAbstractRule implements INabuLexerRule
                 if ($nullable) {
                     throw new ENabuLexerException(
                         ENabuLexerException::ERROR_RULE_NODE_INVALID_VALUE,
-                        array($name,  var_export($array_value, true), 'array, null')
+                        array($name,  var_export($descriptor[$name], true), 'array, null')
                     );
                 } else {
                     throw new ENabuLexerException(
                         ENabuLexerException::ERROR_RULE_NODE_INVALID_VALUE,
-                        array($name, var_export($array_value, true), 'array')
+                        array($name, var_export($descriptor[$name], true), 'array')
                     );
                 }
             }
@@ -352,7 +352,7 @@ abstract class CNabuLexerAbstractRule implements INabuLexerRule
             } elseif ($raise_exception) {
                 throw new ENabuLexerException(
                     ENabuLexerException::ERROR_RULE_NODE_INVALID_VALUE,
-                    array($name, var_export($mixedValue, true), 'mixed')
+                    array($name, var_export($descriptor[$name], true), 'mixed')
                 );
             }
         } elseif ($raise_exception) {
@@ -378,15 +378,24 @@ abstract class CNabuLexerAbstractRule implements INabuLexerRule
     protected function checkRegExLeaf(
         array $descriptor, string $name, string $def_value = null, bool $nullable = true, bool $raise_exception = false
     ) {
-        $regex = $this->checkStringLeaf($descriptor, $name, $def_value, $nullable, $raise_exception);
 
         try {
+            $regex = $this->checkStringLeaf($descriptor, $name, $def_value, $nullable, $raise_exception);
             is_string($regex) && preg_match("/$regex/", 'test pattern');
+        } catch (ENabuLexerException $ex) {
+            if ($ex->getCode() === ENabuLexerException::ERROR_RULE_NODE_INVALID_VALUE) {
+                throw new ENabuLexerException(
+                    ENabuLexerException::ERROR_RULE_NODE_INVALID_VALUE,
+                    array($name, var_export($descriptor[$name], true), 'Regular Expression')
+                );
+            } else {
+                throw $ex;
+            }
         } catch (Exception $ex) {
             if ($raise_exception) {
                 throw new ENabuLexerException(
                     ENabuLexerException::ERROR_RULE_NODE_INVALID_VALUE,
-                    array($name, $regex, 'Regular Expression')
+                    array($name, var_export($descriptor[$name], true), 'Regular Expression')
                 );
             } else {
                 $regex = $def_value;
@@ -427,7 +436,7 @@ abstract class CNabuLexerAbstractRule implements INabuLexerRule
             } else {
                 throw new ENabuLexerException(
                     ENabuLexerException::ERROR_INVALID_RANGE_VALUES,
-                    array($str_range)
+                    array($str_range, var_export($str_range, true))
                 );
             }
         } catch (ENabuLexerException $ex) {
@@ -436,7 +445,7 @@ abstract class CNabuLexerAbstractRule implements INabuLexerRule
             if ($raise_exception) {
                 throw new ENabuLexerException(
                     ENabuLexerException::ERROR_RULE_NODE_INVALID_VALUE,
-                    array($name, $str_range, 'Range m..n')
+                    array($name, var_export($descriptor[$name], true), 'Range m..n')
                 );
             } else {
                 $range = $def_value;
