@@ -88,7 +88,7 @@ class ENabuLexerException extends ENabuException
         ENabuLexerException::ERROR_RULE_NOT_FOUND_FOR_DESCRIPTOR =>
             "Rule not found to match descriptor.\n%s",
         ENabuLexerException::ERROR_RULE_NODE_NOT_FOUND_IN_DESCRIPTOR =>
-            'Rule node [%s] not found in descriptor.',
+            "Rule node [%s] not found in descriptor.\n%s",
         ENabuLexerException::ERROR_RULE_NODE_INVALID_VALUE =>
             'Rule node [%s] contains an invalid or unexpected value [%s]. Allowed are [%s].',
         ENabuLexerException::ERROR_INVALID_RULE_METHOD =>

@@ -420,8 +420,8 @@ class CNabuLexerAbstractRuleTest extends TestCase
                 'bool_required' => false,
                 'string_required' => 'required',
                 'string_null' => null,
-                'enum_requirex' => 'literal',
-                'enum_null' => array(),
+                'enum_required' => 'literal',
+                'enum_null' => null,
                 'array_null' => null,
                 'mixed_required' => 'mixed',
                 'mixed_null' => null
@@ -484,10 +484,10 @@ class CNabuLexerAbstractRuleTest extends TestCase
                 'bool_required' => false,
                 'string_required' => 'required',
                 'string_null' => null,
-                'enum_requirex' => 'literal',
-                'enum_null' => array(),
+                'enum_required' => 'literal',
+                'enum_null' => null,
+                'array_required' => array('value'),
                 'array_null' => null,
-                'mixed_required' => 'mixed',
                 'mixed_null' => null
             )
         );

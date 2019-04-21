@@ -48,7 +48,7 @@ class ENabuLexerExceptionTest extends TestCase
             [ENabuLexerException::ERROR_RESOURCE_GRAMMAR_DESCRIPTION_MISSING, null],
             [ENabuLexerException::ERROR_RESOURCE_GRAMMAR_LANGUAGE_NOT_MATCH, array('5.7', '5.8')],
             [ENabuLexerException::ERROR_RULE_NOT_FOUND_FOR_DESCRIPTOR, null],
-            [ENabuLexerException::ERROR_RULE_NODE_NOT_FOUND_IN_DESCRIPTOR, array('test_node')],
+            [ENabuLexerException::ERROR_RULE_NODE_NOT_FOUND_IN_DESCRIPTOR, array('test_node', var_export(array('name' => 'value'), true))],
             [ENabuLexerException::ERROR_RULE_NODE_INVALID_VALUE, array('node', 'value', 'mixed')],
             [ENabuLexerException::ERROR_INVALID_RULE_METHOD, array('method_name')],
             [ENabuLexerException::ERROR_EMPTY_GROUP_RULE, null],

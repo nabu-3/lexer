@@ -186,7 +186,10 @@ abstract class CNabuLexerAbstractRule implements INabuLexerRule
                 );
             }
         } elseif ($raise_exception) {
-            throw new ENabuLexerException(ENabuLexerException::ERROR_RULE_NODE_NOT_FOUND_IN_DESCRIPTOR, array($name));
+            throw new ENabuLexerException(
+                ENabuLexerException::ERROR_RULE_NODE_NOT_FOUND_IN_DESCRIPTOR,
+                array($name, var_export($boolValue, true))
+            );
         }
 
         return $boolValue;
@@ -232,7 +235,10 @@ abstract class CNabuLexerAbstractRule implements INabuLexerRule
                 }
             }
         } elseif ($raise_exception) {
-            throw new ENabuLexerException(ENabuLexerException::ERROR_RULE_NODE_NOT_FOUND_IN_DESCRIPTOR, array($name));
+            throw new ENabuLexerException(
+                ENabuLexerException::ERROR_RULE_NODE_NOT_FOUND_IN_DESCRIPTOR,
+                array($name, var_export($stringValue, true))
+            );
         }
 
         return $stringValue;
@@ -275,7 +281,10 @@ abstract class CNabuLexerAbstractRule implements INabuLexerRule
                 }
             }
         } elseif ($raise_exception) {
-            throw new  ENabuLexerException(ENabuLexerException::ERROR_RULE_NODE_NOT_FOUND_IN_DESCRIPTOR, array($name));
+            throw new ENabuLexerException(
+                ENabuLexerException::ERROR_RULE_NODE_NOT_FOUND_IN_DESCRIPTOR,
+                array($name, var_export($enum_val, true))
+            );
         }
 
         return $enum_val;
@@ -313,8 +322,10 @@ abstract class CNabuLexerAbstractRule implements INabuLexerRule
                 }
             }
         } elseif ($raise_exception) {
-            error_log(__METHOD__);
-            throw new ENabuLexerException(ENabuLexerException::ERROR_RULE_NOT_FOUND_FOR_DESCRIPTOR, array($name));
+            throw new ENabuLexerException(
+                ENabuLexerException::ERROR_RULE_NODE_NOT_FOUND_IN_DESCRIPTOR,
+                array($name, var_export($descriptor, true))
+            );
         }
 
         return $array_value;
@@ -345,7 +356,10 @@ abstract class CNabuLexerAbstractRule implements INabuLexerRule
                 );
             }
         } elseif ($raise_exception) {
-            throw new ENabuLexerException(ENabuLexerException::ERROR_RULE_NOT_FOUND_FOR_DESCRIPTOR, array($name));
+            throw new ENabuLexerException(
+                ENabuLexerException::ERROR_RULE_NODE_NOT_FOUND_IN_DESCRIPTOR,
+                array($name, var_export($descriptor, true))
+            );
         }
 
         return $mixedValue;
