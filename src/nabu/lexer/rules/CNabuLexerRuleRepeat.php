@@ -52,12 +52,12 @@ class CNabuLexerRuleRepeat extends CNabuLexerAbstractRule
      * Get the tokenizer attribute.
      * @return INabuLexerRule|null Returns the value of tokenizer attribute.
      */
-    public function getTokenizer()
+    public function getTokenizer(): ?INabuLexerRule
     {
         return $this->tokenizer;
     }
 
-    public function initFromDescriptor(array $descriptor)
+    public function initFromDescriptor(array $descriptor): void
     {
         parent::initFromDescriptor($descriptor);
 

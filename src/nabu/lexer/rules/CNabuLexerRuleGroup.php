@@ -62,7 +62,7 @@ class CNabuLexerRuleGroup extends CNabuLexerAbstractRule
      * Get the method attribute.
      * @return string|null Returns the value of method attribute.
      */
-    public function getMethod()
+    public function getMethod(): ?string
     {
         return $this->method;
     }
@@ -71,12 +71,12 @@ class CNabuLexerRuleGroup extends CNabuLexerAbstractRule
      * Get the tokenizer attribute.
      * @return string|null Returns the value of tokenizer attribute.
      */
-    public function getTokenizer()
+    public function getTokenizer(): ?string
     {
         return $this->tokenizer;
     }
 
-    public function initFromDescriptor(array $descriptor)
+    public function initFromDescriptor(array $descriptor): void
     {
         parent::initFromDescriptor($descriptor);
 

@@ -54,7 +54,7 @@ class CNabuLexerRuleKeyword extends CNabuLexerAbstractRule
      * Get the method attribute.
      * @return string|null Returns the value of method attribute.
      */
-    public function getMethod()
+    public function getMethod(): ?string
     {
         return $this->method;
     }
@@ -81,12 +81,12 @@ class CNabuLexerRuleKeyword extends CNabuLexerAbstractRule
      * Get the keyword attribute.
      * @return string|null Returns the value of keyword attribute.
      */
-    public function getKeyword()
+    public function getKeyword(): ?string
     {
         return $this->keyword;
     }
 
-    public function initFromDescriptor(array $descriptor)
+    public function initFromDescriptor(array $descriptor): void
     {
         parent::initFromDescriptor($descriptor);
 

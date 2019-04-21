@@ -97,7 +97,7 @@ abstract class CNabuLexerAbstractRule implements INabuLexerRule
         return $rule;
     }
 
-    public function initFromDescriptor(array $descriptor)
+    public function initFromDescriptor(array $descriptor): void
     {
         $this->starter = $this->checkBooleanLeaf($descriptor, self::DESCRIPTOR_STARTER_NODE);
         $this->path = $this->checkStringLeaf($descriptor, self::DESCRIPTOR_PATH_NODE);
@@ -113,13 +113,15 @@ abstract class CNabuLexerAbstractRule implements INabuLexerRule
         return $this->sourceLength;
     }
 
-    public function setValue($value, int $sourceLength)
+    public function setValue($value, int $sourceLength): INabuLexerRule
     {
         $this->value = $value;
         $this->sourceLength = $sourceLength;
+
+        return $this;
     }
 
-    public function appendValue($value, int $sourceLength)
+    public function appendValue($value, int $source_length): INabuLexerRule
     {
         if (is_null($this->value)) {
             $this->value = $value;
@@ -128,13 +130,17 @@ abstract class CNabuLexerAbstractRule implements INabuLexerRule
         } else {
             $this->value = array($this->value, $value);
         }
-        $this->sourceLength += $sourceLength;
+        $this->sourceLength += $source_length;
+
+        return $this;
     }
 
-    public function clearValue()
+    public function clearValue(): INabuLexerRule
     {
         $this->value = null;
         $this->sourceLength = 0;
+
+        return $this;
     }
 
     public function isStarter(): bool
@@ -142,7 +148,7 @@ abstract class CNabuLexerAbstractRule implements INabuLexerRule
         return $this->starter;
     }
 
-    public function getPath()
+    public function getPath(): ?string
     {
         return $this->path;
     }
@@ -156,7 +162,7 @@ abstract class CNabuLexerAbstractRule implements INabuLexerRule
      * Check if a leaf have a boolean value and returns the value detected if it is valid.
      * @param array $descriptor The descriptor fragment to be analized. The leaf needs to be in the root of the array.
      * @param string $name Name of the leaf.
-     * @param bool $def_value Boolean default value in case that the leaf does not exists.
+     * @param bool $def_value Default value in case that the leaf does not exists.
      * @param bool $raise_exception If true, throws an exception if the leaf des not exists.
      * @return bool Returns the detected value.
      * @throws ENabuLexerException Throws an exception if value does not exists or is invalid.
@@ -170,7 +176,14 @@ abstract class CNabuLexerAbstractRule implements INabuLexerRule
             if (is_bool($descriptor[$name])) {
                 $boolValue = $descriptor[$name];
             } else {
-                throw new ENabuLexerException(ENabuLexerException::ERROR_RULE_NODE_INVALID_VALUE, array($name, 'bool'));
+                throw new ENabuLexerException(
+                    ENabuLexerException::ERROR_RULE_NODE_INVALID_VALUE,
+                    array(
+                        $name,
+                        var_export($descriptor[$name], true),
+                        'bool'
+                    )
+                );
             }
         } elseif ($raise_exception) {
             throw new ENabuLexerException(ENabuLexerException::ERROR_RULE_NODE_NOT_FOUND_IN_DESCRIPTOR, array($name));
@@ -183,7 +196,7 @@ abstract class CNabuLexerAbstractRule implements INabuLexerRule
      * Check if a leaf have a string value and returns the value detected if it is valid.
      * @param array $descriptor The descriptor fragment to be analized. The leaf needs to be in the root of the array.
      * @param string $name Name of the leaf.
-     * @param string|null $def_value Boolean default value in case that the leaf does not exists.
+     * @param string|null $def_value Default value in case that the leaf does not exists.
      * @param bool $nullable If true, the node can contain a null value.
      * @param bool $raise_exception If true, throws an exception if the leaf des not exists.
      * @return string|null Returns the detected value.
@@ -201,12 +214,20 @@ abstract class CNabuLexerAbstractRule implements INabuLexerRule
                 if ($nullable) {
                     throw new ENabuLexerException(
                         ENabuLexerException::ERROR_RULE_NODE_INVALID_VALUE,
-                        array($name, 'string, null')
+                        array(
+                            $name,
+                            var_export($descriptor[$name], true),
+                            'string, null'
+                        )
                     );
                 } else {
                     throw new ENabuLexerException(
                         ENabuLexerException::ERROR_RULE_NODE_INVALID_VALUE,
-                        array($name, 'string')
+                        array(
+                            $name,
+                            var_export($descriptor[$name], true),
+                            'string'
+                        )
                     );
                 }
             }
@@ -223,7 +244,7 @@ abstract class CNabuLexerAbstractRule implements INabuLexerRule
      * @param array $descriptor The descriptor fragment to be analized. The leaf needs to be in the root of the array.
      * @param string $name Name of the leaf.
      * @param array $enum_values Array of possible enumerated values.
-     * @param mixed|null $def_value Boolean default value in case that the leaf does not exists.
+     * @param mixed|null $def_value Default value in case that the leaf does not exists.
      * @param bool $nullable If true, the node can contain a null value.
      * @param bool $raise_exception If true, throws an exception if the leaf des not exists.
      * @return mixed Returns the detected value.
@@ -264,7 +285,7 @@ abstract class CNabuLexerAbstractRule implements INabuLexerRule
      * Check if a node is an array and returns the array found.
      * @param array $descriptor The descriptor fragment to be analized. The node needs to be in the root of the array.
      * @param string $name Name of the leaf.
-     * @param array|null $def_value Boolean default value in case that the leaf does not exists.
+     * @param array|null $def_value Default value in case that the leaf does not exists.
      * @param bool $nullable If true, allows the node to be null.
      * @param bool $raise_exception If true, throws an exception if the node des not exists.
      * @return array|null Returns the array found or null if allowed.
@@ -302,7 +323,7 @@ abstract class CNabuLexerAbstractRule implements INabuLexerRule
      * Check if a node have a mixed value and returns the value found.
      * @param array $descriptor The descriptor fragment to be analized. The node needs to be in the root of the array.
      * @param string $name Name of the leaf.
-     * @param mixed|null $def_value Boolean default value in case that the leaf does not exists.
+     * @param mixed|null $def_value Default value in case that the leaf does not exists.
      * @param bool $nullable If true, allows the node to be null.
      * @param bool $raise_exception If true, throws an exception if the node des not exists.
      * @return array|null Returns the array found or null if allowed.
@@ -329,10 +350,41 @@ abstract class CNabuLexerAbstractRule implements INabuLexerRule
     }
 
     /**
+     * Check if a leaf have a regular expression value and returns the value detected if it is valid.
+     * @param array $descriptor The descriptor fragment to be analized. The leaf needs to be in the root of the array.
+     * @param string $name Name of the leaf.
+     * @param string|null $def_value Default value in case that the leaf does not exists.
+     * @param bool $nullable If true, the node can contain a null value.
+     * @param bool $raise_exception If true, throws an exception if the leaf des not exists.
+     * @return string|null Returns the detected value.
+     * @throws ENabuLexerException Throws an exception if value does not exists or is invalid.
+     */
+    protected function checkRegExLeaf(
+        array $descriptor, string $name, string $def_value = null, bool $nullable = true, bool $raise_exception = false
+    ) {
+        $regex = $this->checkStringLeaf($descriptor, $name, $def_value, $nullable, $raise_exception);
+
+        try {
+            is_string($regex) && preg_match("/$regex/", 'test pattern');
+        } catch (Exception $ex) {
+            if ($raise_exception) {
+                throw new ENabuLexerException(
+                    ENabuLexerException::ERROR_RULE_NODE_INVALID_VALUE,
+                    array($name, $regex, 'Regular Expression')
+                );
+            } else {
+                $regex = $def_value;
+            }
+        }
+
+        return $regex;
+    }
+
+    /**
      * Check if a leaf have a range value and returns the range detected if it is valid.
      * @param array $descriptor The descriptor fragment to be analized. The leaf needs to be in the root of the array.
      * @param string $name Name of the leaf.
-     * @param string|null $def_value Boolean default value in case that the leaf does not exists.
+     * @param string|null $def_value Default value in case that the leaf does not exists.
      * @param bool $nullable If true, the node can contain a null value.
      * @param bool $raise_exception If true, throws an exception if the leaf des not exists.
      * @return array Returns the detected value. He can be received as a list assignement.
@@ -357,7 +409,6 @@ abstract class CNabuLexerAbstractRule implements INabuLexerRule
                     $range = $this->checkRangeLeafTupla($str_range, $match);
                 }
             } else {
-                error_log($str_range . ' ' . $c . ' ' .var_export($match, true));
                 throw new ENabuLexerException(
                     ENabuLexerException::ERROR_INVALID_RANGE_VALUES,
                     array($str_range)
