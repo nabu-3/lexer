@@ -54,6 +54,8 @@ class CNabuLexerAbstractRuleTest extends TestCase
                 'bool_required' => true,
                 'string_required' => 'required',
                 'string_null' => 'nullable',
+                'enum_required' => 'literal',
+                'enum_null' => null,
                 'path' => 'a.b.c'
             )
         );
@@ -66,6 +68,8 @@ class CNabuLexerAbstractRuleTest extends TestCase
                 'bool_required' => true,
                 'string_required' => 'required',
                 'string_null' => 'nullable',
+                'enum_required' => 'literal',
+                'enum_null' => null,
                 'other' => 'a.b.c'
             )
         );
@@ -83,7 +87,9 @@ class CNabuLexerAbstractRuleTest extends TestCase
             array(
                 'bool_required' => true,
                 'string_required' => 'required',
-                'string_null' => 'nullable'
+                'string_null' => 'nullable',
+                'enum_required' => 'literal',
+                'enum_null' => null
             )
         );
         $this->assertInstanceOf(CNabuLexerAbstractRuleTestingLeafs::class, $rule);
@@ -94,7 +100,9 @@ class CNabuLexerAbstractRuleTest extends TestCase
             array(
                 'bool_required' => false,
                 'string_required' => 'required',
-                'string_null' => 'nullable'
+                'string_null' => 'nullable',
+                'enum_required' => 'literal',
+                'enum_null' => null
             )
         );
         $this->assertInstanceOf(CNabuLexerAbstractRuleTestingLeafs::class, $rule);
@@ -107,7 +115,9 @@ class CNabuLexerAbstractRuleTest extends TestCase
             array(
                 'string_required' => 'required',
                 'string_null' => 'nullable',
-                'other' => null
+                'other' => null,
+                'enum_required' => 'literal',
+                'enum_null' => null
             )
         );
     }
@@ -124,7 +134,9 @@ class CNabuLexerAbstractRuleTest extends TestCase
             array(
                 'bool_required' => 'test string',
                 'string_required' => 'required',
-                'string_null' => 'nullable'
+                'string_null' => 'nullable',
+                'enum_required' => 'literal',
+                'enum_null' => null
             )
         );
     }
@@ -139,7 +151,9 @@ class CNabuLexerAbstractRuleTest extends TestCase
             array(
                 'bool_required' => false,
                 'string_required' => 'required',
-                'string_null' => null
+                'string_null' => null,
+                'enum_required' => 'literal',
+                'enum_null' => null
             )
         );
         $this->assertInstanceOf(CNabuLexerAbstractRuleTestingLeafs::class, $rule);
@@ -154,7 +168,9 @@ class CNabuLexerAbstractRuleTest extends TestCase
             array(
                 'bool_required' => false,
                 'string_required' => null,
-                'string_null' => 'nullable'
+                'string_null' => 'nullable',
+                'enum_required' => 'literal',
+                'enum_null' => null
             )
         );
     }
@@ -172,7 +188,9 @@ class CNabuLexerAbstractRuleTest extends TestCase
             array(
                 'bool_required' => false,
                 'string_required' => 'required',
-                'string_null' => array()
+                'string_null' => array(),
+                'enum_required' => 'literal',
+                'enum_null' => null
             )
         );
     }
@@ -188,7 +206,81 @@ class CNabuLexerAbstractRuleTest extends TestCase
             $this->lexer,
             array(
                 'bool_required' => false,
-                'string_null' => null
+                'string_null' => null,
+                'enum_required' => 'literal',
+                'enum_null' => null
+            )
+        );
+    }
+
+    /**
+     * @test checkEnumLeaf
+     */
+    public function testCheckEnumLeaf()
+    {
+        $rule = CNabuLexerAbstractRuleTestingLeafs::createFromDescriptor(
+            $this->lexer,
+            array(
+                'bool_required' => false,
+                'string_required' => 'required',
+                'string_null' => null,
+                'enum_required' => 'literal',
+                'enum_null' => null
+            )
+        );
+        $this->assertInstanceOf(CNabuLexerAbstractRuleTestingLeafs::class, $rule);
+        $this->assertSame('literal', $rule->getEnumRequired());
+        $this->assertNull($rule->getEnumNull());
+
+        $this->expectException(ENabuLexerException::class);
+        $this->expectExceptionCode(ENabuLexerException::ERROR_RULE_NODE_INVALID_VALUE);
+        $this->expectExceptionMessage('[literal, ignore case]');
+        $rule = CNabuLexerAbstractRuleTestingLeafs::createFromDescriptor(
+            $this->lexer,
+            array(
+                'bool_required' => false,
+                'string_required' => 'required',
+                'string_null' => null,
+                'enum_required' => null,
+                'enum_null' => null
+            )
+        );
+    }
+
+    /**
+     * @test checkEnumLeaf
+     */
+    public function testCheckEnumLeafFails1()
+    {
+        $this->expectException(ENabuLexerException::class);
+        $this->expectExceptionCode(ENabuLexerException::ERROR_RULE_NODE_INVALID_VALUE);
+        $this->expectExceptionMessage('[literal, ignore case, null]');
+        $rule = CNabuLexerAbstractRuleTestingLeafs::createFromDescriptor(
+            $this->lexer,
+            array(
+                'bool_required' => false,
+                'string_required' => 'required',
+                'string_null' => null,
+                'enum_required' => 'literal',
+                'enum_null' => array()
+            )
+        );
+    }
+
+    /**
+     * @test checkEnumLeaf
+     */
+    public function testCheckEnumLeafFails2()
+    {
+        $this->expectException(ENabuLexerException::class);
+        $this->expectExceptionCode(ENabuLexerException::ERROR_RULE_NODE_NOT_FOUND_IN_DESCRIPTOR);
+        $rule = CNabuLexerAbstractRuleTestingLeafs::createFromDescriptor(
+            $this->lexer,
+            array(
+                'bool_required' => false,
+                'string_required' => 'required',
+                'string_null' => null,
+                'enum_null' => array()
             )
         );
     }
@@ -202,6 +294,10 @@ class CNabuLexerAbstractRuleTestingLeafs extends CNabuLexerAbstractRule
     private $string_required = null;
     /** @var string|null $string_null Null string parameter. */
     private $string_null = null;
+    /** @var string|null $enum_required Required enum parameter. */
+    private $enum_required = null;
+    /** @var string|null $enum_null Null enum parameter. */
+    private $enum_null = null;
 
     /**
      * @return bool
@@ -227,6 +323,22 @@ class CNabuLexerAbstractRuleTestingLeafs extends CNabuLexerAbstractRule
         return $this->string_null;
     }
 
+    /**
+     * @return string|null
+     */
+    public function getEnumRequired(): ?string
+    {
+        return $this->enum_required;
+    }
+
+    /**
+     * @return string|null
+     */
+    public function getEnumNull(): ?string
+    {
+        return $this->enum_null;
+    }
+
     public function initFromDescriptor(array $descriptor): void
     {
         parent::initFromDescriptor($descriptor);
@@ -234,6 +346,22 @@ class CNabuLexerAbstractRuleTestingLeafs extends CNabuLexerAbstractRule
         $this->bool_required = $this->checkBooleanLeaf($descriptor, 'bool_required', false, true);
         $this->string_required = $this->checkStringLeaf($descriptor, 'string_required', null, false, true);
         $this->string_null = $this->checkStringLeaf($descriptor, 'string_null', null, true, true);
+        $this->enum_required = $this->checkEnumLeaf(
+            $descriptor,
+            'enum_required',
+            array('literal', 'ignore case'),
+            null,
+            false,
+            true
+        );
+        $this->enum_null = $this->checkEnumLeaf(
+            $descriptor,
+            'enum_null',
+            array('literal', 'ignore case'),
+            null,
+            true,
+            true
+        );
     }
 
     public function applyRuleToContent(string $content): bool

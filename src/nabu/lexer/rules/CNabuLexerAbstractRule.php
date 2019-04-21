@@ -265,12 +265,12 @@ abstract class CNabuLexerAbstractRule implements INabuLexerRule
                 if ($nullable) {
                     throw new ENabuLexerException(
                         ENabuLexerException::ERROR_RULE_NODE_INVALID_VALUE,
-                        array($name, $enum_val, implode(', ', $enum_values) . ', null')
+                        array($name, var_export($enum_val, true), implode(', ', $enum_values) . ', null')
                     );
                 } else {
                     throw new ENabuLexerException(
                         ENabuLexerException::ERROR_RULE_NODE_INVALID_VALUE,
-                        array($name, $enum_val, implode(', ', $enum_values))
+                        array($name, var_export($enum_val, true), implode(', ', $enum_values))
                     );
                 }
             }
