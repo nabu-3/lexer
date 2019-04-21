@@ -294,21 +294,21 @@ abstract class CNabuLexerAbstractRule implements INabuLexerRule
     protected function checkArrayNode(
         array $descriptor, string $name, array $def_value = null, bool $nullable = true, bool $raise_exception = false
     ) {
-        $arrayValue = $def_value;
+        $array_value = $def_value;
 
         if (array_key_exists($name, $descriptor)) {
             if (is_array($descriptor[$name]) || ($nullable && is_null($descriptor[$name]))) {
-                $arrayValue = $descriptor[$name];
+                $array_value = $descriptor[$name];
             } elseif ($raise_exception) {
                 if ($nullable) {
                     throw new ENabuLexerException(
                         ENabuLexerException::ERROR_RULE_NODE_INVALID_VALUE,
-                        array($name, 'array, null')
+                        array($name,  var_export($array_value, true), 'array, null')
                     );
                 } else {
                     throw new ENabuLexerException(
                         ENabuLexerException::ERROR_RULE_NODE_INVALID_VALUE,
-                        array($name, 'array')
+                        array($name, var_export($array_value, true), 'array')
                     );
                 }
             }
@@ -316,7 +316,7 @@ abstract class CNabuLexerAbstractRule implements INabuLexerRule
             throw new ENabuLexerException(ENabuLexerException::ERROR_RULE_NOT_FOUND_FOR_DESCRIPTOR, array($name));
         }
 
-        return $arrayValue;
+        return $array_value;
     }
 
     /**
@@ -335,11 +335,12 @@ abstract class CNabuLexerAbstractRule implements INabuLexerRule
         $mixedValue = $def_value;
 
         if (array_key_exists($name, $descriptor)) {
-            if ((is_null($descriptor[$name]) && $nullable) || !is_null($descriptor[$name])) {
+            if ($nullable || !is_null($descriptor[$name])) {
                 $mixedValue = $descriptor[$name];
             } elseif ($raise_exception) {
                 throw new ENabuLexerException(
-                    ENabuLexerException::ERROR_RULE_NODE_INVALID_VALUE, array($name, 'mixed')
+                    ENabuLexerException::ERROR_RULE_NODE_INVALID_VALUE,
+                    array($name, var_export($mixedValue, true), 'mixed')
                 );
             }
         } elseif ($raise_exception) {

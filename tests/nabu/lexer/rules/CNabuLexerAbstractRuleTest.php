@@ -56,6 +56,10 @@ class CNabuLexerAbstractRuleTest extends TestCase
                 'string_null' => 'nullable',
                 'enum_required' => 'literal',
                 'enum_null' => null,
+                'array_required' => array('value'),
+                'array_null' => null,
+                'mixed_required' => 'mixed',
+                'mixed_null' => null,
                 'path' => 'a.b.c'
             )
         );
@@ -70,6 +74,10 @@ class CNabuLexerAbstractRuleTest extends TestCase
                 'string_null' => 'nullable',
                 'enum_required' => 'literal',
                 'enum_null' => null,
+                'array_required' => array('value'),
+                'array_null' => null,
+                'mixed_required' => 'mixed',
+                'mixed_null' => null,
                 'other' => 'a.b.c'
             )
         );
@@ -89,7 +97,11 @@ class CNabuLexerAbstractRuleTest extends TestCase
                 'string_required' => 'required',
                 'string_null' => 'nullable',
                 'enum_required' => 'literal',
-                'enum_null' => null
+                'enum_null' => null,
+                'array_required' => array('value'),
+                'array_null' => null,
+                'mixed_required' => 'mixed',
+                'mixed_null' => null
             )
         );
         $this->assertInstanceOf(CNabuLexerAbstractRuleTestingLeafs::class, $rule);
@@ -102,7 +114,11 @@ class CNabuLexerAbstractRuleTest extends TestCase
                 'string_required' => 'required',
                 'string_null' => 'nullable',
                 'enum_required' => 'literal',
-                'enum_null' => null
+                'enum_null' => null,
+                'array_required' => array('value'),
+                'array_null' => null,
+                'mixed_required' => 'mixed',
+                'mixed_null' => null
             )
         );
         $this->assertInstanceOf(CNabuLexerAbstractRuleTestingLeafs::class, $rule);
@@ -117,7 +133,11 @@ class CNabuLexerAbstractRuleTest extends TestCase
                 'string_null' => 'nullable',
                 'other' => null,
                 'enum_required' => 'literal',
-                'enum_null' => null
+                'enum_null' => null,
+                'array_required' => array('value'),
+                'array_null' => null,
+                'mixed_required' => 'mixed',
+                'mixed_null' => null
             )
         );
     }
@@ -136,7 +156,11 @@ class CNabuLexerAbstractRuleTest extends TestCase
                 'string_required' => 'required',
                 'string_null' => 'nullable',
                 'enum_required' => 'literal',
-                'enum_null' => null
+                'enum_null' => null,
+                'array_required' => array('value'),
+                'array_null' => null,
+                'mixed_required' => 'mixed',
+                'mixed_null' => null
             )
         );
     }
@@ -153,7 +177,11 @@ class CNabuLexerAbstractRuleTest extends TestCase
                 'string_required' => 'required',
                 'string_null' => null,
                 'enum_required' => 'literal',
-                'enum_null' => null
+                'enum_null' => null,
+                'array_required' => array('value'),
+                'array_null' => null,
+                'mixed_required' => 'mixed',
+                'mixed_null' => null
             )
         );
         $this->assertInstanceOf(CNabuLexerAbstractRuleTestingLeafs::class, $rule);
@@ -170,7 +198,11 @@ class CNabuLexerAbstractRuleTest extends TestCase
                 'string_required' => null,
                 'string_null' => 'nullable',
                 'enum_required' => 'literal',
-                'enum_null' => null
+                'enum_null' => null,
+                'array_required' => array('value'),
+                'array_null' => null,
+                'mixed_required' => 'mixed',
+                'mixed_null' => null
             )
         );
     }
@@ -190,7 +222,11 @@ class CNabuLexerAbstractRuleTest extends TestCase
                 'string_required' => 'required',
                 'string_null' => array(),
                 'enum_required' => 'literal',
-                'enum_null' => null
+                'enum_null' => null,
+                'array_required' => array('value'),
+                'array_null' => null,
+                'mixed_required' => 'mixed',
+                'mixed_null' => null
             )
         );
     }
@@ -208,7 +244,11 @@ class CNabuLexerAbstractRuleTest extends TestCase
                 'bool_required' => false,
                 'string_null' => null,
                 'enum_required' => 'literal',
-                'enum_null' => null
+                'enum_null' => null,
+                'array_required' => array('value'),
+                'array_null' => null,
+                'mixed_required' => 'mixed',
+                'mixed_null' => null
             )
         );
     }
@@ -225,7 +265,11 @@ class CNabuLexerAbstractRuleTest extends TestCase
                 'string_required' => 'required',
                 'string_null' => null,
                 'enum_required' => 'literal',
-                'enum_null' => null
+                'enum_null' => null,
+                'array_required' => array('value'),
+                'array_null' => null,
+                'mixed_required' => 'mixed',
+                'mixed_null' => null
             )
         );
         $this->assertInstanceOf(CNabuLexerAbstractRuleTestingLeafs::class, $rule);
@@ -242,7 +286,11 @@ class CNabuLexerAbstractRuleTest extends TestCase
                 'string_required' => 'required',
                 'string_null' => null,
                 'enum_required' => null,
-                'enum_null' => null
+                'enum_null' => null,
+                'array_required' => array('value'),
+                'array_null' => null,
+                'mixed_required' => 'mixed',
+                'mixed_null' => null
             )
         );
     }
@@ -262,7 +310,11 @@ class CNabuLexerAbstractRuleTest extends TestCase
                 'string_required' => 'required',
                 'string_null' => null,
                 'enum_required' => 'literal',
-                'enum_null' => array()
+                'enum_null' => array(),
+                'array_required' => array('value'),
+                'array_null' => null,
+                'mixed_required' => 'mixed',
+                'mixed_null' => null
             )
         );
     }
@@ -280,7 +332,163 @@ class CNabuLexerAbstractRuleTest extends TestCase
                 'bool_required' => false,
                 'string_required' => 'required',
                 'string_null' => null,
-                'enum_null' => array()
+                'enum_null' => array(),
+                'array_required' => array('value'),
+                'array_null' => null,
+                'mixed_required' => 'mixed',
+                'mixed_null' => null
+            )
+        );
+    }
+
+    /**
+     * @test checkArrayLeaf
+     */
+    public function testCheckArrayLeaf()
+    {
+        $rule = CNabuLexerAbstractRuleTestingLeafs::createFromDescriptor(
+            $this->lexer,
+            array(
+                'bool_required' => false,
+                'string_required' => 'required',
+                'string_null' => null,
+                'enum_required' => 'literal',
+                'enum_null' => null,
+                'array_required' => array('value'),
+                'array_null' => null,
+                'mixed_required' => 'mixed',
+                'mixed_null' => null
+            )
+        );
+        $this->assertInstanceOf(CNabuLexerAbstractRuleTestingLeafs::class, $rule);
+        $this->assertSame(array('value'), $rule->getArrayRequired());
+        $this->assertNull($rule->getArrayNull());
+
+        $this->expectException(ENabuLexerException::class);
+        $this->expectExceptionCode(ENabuLexerException::ERROR_RULE_NODE_INVALID_VALUE);
+        $this->expectExceptionMessage('[array]');
+        $rule = CNabuLexerAbstractRuleTestingLeafs::createFromDescriptor(
+            $this->lexer,
+            array(
+                'bool_required' => false,
+                'string_required' => 'required',
+                'string_null' => null,
+                'enum_required' => 'literal',
+                'enum_null' => null,
+                'array_required' => 'value',
+                'array_null' => null,
+                'mixed_required' => 'mixed',
+                'mixed_null' => null
+            )
+        );
+    }
+
+    /**
+     * @test checkArrayLeaf
+     */
+    public function testCheckArrayLeafFails1()
+    {
+        $this->expectException(ENabuLexerException::class);
+        $this->expectExceptionCode(ENabuLexerException::ERROR_RULE_NODE_INVALID_VALUE);
+        $this->expectExceptionMessage('[array, null]');
+        $rule = CNabuLexerAbstractRuleTestingLeafs::createFromDescriptor(
+            $this->lexer,
+            array(
+                'bool_required' => false,
+                'string_required' => 'required',
+                'string_null' => null,
+                'enum_required' => 'literal',
+                'enum_null' => null,
+                'array_required' => array('value'),
+                'array_null' => 'value',
+                'mixed_required' => 'mixed',
+                'mixed_null' => null
+            )
+        );
+    }
+
+    /**
+     * @test checkArrayLeaf
+     */
+    public function testCheckArrayLeafFails2()
+    {
+        $this->expectException(ENabuLexerException::class);
+        $this->expectExceptionCode(ENabuLexerException::ERROR_RULE_NODE_NOT_FOUND_IN_DESCRIPTOR);
+        $rule = CNabuLexerAbstractRuleTestingLeafs::createFromDescriptor(
+            $this->lexer,
+            array(
+                'bool_required' => false,
+                'string_required' => 'required',
+                'string_null' => null,
+                'enum_requirex' => 'literal',
+                'enum_null' => array(),
+                'array_null' => null,
+                'mixed_required' => 'mixed',
+                'mixed_null' => null
+            )
+        );
+    }
+
+    /**
+     * @test checkMixedLeaf
+     */
+    public function testCheckMixedLeaf()
+    {
+        $rule = CNabuLexerAbstractRuleTestingLeafs::createFromDescriptor(
+            $this->lexer,
+            array(
+                'bool_required' => false,
+                'string_required' => 'required',
+                'string_null' => null,
+                'enum_required' => 'literal',
+                'enum_null' => null,
+                'array_required' => array('value'),
+                'array_null' => null,
+                'mixed_required' => 'mixed',
+                'mixed_null' => null
+            )
+        );
+        $this->assertInstanceOf(CNabuLexerAbstractRuleTestingLeafs::class, $rule);
+        $this->assertSame('mixed', $rule->getMixedRequired());
+        $this->assertNull($rule->getMixedNull());
+
+        $this->expectException(ENabuLexerException::class);
+        $this->expectExceptionCode(ENabuLexerException::ERROR_RULE_NODE_INVALID_VALUE);
+        $this->expectExceptionMessage('[mixed]');
+        $rule = CNabuLexerAbstractRuleTestingLeafs::createFromDescriptor(
+            $this->lexer,
+            array(
+                'bool_required' => false,
+                'string_required' => 'required',
+                'string_null' => null,
+                'enum_required' => 'literal',
+                'enum_null' => null,
+                'array_required' => array('value'),
+                'array_null' => null,
+                'mixed_required' => null,
+                'mixed_null' => null
+            )
+        );
+    }
+
+    /**
+     * @test checkMixedLeaf
+     */
+    public function testCheckMixedLeafFails1()
+    {
+        $this->expectException(ENabuLexerException::class);
+        $this->expectExceptionCode(ENabuLexerException::ERROR_RULE_NODE_NOT_FOUND_IN_DESCRIPTOR);
+        $rule = CNabuLexerAbstractRuleTestingLeafs::createFromDescriptor(
+            $this->lexer,
+            array(
+                'bool_required' => false,
+                'string_required' => 'required',
+                'string_null' => null,
+                'enum_requirex' => 'literal',
+                'enum_null' => array(),
+                'array_null' => null,
+                'mixed_required' => 'mixed',
+                'mixed_null' => null
             )
         );
     }
@@ -298,6 +506,14 @@ class CNabuLexerAbstractRuleTestingLeafs extends CNabuLexerAbstractRule
     private $enum_required = null;
     /** @var string|null $enum_null Null enum parameter. */
     private $enum_null = null;
+    /** @var array|null $array_required Required array parameter. */
+    private $array_required = null;
+    /** @var array|null $array_null Null array parameter. */
+    private $array_null = null;
+    /** @var mixed|null $mixed_required Required mixed parameter. */
+    private $mixed_required = null;
+    /** @var mixed|null $mixed_null Null mixed parameter. */
+    private $mixed_null = null;
 
     /**
      * @return bool
@@ -339,6 +555,38 @@ class CNabuLexerAbstractRuleTestingLeafs extends CNabuLexerAbstractRule
         return $this->enum_null;
     }
 
+    /**
+     * @return array|null
+     */
+    public function getArrayRequired(): ?array
+    {
+        return $this->array_required;
+    }
+
+    /**
+     * @return array|null
+     */
+    public function getArrayNull(): ?array
+    {
+        return $this->array_null;
+    }
+
+    /**
+     * @return mixed|null
+     */
+    public function getMixedRequired()
+    {
+        return $this->mixed_required;
+    }
+
+    /**
+     * @return mixed|null
+     */
+    public function getMixedNull()
+    {
+        return $this->mixed_null;
+    }
+
     public function initFromDescriptor(array $descriptor): void
     {
         parent::initFromDescriptor($descriptor);
@@ -362,6 +610,10 @@ class CNabuLexerAbstractRuleTestingLeafs extends CNabuLexerAbstractRule
             true,
             true
         );
+        $this->array_required = $this->checkArrayNode($descriptor, 'array_required', null, false, true);
+        $this->array_null = $this->checkArrayNode($descriptor, 'array_null', null, true, true);
+        $this->mixed_required = $this->checkMixedNode($descriptor, 'mixed_required', null, false, true);
+        $this->mixed_null = $this->checkMixedNode($descriptor, 'mixed_null', null, true, true);
     }
 
     public function applyRuleToContent(string $content): bool
