@@ -313,6 +313,7 @@ abstract class CNabuLexerAbstractRule implements INabuLexerRule
                 }
             }
         } elseif ($raise_exception) {
+            error_log(__METHOD__);
             throw new ENabuLexerException(ENabuLexerException::ERROR_RULE_NOT_FOUND_FOR_DESCRIPTOR, array($name));
         }
 
