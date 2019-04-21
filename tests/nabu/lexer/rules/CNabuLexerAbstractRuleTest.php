@@ -559,6 +559,25 @@ class CNabuLexerAbstractRuleTest extends TestCase
         $this->assertNull($rule->getRegExNull());
         $this->assertSame('.*', $rule->getRegExDefault());
 
+        $rule = CNabuLexerAbstractRuleTestingLeafs::createFromDescriptor(
+            $this->lexer,
+            array(
+                'bool_required' => false,
+                'string_required' => 'required',
+                'string_null' => null,
+                'enum_required' => 'literal',
+                'enum_null' => null,
+                'array_required' => array('value'),
+                'array_null' => null,
+                'mixed_required' => 'mixed',
+                'mixed_null' => null,
+                'regex_required' => '[.*]',
+                'regex_null' => null,
+                'regex_default' => '[.*'
+            )
+        );
+        $this->assertSame('.*', $rule->getRegExDefault());
+
         $this->expectException(ENabuLexerException::class);
         $this->expectExceptionCode(ENabuLexerException::ERROR_RULE_NODE_INVALID_VALUE);
         $this->expectExceptionMessage('[Regular Expression]');
@@ -601,6 +620,30 @@ class CNabuLexerAbstractRuleTest extends TestCase
                 'mixed_required' => 'mixed',
                 'mixed_null' => null,
                 'regex_required' => '[.*',
+                'regex_null' => null
+            )
+        );
+    }
+
+    /**
+     * @test checkRegExLeaf
+     */
+    public function testCheckRegExLeafFails2()
+    {
+        $this->expectException(ENabuLexerException::class);
+        $this->expectExceptionCode(ENabuLexerException::ERROR_RULE_NODE_NOT_FOUND_IN_DESCRIPTOR);
+        $rule = CNabuLexerAbstractRuleTestingLeafs::createFromDescriptor(
+            $this->lexer,
+            array(
+                'bool_required' => false,
+                'string_required' => 'required',
+                'string_null' => null,
+                'enum_required' => 'literal',
+                'enum_null' => null,
+                'array_required' => array('value'),
+                'array_null' => null,
+                'mixed_required' => 'mixed',
+                'mixed_null' => null,
                 'regex_null' => null
             )
         );
