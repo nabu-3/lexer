@@ -36,6 +36,7 @@ use nabu\lexer\exceptions\ENabuLexerException;
  */
 class CNabuLexerAbstractRuleTest extends TestCase
 {
+    /** @var CNabuCustomLexer $lexer Lexer instance to be used across all tests. */
     private $lexer;
 
     public function setUp(): void
@@ -62,6 +63,8 @@ class CNabuLexerAbstractRuleTest extends TestCase
                 'mixed_null' => null,
                 'regex_required' => '\s+',
                 'regex_null' => null,
+                'range_required' => '0..1',
+                'range_null' => null,
                 'path' => 'a.b.c'
             )
         );
@@ -82,6 +85,8 @@ class CNabuLexerAbstractRuleTest extends TestCase
                 'mixed_null' => null,
                 'regex_required' => '\s+',
                 'regex_null' => null,
+                'range_required' => '0..1',
+                'range_null' => null,
                 'other' => 'a.b.c'
             )
         );
@@ -107,7 +112,9 @@ class CNabuLexerAbstractRuleTest extends TestCase
                 'mixed_required' => 'mixed',
                 'mixed_null' => null,
                 'regex_required' => '\s+',
-                'regex_null' => null
+                'regex_null' => null,
+                'range_required' => '0..1',
+                'range_null' => null
             )
         );
         $this->assertInstanceOf(CNabuLexerAbstractRuleTestingLeafs::class, $rule);
@@ -126,7 +133,9 @@ class CNabuLexerAbstractRuleTest extends TestCase
                 'mixed_required' => 'mixed',
                 'mixed_null' => null,
                 'regex_required' => '\s+',
-                'regex_null' => null
+                'regex_null' => null,
+                'range_required' => '0..1',
+                'range_null' => null
             )
         );
         $this->assertInstanceOf(CNabuLexerAbstractRuleTestingLeafs::class, $rule);
@@ -147,7 +156,9 @@ class CNabuLexerAbstractRuleTest extends TestCase
                 'mixed_required' => 'mixed',
                 'mixed_null' => null,
                 'regex_required' => '\s+',
-                'regex_null' => null
+                'regex_null' => null,
+                'range_required' => '0..1',
+                'range_null' => null
             )
         );
     }
@@ -172,7 +183,9 @@ class CNabuLexerAbstractRuleTest extends TestCase
                 'mixed_required' => 'mixed',
                 'mixed_null' => null,
                 'regex_required' => '\s+',
-                'regex_null' => null
+                'regex_null' => null,
+                'range_required' => '0..1',
+                'range_null' => null
             )
         );
     }
@@ -195,7 +208,9 @@ class CNabuLexerAbstractRuleTest extends TestCase
                 'mixed_required' => 'mixed',
                 'mixed_null' => null,
                 'regex_required' => '\s+',
-                'regex_null' => null
+                'regex_null' => null,
+                'range_required' => '0..1',
+                'range_null' => null
             )
         );
         $this->assertInstanceOf(CNabuLexerAbstractRuleTestingLeafs::class, $rule);
@@ -216,7 +231,9 @@ class CNabuLexerAbstractRuleTest extends TestCase
                 'array_required' => array('value'),
                 'array_null' => null,
                 'mixed_required' => 'mixed',
-                'mixed_null' => null
+                'mixed_null' => null,
+                'range_required' => '0..1',
+                'range_null' => null
             )
         );
     }
@@ -242,7 +259,9 @@ class CNabuLexerAbstractRuleTest extends TestCase
                 'mixed_required' => 'mixed',
                 'mixed_null' => null,
                 'regex_required' => '\s+',
-                'regex_null' => null
+                'regex_null' => null,
+                'range_required' => '0..1',
+                'range_null' => null
             )
         );
     }
@@ -266,7 +285,9 @@ class CNabuLexerAbstractRuleTest extends TestCase
                 'mixed_required' => 'mixed',
                 'mixed_null' => null,
                 'regex_required' => '\s+',
-                'regex_null' => null
+                'regex_null' => null,
+                'range_required' => '0..1',
+                'range_null' => null
             )
         );
     }
@@ -289,7 +310,9 @@ class CNabuLexerAbstractRuleTest extends TestCase
                 'mixed_required' => 'mixed',
                 'mixed_null' => null,
                 'regex_required' => '\s+',
-                'regex_null' => null
+                'regex_null' => null,
+                'range_required' => '0..1',
+                'range_null' => null
             )
         );
         $this->assertInstanceOf(CNabuLexerAbstractRuleTestingLeafs::class, $rule);
@@ -312,7 +335,9 @@ class CNabuLexerAbstractRuleTest extends TestCase
                 'mixed_required' => 'mixed',
                 'mixed_null' => null,
                 'regex_required' => '\s+',
-                'regex_null' => null
+                'regex_null' => null,
+                'range_required' => '0..1',
+                'range_null' => null
             )
         );
     }
@@ -338,7 +363,9 @@ class CNabuLexerAbstractRuleTest extends TestCase
                 'mixed_required' => 'mixed',
                 'mixed_null' => null,
                 'regex_required' => '\s+',
-                'regex_null' => null
+                'regex_null' => null,
+                'range_required' => '0..1',
+                'range_null' => null
             )
         );
     }
@@ -362,7 +389,9 @@ class CNabuLexerAbstractRuleTest extends TestCase
                 'mixed_required' => 'mixed',
                 'mixed_null' => null,
                 'regex_required' => '\s+',
-                'regex_null' => null
+                'regex_null' => null,
+                'range_required' => '0..1',
+                'range_null' => null
             )
         );
     }
@@ -385,7 +414,9 @@ class CNabuLexerAbstractRuleTest extends TestCase
                 'mixed_required' => 'mixed',
                 'mixed_null' => null,
                 'regex_required' => '\s+',
-                'regex_null' => null
+                'regex_null' => null,
+                'range_required' => '0..1',
+                'range_null' => null
             )
         );
         $this->assertInstanceOf(CNabuLexerAbstractRuleTestingLeafs::class, $rule);
@@ -408,7 +439,9 @@ class CNabuLexerAbstractRuleTest extends TestCase
                 'mixed_required' => 'mixed',
                 'mixed_null' => null,
                 'regex_required' => '\s+',
-                'regex_null' => null
+                'regex_null' => null,
+                'range_required' => '0..1',
+                'range_null' => null
             )
         );
     }
@@ -434,7 +467,9 @@ class CNabuLexerAbstractRuleTest extends TestCase
                 'mixed_required' => 'mixed',
                 'mixed_null' => null,
                 'regex_required' => '\s+',
-                'regex_null' => null
+                'regex_null' => null,
+                'range_required' => '0..1',
+                'range_null' => null
             )
         );
     }
@@ -458,7 +493,9 @@ class CNabuLexerAbstractRuleTest extends TestCase
                 'mixed_required' => 'mixed',
                 'mixed_null' => null,
                 'regex_required' => '\s+',
-                'regex_null' => null
+                'regex_null' => null,
+                'range_required' => '0..1',
+                'range_null' => null
             )
         );
     }
@@ -481,7 +518,9 @@ class CNabuLexerAbstractRuleTest extends TestCase
                 'mixed_required' => 'mixed',
                 'mixed_null' => null,
                 'regex_required' => '\s+',
-                'regex_null' => null
+                'regex_null' => null,
+                'range_required' => '0..1',
+                'range_null' => null
             )
         );
         $this->assertInstanceOf(CNabuLexerAbstractRuleTestingLeafs::class, $rule);
@@ -504,7 +543,9 @@ class CNabuLexerAbstractRuleTest extends TestCase
                 'mixed_required' => null,
                 'mixed_null' => null,
                 'regex_required' => '\s+',
-                'regex_null' => null
+                'regex_null' => null,
+                'range_required' => '0..1',
+                'range_null' => null
             )
         );
     }
@@ -528,7 +569,9 @@ class CNabuLexerAbstractRuleTest extends TestCase
                 'array_null' => null,
                 'mixed_null' => null,
                 'regex_required' => '\s+',
-                'regex_null' => null
+                'regex_null' => null,
+                'range_required' => '0..1',
+                'range_null' => null
             )
         );
     }
@@ -551,7 +594,9 @@ class CNabuLexerAbstractRuleTest extends TestCase
                 'mixed_required' => 'mixed',
                 'mixed_null' => null,
                 'regex_required' => '\s+',
-                'regex_null' => null
+                'regex_null' => null,
+                'range_required' => '0..1',
+                'range_null' => null
             )
         );
         $this->assertInstanceOf(CNabuLexerAbstractRuleTestingLeafs::class, $rule);
@@ -573,7 +618,9 @@ class CNabuLexerAbstractRuleTest extends TestCase
                 'mixed_null' => null,
                 'regex_required' => '[.*]',
                 'regex_null' => null,
-                'regex_default' => '[.*'
+                'regex_default' => '[.*',
+                'range_required' => '0..1',
+                'range_null' => null
             )
         );
         $this->assertSame('.*', $rule->getRegExDefault());
@@ -594,7 +641,9 @@ class CNabuLexerAbstractRuleTest extends TestCase
                 'mixed_required' => 'mixed',
                 'mixed_null' => null,
                 'regex_required' => null,
-                'regex_null' => null
+                'regex_null' => null,
+                'range_required' => '0..1',
+                'range_null' => null
             )
         );
     }
@@ -620,7 +669,9 @@ class CNabuLexerAbstractRuleTest extends TestCase
                 'mixed_required' => 'mixed',
                 'mixed_null' => null,
                 'regex_required' => '[.*',
-                'regex_null' => null
+                'regex_null' => null,
+                'range_required' => '0..1',
+                'range_null' => null
             )
         );
     }
@@ -644,7 +695,246 @@ class CNabuLexerAbstractRuleTest extends TestCase
                 'array_null' => null,
                 'mixed_required' => 'mixed',
                 'mixed_null' => null,
-                'regex_null' => null
+                'regex_null' => null,
+                'range_required' => '0..1',
+                'range_null' => null
+            )
+        );
+    }
+
+    /**
+     * Data Provider to perform normal tests of checkRangeLeaf 1
+     */
+    public function checkRangeLeaf1DataProvider()
+    {
+        return [
+            [ '1', array(1, 1) ],
+            [ '3', array(3, 3) ],
+            [ '12', array(12, 12) ],
+            [ 'n', array(1, 'n') ],
+            [ 'inf', array(1, 'n') ],
+            [ 'infinity', array(1, 'n') ],
+            [ '∞', array(1, 'n') ],
+
+            [ '0..1', array(0, 1) ],
+            [ '0..45', array(0, 45) ],
+            [ '1..1', array(1, 1) ],
+            [ '1..30', array(1, 30) ],
+            [ '0..n', array(0, 'n') ],
+            [ '1..n', array(1, 'n') ],
+            [ '3..n', array(3, 'n') ],
+            [ '0..inf', array(0, 'n') ],
+            [ '1..inf', array(1, 'n') ],
+            [ '3..inf', array(3, 'n') ],
+            [ '0..infinity', array(0, 'n') ],
+            [ '1..infinity', array(1, 'n') ],
+            [ '3..infinity', array(3, 'n') ],
+            [ '0..∞', array(0, 'n') ],
+            [ '1..∞', array(1, 'n') ],
+            [ '3..∞', array(3, 'n') ],
+
+            [ '0,1', array(0, 1) ],
+            [ '0,45', array(0, 45) ],
+            [ '1,1', array(1, 1) ],
+            [ '1,30', array(1, 30) ],
+            [ '0,n', array(0, 'n') ],
+            [ '1,n', array(1, 'n') ],
+            [ '3,n', array(3, 'n') ],
+            [ '0,inf', array(0, 'n') ],
+            [ '1,inf', array(1, 'n') ],
+            [ '3,inf', array(3, 'n') ],
+            [ '0,infinity', array(0, 'n') ],
+            [ '1,infinity', array(1, 'n') ],
+            [ '3,infinity', array(3, 'n') ],
+            [ '0,∞', array(0, 'n') ],
+            [ '1,∞', array(1, 'n') ],
+            [ '3,∞', array(3, 'n') ],
+
+            [ '0-1', array(0, 1) ],
+            [ '0-45', array(0, 45) ],
+            [ '1-1', array(1, 1) ],
+            [ '1-30', array(1, 30) ],
+            [ '0-n', array(0, 'n') ],
+            [ '1-n', array(1, 'n') ],
+            [ '3-n', array(3, 'n') ],
+            [ '0-inf', array(0, 'n') ],
+            [ '1-inf', array(1, 'n') ],
+            [ '3-inf', array(3, 'n') ],
+            [ '0-infinity', array(0, 'n') ],
+            [ '1-infinity', array(1, 'n') ],
+            [ '3-infinity', array(3, 'n') ],
+            [ '0-∞', array(0, 'n') ],
+            [ '1-∞', array(1, 'n') ],
+            [ '3-∞', array(3, 'n') ]
+        ];
+    }
+
+    /**
+     * @test checkRangeLeaf
+     * @test checkRangeLeafSingleValue
+     * @test checkRangeLeafTupla
+     * @dataProvider checkRangeLeaf1DataProvider
+     * @param string $value Value to insert in the test.
+     * @param array $range Range to obtain after call.
+     */
+    public function testCheckRangeLeaf1(string $value, array $range)
+    {
+        $rule = CNabuLexerAbstractRuleTestingLeafs::createFromDescriptor(
+            $this->lexer,
+            array(
+                'bool_required' => false,
+                'string_required' => 'required',
+                'string_null' => null,
+                'enum_required' => 'literal',
+                'enum_null' => null,
+                'array_required' => array('value'),
+                'array_null' => null,
+                'mixed_required' => 'mixed',
+                'mixed_null' => null,
+                'regex_required' => '.*',
+                'regex_null' => null,
+                'range_required' => $value,
+                'range_null' => null
+            )
+        );
+        $this->assertInstanceOf(CNabuLexerAbstractRuleTestingLeafs::class, $rule);
+        $parsed_range = $rule->getRangeRequired();
+        if (is_array($range)) {
+            $this->assertIsArray($parsed_range);
+            $this->assertSame($range, $parsed_range);
+        } else {
+            $this->assertIsNull($parsed_range);
+        }
+    }
+
+    /**
+     * Data Provider to perform normal tests of checkRangeLeaf 1
+     */
+    public function checkRangeLeaf2DataProvider()
+    {
+        return array_merge($this->checkRangeLeaf1DataPrivder(), [
+            [ null, null ]
+        ]);
+    }
+
+    /**
+     * @test checkRangeLeaf
+     * @test checkRangeLeafSingleValue
+     * @test checkRangeLeafTupla
+     * @dataProvider checkRangeLeaf1DataProvider
+     * @param string|null $value Value to insert in the test.
+     * @param array|null $range Range to obtain after call.
+     */
+    public function testCheckRangeLeaf2(string $value = null, array $range = null)
+    {
+        $rule = CNabuLexerAbstractRuleTestingLeafs::createFromDescriptor(
+            $this->lexer,
+            array(
+                'bool_required' => false,
+                'string_required' => 'required',
+                'string_null' => null,
+                'enum_required' => 'literal',
+                'enum_null' => null,
+                'array_required' => array('value'),
+                'array_null' => null,
+                'mixed_required' => 'mixed',
+                'mixed_null' => null,
+                'regex_required' => '.*',
+                'regex_null' => null,
+                'range_required' => '0..1',
+                'range_null' => $value
+            )
+        );
+        $this->assertInstanceOf(CNabuLexerAbstractRuleTestingLeafs::class, $rule);
+        $parsed_range = $rule->getRangeNull();
+        if (is_array($range)) {
+            $this->assertIsArray($parsed_range);
+            $this->assertSame($range, $parsed_range);
+        } else {
+            $this->assertIsNull($parsed_range);
+        }
+    }
+
+    /**
+     * @test checkRangeLeaf
+     * @test checkRangeLeafSingleValue
+     * @test checkRangeLeafTupla
+     */
+    public function testCheckRangeLeaf3()
+    {
+        $rule = CNabuLexerAbstractRuleTestingLeafs::createFromDescriptor(
+            $this->lexer,
+            array(
+                'bool_required' => false,
+                'string_required' => 'required',
+                'string_null' => null,
+                'enum_required' => 'literal',
+                'enum_null' => null,
+                'array_required' => array('value'),
+                'array_null' => null,
+                'mixed_required' => 'mixed',
+                'mixed_null' => null,
+                'regex_required' => '.*',
+                'regex_null' => null,
+                'range_required' => '1..n'
+            )
+        );
+        $this->assertInstanceOf(CNabuLexerAbstractRuleTestingLeafs::class, $rule);
+        $parsed_range = $rule->getRangeNull();
+        $this->assertSame(array(1, 'n'), $rule->getRangeRequired());
+        $this->assertIsArray($parsed_range);
+        $this->assertSame(array(0, 1), $parsed_range);
+    }
+
+    /**
+     * Data Provier for checkRangeLeaf fails
+     */
+    public function checkRangeLeafFailsDataProvider()
+    {
+        return [
+            [ '0' ],
+            [ 0 ],
+            [ 1 ],
+            [ 1.24 ],
+            [ 0x009A ],
+            [ array() ],
+            [ '01' ],
+            [ '024' ],
+            [ '0n' ],
+            [ '0inf' ],
+            [ '0infinity' ],
+            [ '0∞' ],
+            [ 'something' ]
+        ];
+    }
+
+    /**
+     * @test checkRangeLeaf
+     * @test checkRangeLeafSingleValue
+     * @test checkRangeLeafTupla
+     * @dataProvider checkRangeLeafFailsDataProvider
+     * @param mixed $value Value to insert in the test.
+     */
+    public function testCheckRangeLeafFails($value)
+    {
+        $this->expectException(ENabuLexerException::class);
+        $this->expectExceptionCode(ENabuLexerException::ERROR_INVALID_RANGE_VALUES);
+        $rule = CNabuLexerAbstractRuleTestingLeafs::createFromDescriptor(
+            $this->lexer,
+            array(
+                'bool_required' => false,
+                'string_required' => 'required',
+                'string_null' => null,
+                'enum_required' => 'literal',
+                'enum_null' => null,
+                'array_required' => array('value'),
+                'array_null' => null,
+                'mixed_required' => 'mixed',
+                'mixed_null' => null,
+                'regex_required' => '.*',
+                'regex_null' => null,
+                'range_required' => $value,
+                'range_null' => null
             )
         );
     }
@@ -676,6 +966,10 @@ class CNabuLexerAbstractRuleTestingLeafs extends CNabuLexerAbstractRule
     private $regex_null = null;
     /** @var string|null $regex_default Default regex parameter. */
     private $regex_default = null;
+    /** @var array|null $range_required Required range value parameter. */
+    private $range_required = null;
+    /** @var array|null $range_null Null range parameter. */
+    private $range_null = null;
 
     /**
      * @return bool
@@ -773,6 +1067,22 @@ class CNabuLexerAbstractRuleTestingLeafs extends CNabuLexerAbstractRule
         return $this->regex_default;
     }
 
+    /**
+     * @return array|null
+     */
+    public function getRangeRequired(): ?array
+    {
+        return $this->range_required;
+    }
+
+    /**
+     * @return array|null
+     */
+    public function getRangeNull(): ?array
+    {
+        return $this->range_null;
+    }
+
     public function initFromDescriptor(array $descriptor): void
     {
         parent::initFromDescriptor($descriptor);
@@ -803,6 +1113,8 @@ class CNabuLexerAbstractRuleTestingLeafs extends CNabuLexerAbstractRule
         $this->regex_required = $this->checkRegExLeaf($descriptor, 'regex_required', null, false, true);
         $this->regex_null = $this->checkRegExLeaf($descriptor, 'regex_null', null, true, true);
         $this->regex_default = $this->checkRegExLeaf($descriptor, 'regex_default', '.*', true, false);
+        $this->range_required = $this->checkRangeLeaf($descriptor, 'range_required', null, false, true);
+        $this->range_null = $this->checkRangeLeaf($descriptor, 'range_null', '0..1', true, false);
     }
 
     public function applyRuleToContent(string $content): bool

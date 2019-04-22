@@ -419,9 +419,10 @@ abstract class CNabuLexerAbstractRule implements INabuLexerRule
         array $descriptor, string $name, string $def_value = null, bool $nullable = true, bool $raise_exception = false
     ) {
         $range = null;
-        $str_range = $this->checkStringLeaf($descriptor, $name, $def_value, $nullable, $raise_exception);
 
         try {
+            $str_range = $this->checkStringLeaf($descriptor, $name, $def_value, $nullable, $raise_exception);
+
             $match = null;
             if (is_string($str_range) &&
                 preg_match(self::RANGE_REGEX, $str_range, $match) &&
@@ -429,26 +430,24 @@ abstract class CNabuLexerAbstractRule implements INabuLexerRule
                 (($c = count($match)) === 6 || $c === 7)
             ) {
                 if ($c === 7) {
-                    $range = $this->checkRangeLeafSingleValue($str_range, $match);
+                    $range = $this->checkRangeLeafSingleValue($str_range, $match[6]);
                 } else {
-                    $range = $this->checkRangeLeafTupla($str_range, $match);
+                    $range = $this->checkRangeLeafTupla($str_range, $match[3], $match[5]);
                 }
-            } else {
+            } elseif (!is_null($str_range) || !$nullable) {
                 throw new ENabuLexerException(
                     ENabuLexerException::ERROR_INVALID_RANGE_VALUES,
-                    array($str_range, var_export($str_range, true))
+                    array(var_export($str_range, true))
                 );
             }
         } catch (ENabuLexerException $ex) {
-            throw $ex;
-        } catch (Exception $ex) {
-            if ($raise_exception) {
+            if ($ex->getCode() === ENabuLexerException::ERROR_RULE_NODE_INVALID_VALUE) {
                 throw new ENabuLexerException(
-                    ENabuLexerException::ERROR_RULE_NODE_INVALID_VALUE,
-                    array($name, var_export($descriptor[$name], true), 'Range m..n')
+                    ENabuLexerException::ERROR_INVALID_RANGE_VALUES,
+                    array(var_export($descriptor[$name], true))
                 );
             } else {
-                $range = $def_value;
+                throw $ex;
             }
         }
 
@@ -460,14 +459,14 @@ abstract class CNabuLexerAbstractRule implements INabuLexerRule
      * If the range is numeric, return value is (n, n) where n is the value expressed in the range.
      * If the range is invinite, return value is (1, n) where n is the literal repressenting infinity value.
      * @param string $str_range String parsed. Provided on to throw the exception if value is not valid.
-     * @param array $match Match fragments to parse.
+     * @param string $value Value range to parse.
      * @return array Returns an array with min and max values of the range.
      */
-    private function checkRangeLeafSingleValue(string $str_range, array $match): array
+    private function checkRangeLeafSingleValue(string $str_range, string $value): array
     {
-        if (is_numeric($match[6])) {
-            $range = array($match[6], $match[6]);
-        } elseif (is_string($match[6]) && in_array(mb_strtolower($match[6]), self::RANGE_INFINITE_VALUES)) {
+        if (is_numeric($value)) {
+            $range = array((int)$value, (int)$value);
+        } elseif (is_string($value) && in_array(mb_strtolower($value), self::RANGE_INFINITE_VALUES)) {
             $range = array(1, self::RANGE_N);
         } else {
             throw new ENabuLexerException(
@@ -486,14 +485,15 @@ abstract class CNabuLexerAbstractRule implements INabuLexerRule
      * If the range is numeric, return value is (n, n) where n is the value expressed in the range.
      * If the range is invinite, return value is (1, n) where n is the literal repressenting infinity value.
      * @param string $str_range String parsed. Provided on to throw the exception if value is not valid.
-     * @param array $match Match fragments to parse.
+     * @param string $min_value Minimum value fragment to parse.
+     * @param string $max_value Maximum value fragment to parse.
      * @return array Returns an array with min and max values of the range.
      */
-    private function checkRangeLeafTupla(string $str_range, array $match): array
+    private function checkRangeLeafTupla(string $str_range, string $min_value, string $max_value): array
     {
-        if ((is_numeric($match[3]) && is_numeric($match[5]) && $match[3] > $match[5]) ||
-            (!is_numeric($match[5]) && is_string($match[5]) &&
-             !in_array(mb_strtolower($match[5]), self::RANGE_INFINITE_VALUES)
+        if ((is_numeric($min_value) && is_numeric($max_value) && $min_value > $max_value) ||
+            (!is_numeric($max_value) && is_string($max_value) &&
+             !in_array(mb_strtolower($max_value), self::RANGE_INFINITE_VALUES)
             )
         ) {
             throw new ENabuLexerException(
@@ -501,10 +501,12 @@ abstract class CNabuLexerAbstractRule implements INabuLexerRule
                 array($str_range)
             );
         }
-        if (in_array($match[5], self::RANGE_INFINITE_VALUES)) {
-            $match[5] = self::RANGE_N;
+        if (in_array($max_value, self::RANGE_INFINITE_VALUES)) {
+            $max_value = self::RANGE_N;
+        } else {
+            $max_value = (int)$max_value;
         }
 
-        return array($match[3], $match[5]);
+        return array((int)$min_value, $max_value);
     }
 }
