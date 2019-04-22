@@ -132,13 +132,13 @@ class CNabuLexerRuleGroup extends CNabuLexerAbstractRule
         $retval = false;
 
         switch ($this->method) {
-            case self::METHOD_CASE:
-                $retval = $this->applyRuleToContentAsCase($content);
-                break;
             case self::METHOD_SEQUENCE:
                 $retval = $this->applyRuleToContentAsSequence($content);
                 break;
+            case self::METHOD_CASE:
             default:
+                $retval = $this->applyRuleToContentAsCase($content);
+                break;
         }
 
         return $retval;
