@@ -430,9 +430,9 @@ abstract class CNabuLexerAbstractRule implements INabuLexerRule
                 (($c = count($match)) === 6 || $c === 7)
             ) {
                 if ($c === 7) {
-                    $range = $this->checkRangeLeafSingleValue($str_range, $match[6]);
+                    $range = $this->checkRangeLeafSingleValue($match[6]);
                 } else {
-                    $range = $this->checkRangeLeafTupla($str_range, $match[3], $match[5]);
+                    $range = $this->checkRangeLeafTupla($match[3], $match[5]);
                 }
             } elseif (!is_null($str_range) || !$nullable) {
                 throw new ENabuLexerException(
@@ -458,21 +458,15 @@ abstract class CNabuLexerAbstractRule implements INabuLexerRule
      * Parse a range expressed as a single value. This value could be a number or a repressentation of infinity.
      * If the range is numeric, return value is (n, n) where n is the value expressed in the range.
      * If the range is invinite, return value is (1, n) where n is the literal repressenting infinity value.
-     * @param string $str_range String parsed. Provided on to throw the exception if value is not valid.
      * @param string $value Value range to parse.
      * @return array Returns an array with min and max values of the range.
      */
-    private function checkRangeLeafSingleValue(string $str_range, string $value): array
+    private function checkRangeLeafSingleValue(string $value): array
     {
         if (is_numeric($value)) {
             $range = array((int)$value, (int)$value);
         } elseif (is_string($value) && in_array(mb_strtolower($value), self::RANGE_INFINITE_VALUES)) {
             $range = array(1, self::RANGE_N);
-        } else {
-            throw new ENabuLexerException(
-                ENabuLexerException::ERROR_INVALID_RANGE_VALUES,
-                array($str_range)
-            );
         }
 
         return $range;
@@ -484,23 +478,12 @@ abstract class CNabuLexerAbstractRule implements INabuLexerRule
      * The second value could be a number or an infinity repressentation.
      * If the range is numeric, return value is (n, n) where n is the value expressed in the range.
      * If the range is invinite, return value is (1, n) where n is the literal repressenting infinity value.
-     * @param string $str_range String parsed. Provided on to throw the exception if value is not valid.
      * @param string $min_value Minimum value fragment to parse.
      * @param string $max_value Maximum value fragment to parse.
      * @return array Returns an array with min and max values of the range.
      */
-    private function checkRangeLeafTupla(string $str_range, string $min_value, string $max_value): array
+    private function checkRangeLeafTupla(string $min_value, string $max_value): array
     {
-        if ((is_numeric($min_value) && is_numeric($max_value) && $min_value > $max_value) ||
-            (!is_numeric($max_value) && is_string($max_value) &&
-             !in_array(mb_strtolower($max_value), self::RANGE_INFINITE_VALUES)
-            )
-        ) {
-            throw new ENabuLexerException(
-                ENabuLexerException::ERROR_INVALID_RANGE_VALUES,
-                array($str_range)
-            );
-        }
         if (in_array($max_value, self::RANGE_INFINITE_VALUES)) {
             $max_value = self::RANGE_N;
         } else {
