@@ -21,18 +21,23 @@
 
 namespace nabu\lexer;
 
-use Error;
+use PHPUnit\Framework\Error\Error;
 
 use PHPUnit\Framework\TestCase;
 
 use nabu\lexer\CNabuLexer;
+
+use nabu\lexer\data\CNabuLexerData;
 
 use nabu\lexer\exceptions\ENabuLexerException;
 
 use nabu\lexer\grammar\mysql\CNabuLexerMySQL57;
 use nabu\lexer\grammar\mysql\CNabuLexerMySQL81;
 
+use nabu\lexer\grammar\unittests2\CNabuLexerGrammarTestSubclass1;
 use nabu\lexer\grammar\unittests2\CNabuLexerGrammarTestSubclass3;
+
+use nabu\lexer\interfaces\INabuLexer;
 
 /**
  * Test class for @see CNabuLexer.
@@ -48,7 +53,7 @@ class CNabuLexerTest extends TestCase
      */
     public function testConstruct_1()
     {
-        $this->expectException(Error::class);
+        $this->expectException(\Error::class);
         new CNabuLexer();
     }
 
@@ -59,6 +64,7 @@ class CNabuLexerTest extends TestCase
     public function testConstruct_2()
     {
         $this->expectException(ENabuLexerException::class);
+        $this->expectExceptionCode(ENabuLexerException::ERROR_LEXER_GRAMMAR_INVALID_VERSIONS_RANGE);
         CNabuLexerGrammarTestSubclass3::getLexer();
     }
 
@@ -99,6 +105,7 @@ class CNabuLexerTest extends TestCase
     public function testGetLexerFails1()
     {
         $this->expectException(ENabuLexerException::class, 'Test getting Lexer for MySQL v.5.8');
+        $this->expectExceptionCode(ENabuLexerException::ERROR_LEXER_GRAMMAR_UNSUPPORTED_VERSION);
         CNabuLexer::getLexer(CNabuLexer::GRAMMAR_MYSQL, '5.8');
     }
 
@@ -108,16 +115,16 @@ class CNabuLexerTest extends TestCase
     public function testGetLexerFails2()
     {
         $this->expectException(ENabuLexerException::class);
+        $this->expectExceptionCode(ENabuLexerException::ERROR_LEXER_GRAMMAR_DOES_NOT_EXISTS);
         CNabuLexer::getLexer('unittests', '5.6');
     }
 
     /**
      * @test getLexer
      */
-    public function testGetLexerFails3()
+    public function testGetLexerLoadWithoutResourcesFile()
     {
-        $this->expectException(ENabuLexerException::class);
-        CNabuLexer::getLexer('unittests2', '1.8');
+        $this->assertInstanceOf(CNabuLexerGrammarTestSubclass1::class, CNabuLexer::getLexer('unittests2', '1.8'));
     }
 
     /**
@@ -126,6 +133,7 @@ class CNabuLexerTest extends TestCase
     public function testGetLexerFails4()
     {
         $this->expectException(ENabuLexerException::class);
+        $this->expectExceptionCode(ENabuLexerException::ERROR_LEXER_GRAMMAR_UNSUPPORTED_VERSION);
         CNabuLexer::getLexer('unittests2', '3.2');
     }
 
@@ -135,6 +143,7 @@ class CNabuLexerTest extends TestCase
     public function testGetLexerFails5()
     {
         $this->expectException(ENabuLexerException::class);
+        $this->expectExceptionCode(ENabuLexerException::ERROR_INVALID_LEXER_CLASS);
         CNabuLexer::getLexer('unittests3', '3.2');
     }
 
@@ -160,5 +169,84 @@ class CNabuLexerTest extends TestCase
     public function testGetMaximumVersion()
     {
         $this->assertNull(CNabuLexer::getMaximumVersion());
+    }
+
+    /**
+     * @test getData
+     * @test setData
+     */
+    public function testGetSetData()
+    {
+        $lexer = CNabuCustomLexer::getLexer();
+        $this->assertInstanceOf(CNabuCustomLexer::class, $lexer);
+
+        $data = new CNabuLexerData();
+        $this->assertInstanceOf(INabuLexer::class, $lexer->setData($data));
+        $this->assertSame($data, $lexer->getData());
+    }
+
+    /**
+     * @test loadFileResources
+     */
+    public function testLoadFileResourcesRWError()
+    {
+        $lexer = CNabuCustomLexer::getLexer();
+        $this->assertInstanceOf(CNabuCustomLexer::class, $lexer);
+
+        $this->expectException(ENabuLexerException::class);
+        $this->expectExceptionCode(ENabuLexerException::ERROR_INVALID_GRAMMAR_RESOURCE_FILE);
+        $lexer->loadFileResources(__DIR__ . DIRECTORY_SEPARATOR . 'resources' . DIRECTORY_SEPARATOR . 'test-write-only-file.json');
+    }
+
+    /**
+     * @test loadFileResources
+     */
+    public function testLoadFileResourcesJSONParseError()
+    {
+        $lexer = CNabuCustomLexer::getLexer();
+        $this->assertInstanceOf(CNabuCustomLexer::class, $lexer);
+
+        $this->expectException(ENabuLexerException::class);
+        $this->expectExceptionCode(ENabuLexerException::ERROR_INVALID_GRAMMAR_RESOURCE_FILE);
+        $lexer->loadFileResources(__DIR__ . DIRECTORY_SEPARATOR . 'resources' . DIRECTORY_SEPARATOR . 'test-json-error.json');
+    }
+
+    /**
+     * @test processJSONHeader
+     */
+    public function testProcessJSONHeaderGrammarMissing()
+    {
+        $lexer = CNabuCustomLexer::getLexer();
+        $this->assertInstanceOf(CNabuCustomLexer::class, $lexer);
+
+        $this->expectException(ENabuLexerException::class);
+        $this->expectExceptionCode(ENabuLexerException::ERROR_RESOURCE_GRAMMAR_DESCRIPTION_MISSING);
+        $lexer->loadFileResources(__DIR__ . DIRECTORY_SEPARATOR . 'resources' . DIRECTORY_SEPARATOR . 'test-read-only-file.json');
+    }
+
+    /**
+     * @test processJSONHeader
+     */
+    public function testProcessJSONHeaderGrammarNameNotMatch()
+    {
+        $lexer = CNabuCustomLexer::getLexer();
+        $this->assertInstanceOf(CNabuCustomLexer::class, $lexer);
+
+        $this->expectException(ENabuLexerException::class);
+        $this->expectExceptionCode(ENabuLexerException::ERROR_RESOURCE_GRAMMAR_LANGUAGE_NOT_MATCH);
+        $lexer->loadFileResources(__DIR__ . DIRECTORY_SEPARATOR . 'resources' . DIRECTORY_SEPARATOR . 'test-grammar-not-match-file.json');
+    }
+
+    /**
+     * @test processJSONHeader
+     */
+    public function testProcessJSONHeaderGrammarInvalidVersionRange()
+    {
+        $lexer = CNabuCustomLexer::getLexer();
+        $this->assertInstanceOf(CNabuCustomLexer::class, $lexer);
+
+        $this->expectException(ENabuLexerException::class);
+        $this->expectExceptionCode(ENabuLexerException::ERROR_LEXER_GRAMMAR_INVALID_VERSIONS_RANGE);
+        $lexer->loadFileResources(__DIR__ . DIRECTORY_SEPARATOR . 'resources' . DIRECTORY_SEPARATOR . 'test-grammar-version-error-file.json');
     }
 }

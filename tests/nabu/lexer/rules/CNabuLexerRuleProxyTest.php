@@ -23,6 +23,8 @@ namespace nabu\lexer\rules;
 
 use PHPUnit\Framework\TestCase;
 
+use nabu\lexer\CNabuCustomLexer;
+
 use nabu\lexer\exceptions\ENabuLexerException;
 
 /**
@@ -38,9 +40,11 @@ class CNabuLexerRuleProxyTest extends TestCase
      * @test createRuleFromDescriptor
      * @return CNabuLexerRuleGroup Returns created rule for tests.
      */
-    public function testCreateRuleFromDescriptor() : CNabuLexerRuleGroup
+    public function testCreateRuleFromDescriptor()
     {
+        $lexer = CNabuCustomLexer::getLexer();
         $rule = CNabuLexerRuleProxy::createRuleFromDescriptor(
+            $lexer,
             array(
                 "starter" => true,
                 "method" => "literal",
@@ -50,6 +54,7 @@ class CNabuLexerRuleProxyTest extends TestCase
         $this->assertInstanceOf(CNabuLexerRuleKeyword::class, $rule);
 
         $rule = CNabuLexerRuleProxy::createRuleFromDescriptor(
+            $lexer,
             array(
                 "starter" => true,
                 "method" => "literal",
@@ -59,9 +64,9 @@ class CNabuLexerRuleProxyTest extends TestCase
         $this->assertInstanceOf(CNabuLexerRuleRegEx::class, $rule);
 
         $rule = CNabuLexerRuleProxy::createRuleFromDescriptor(
+            $lexer,
             array(
                 "starter" => true,
-                "case_sensitive" => false,
                 "method" => "case",
                 "group" => array(
                     "CREATE", "DROP"
@@ -72,9 +77,82 @@ class CNabuLexerRuleProxyTest extends TestCase
 
         $this->expectException(ENabuLexerException::class);
         CNabuLexerRuleProxy::createRuleFromDescriptor(
+            $lexer,
             array(
                 'starter' => true
             )
         );
     }
+
+    /**
+     * @test createRuleFromDescriptor
+     */
+    public function testCreateRuleFromDescriptorWithInvalidRule()
+    {
+        $lexer = CNabuCustomLexer::getLexer();
+        $this->expectException(ENabuLexerException::class);
+        $this->expectExceptionCode(ENabuLexerException::ERROR_RULE_NOT_FOUND_FOR_DESCRIPTOR);
+        $rule = CNabuLexerRuleProxy::createRuleFromDescriptor(
+            $lexer,
+            array(
+                'rule' => array(
+                    'starter' => true,
+                    'method' => 'literal',
+                    'keyword' => 'Test'
+                )
+            )
+        );
+    }
+
+    /**
+     * @test registerRule
+     */
+    public function testRegisterRule()
+    {
+        $lexer = CNabuCustomLexer::getLexer();
+        $rule = CNabuLexerRuleKeyword::createFromDescriptor(
+            $lexer,
+            array(
+                'keyword' => 'Test',
+                'method' => 'literal'
+            )
+        );
+        $this->assertInstanceOf(CNabuLexerRuleKeyword::class, $rule);
+        $lexer->registerRule('rule_reg', $rule);
+        $this->expectException(ENabuLexerException::class);
+        $this->expectExceptionCode(ENabuLexerException::ERROR_RULE_ALREADY_EXISTS);
+        $lexer->registerRule('rule_reg', $rule);
+    }
+
+    /**
+     * @test getRule
+     */
+    public function testGetRuleWithEmptyInventory()
+    {
+        $lexer = CNabuCustomLexer::getLexer();
+        $this->expectException(ENabuLexerException::class);
+        $this->expectExceptionCode(ENabuLexerException::ERROR_RULE_DOES_NOT_EXISTS);
+        $lexer->getRule('rule_reg');
+    }
+
+    /**
+     * @test getRule
+     */
+    public function testGetRuleThatDoesNotExists()
+    {
+        $lexer = CNabuCustomLexer::getLexer();
+        $rule = CNabuLexerRuleKeyword::createFromDescriptor(
+            $lexer,
+            array(
+                'keyword' => 'Test',
+                'method' => 'literal'
+            )
+        );
+        $this->assertInstanceOf(CNabuLexerRuleKeyword::class, $rule);
+        $lexer->registerRule('rule_reg', $rule);
+        $this->expectException(ENabuLexerException::class);
+        $this->expectExceptionCode(ENabuLexerException::ERROR_RULE_DOES_NOT_EXISTS);
+        $lexer->getRule('another_rule');
+    }
+
 }

@@ -50,16 +50,22 @@ class ENabuLexerException extends ENabuException
     public const ERROR_RESOURCE_GRAMMAR_DESCRIPTION_MISSING         = 0x0007;
     /** @var int Resource file language name does not match. Requires both language names. */
     public const ERROR_RESOURCE_GRAMMAR_LANGUAGE_NOT_MATCH          = 0x0008;
-    /** @var int Rule not found for descriptor. */
+    /** @var int Rule not found for descriptor. Requires descriptor content with var_export. */
     public const ERROR_RULE_NOT_FOUND_FOR_DESCRIPTOR                = 0x0009;
-    /** @var int Rule node not found in descriptor. Requires the node name. */
+    /** @var int Rule node not found in descriptor. Requires the node name. Requires descriptor dump */
     public const ERROR_RULE_NODE_NOT_FOUND_IN_DESCRIPTOR            = 0x000a;
-    /** @var int Rule node invalid value. Requires the node name and type expected. */
+    /** @var int Rule node invalid value. Requires the node name, value and type expected. */
     public const ERROR_RULE_NODE_INVALID_VALUE                      = 0x000b;
     /** @var int Invalid Rule method. Requires the method name. */
     public const ERROR_INVALID_RULE_METHOD                          = 0x000c;
-    /** @var int Group Role is empty. */
+    /** @var int Group Rule is empty. */
     public const ERROR_EMPTY_GROUP_RULE                             = 0x000d;
+    /** @var int Rule already exists. Requires rule key. */
+    public const ERROR_RULE_ALREADY_EXISTS                          = 0x000e;
+    /** @var int Rule does not exists. Requires rule key. */
+    public const ERROR_RULE_DOES_NOT_EXISTS                         = 0x000f;
+    /** @var int Invalid Range values. Requires range as string. */
+    public const ERROR_INVALID_RANGE_VALUES                         = 0x0010;
 
     /** @var array English error messages array. */
     private static $error_messages = array(
@@ -80,15 +86,21 @@ class ENabuLexerException extends ENabuException
         ENabuLexerException::ERROR_RESOURCE_GRAMMAR_LANGUAGE_NOT_MATCH =>
             'Resource file Grammar Language name does not match [%s - %s]',
         ENabuLexerException::ERROR_RULE_NOT_FOUND_FOR_DESCRIPTOR =>
-            'Rule not found to match descriptor.',
+            "Rule not found to match descriptor.\n%s",
         ENabuLexerException::ERROR_RULE_NODE_NOT_FOUND_IN_DESCRIPTOR =>
-            'Rule node [%s] not found in descriptor.',
+            "Rule node [%s] not found in descriptor.\n%s",
         ENabuLexerException::ERROR_RULE_NODE_INVALID_VALUE =>
-            'Rule node [%s] contains an invalid nor unexpected value. Allowed are [%s].',
+            'Rule node [%s] contains an invalid or unexpected value [%s]. Allowed are [%s].',
         ENabuLexerException::ERROR_INVALID_RULE_METHOD =>
             'Invalid Rule method [$s].',
         ENabuLexerException::ERROR_EMPTY_GROUP_RULE =>
-            'Group Rule is empty.'
+            'Group Rule is empty.',
+        ENabuLexerException::ERROR_RULE_ALREADY_EXISTS =>
+            'Rule [%s] already exists.',
+        ENabuLexerException::ERROR_RULE_DOES_NOT_EXISTS =>
+            'Rule [%s] does not exists.',
+        ENabuLexerException::ERROR_INVALID_RANGE_VALUES =>
+            'Invalid Range values [%s].'
     );
 
     /**

@@ -30,10 +30,10 @@ namespace nabu\lexer\rules;
  */
 class CNabuLexerRuleKeyword extends CNabuLexerAbstractRule
 {
-    /** @var string Descriptor method node literal. */
-    const DESCRIPTOR_METHOD_NODE = 'method';
     /** @var string Descriptor keywords node literal. */
     const DESCRIPTOR_KEYWORD_NODE = 'keyword';
+    /** @var string Descriptor method node literal. */
+    const DESCRIPTOR_METHOD_NODE = 'method';
 
     /** @var string Method Literal literal. */
     const METHOD_LITERAL = 'literal';
@@ -54,7 +54,7 @@ class CNabuLexerRuleKeyword extends CNabuLexerAbstractRule
      * Get the method attribute.
      * @return string|null Returns the value of method attribute.
      */
-    public function getMethod()
+    public function getMethod(): ?string
     {
         return $this->method;
     }
@@ -81,12 +81,12 @@ class CNabuLexerRuleKeyword extends CNabuLexerAbstractRule
      * Get the keyword attribute.
      * @return string|null Returns the value of keyword attribute.
      */
-    public function getKeyword()
+    public function getKeyword(): ?string
     {
         return $this->keyword;
     }
 
-    public function initFromDescriptor(array $descriptor)
+    public function initFromDescriptor(array $descriptor): void
     {
         parent::initFromDescriptor($descriptor);
 

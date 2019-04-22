@@ -83,7 +83,7 @@ abstract class CNabuAbstractLexerGrammarProxy extends CNabuObject implements INa
             foreach ($this->versions as $version_lexer) {
                 if ($version_lexer::isValidVersion($version) &&
                     ($lexer === null ||
-                     version_compare($lexer::getMinimumVersion(), $version_lexer::getMinimumVersion(), '>')
+                     version_compare($lexer::getMinimumVersion(), $version_lexer::getMinimumVersion()) === -1
                     )
                 ) {
                     $lexer = $version_lexer::getLexer();

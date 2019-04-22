@@ -22,11 +22,17 @@
 namespace nabu\lexer;
 
 use Error;
+use Exception;
 use ReflectionClass;
+
+use nabu\lexer\data\CNabuLexerData;
 
 use nabu\lexer\exceptions\ENabuLexerException;
 
 use nabu\lexer\interfaces\INabuLexer;
+use nabu\lexer\interfaces\INabuLexerRule;
+
+use nabu\lexer\rules\CNabuLexerRuleProxy;
 
 use nabu\min\CNabuObject;
 
@@ -49,6 +55,8 @@ class CNabuLexer extends CNabuObject implements INabuLexer
     private const JSON_LANGUAGE_NODE = 'language';
     /** @var string JSON Grammar Version branch name */
     private const JSON_VERSION_NODE = 'version';
+    /** @var string JSON Rules branch name. */
+    private const JSON_RULES_NODE = 'rules';
 
     /** @var string Language name used by this Lexer. */
     protected static $grammar_name = null;
@@ -56,6 +64,12 @@ class CNabuLexer extends CNabuObject implements INabuLexer
     protected static $grammar_version_min = null;
     /** @var string Language maximum version used by this lexer. */
     protected static $grammar_version_max = null;
+
+    /** @var CNabuLexerData Data storage for analysis. */
+    protected $data = null;
+
+    /** @var CNabuLexerRuleProxy Proxy Rule instance to manage Lexer rules. */
+    protected $rules_proxy = null;
 
     /**
      * Protects the constructor to force to be invoqued from the getLexer method.
@@ -66,7 +80,7 @@ class CNabuLexer extends CNabuObject implements INabuLexer
 
         if (is_string($caller::$grammar_version_min) &&
             is_string($caller::$grammar_version_max) &&
-            version_compare($caller::$grammar_version_min, $caller::$grammar_version_max, '>')
+            version_compare($caller::$grammar_version_min, $caller::$grammar_version_max) === 1
         ) {
             throw new ENabuLexerException(
                 ENabuLexerException::ERROR_LEXER_GRAMMAR_INVALID_VERSIONS_RANGE,
@@ -76,6 +90,8 @@ class CNabuLexer extends CNabuObject implements INabuLexer
                 )
             );
         }
+
+        $this->rules_proxy = new CNabuLexerRuleProxy($this);
 
         if (is_string(self::getGrammarName())) {
             $this->preloadFileResources();
@@ -122,19 +138,42 @@ class CNabuLexer extends CNabuObject implements INabuLexer
         return get_called_class()::$grammar_version_max;
     }
 
+    public function getData()
+    {
+        return $this->data;
+    }
+
+    public function setData(CNabuLexerData $data): INabuLexer
+    {
+        $this->data = $data;
+
+        return $this;
+    }
+
     public static function isValidVersion(string $version): bool
     {
         $retval = true;
-
         $caller = get_called_class();
 
-        if ((is_string($caller::$grammar_version_min) && version_compare($caller::$grammar_version_min, $version, '>')) ||
-            (is_string($caller::$grammar_version_max) && version_compare($caller::$grammar_version_max, $version, '<'))
+        if ((is_string($caller::$grammar_version_min) && version_compare($caller::$grammar_version_min, $version) === 1) ||
+            (is_string($caller::$grammar_version_max) && version_compare($caller::$grammar_version_max, $version) === -1)
         ) {
             $retval = false;
         }
 
         return $retval;
+    }
+
+    public function getRule(string $key): INabuLexerRule
+    {
+        return $this->rules_proxy->getRule($key);
+    }
+
+    public function registerRule(string $key, INabuLexerRule $rule): INabuLexer
+    {
+        $this->rules_proxy->registerRule($key, $rule);
+
+        return $this;
     }
 
     /**
@@ -154,26 +193,43 @@ class CNabuLexer extends CNabuObject implements INabuLexer
     {
         $retval = false;
 
-        if (!file_exists($filename) ||
-            ($raw = file_get_contents($filename)) === false ||
-            !($json = json_decode($raw))
-        ) {
-            throw new ENabuLexerException(
-                ENabuLexerException::ERROR_INVALID_GRAMMAR_RESOURCE_FILE,
-                array(
-                    $filename
-                )
-            );
-        }
+        if (file_exists($filename)) {
+            try {
+                if (($raw = file_get_contents($filename)) === false ||
+                    !($json = json_decode($raw, JSON_OBJECT_AS_ARRAY))
+                ) {
+                    throw new ENabuLexerException(
+                        ENabuLexerException::ERROR_INVALID_GRAMMAR_RESOURCE_FILE,
+                        array(
+                            $filename
+                        )
+                    );
+                }
+            } catch (ENabuLexerException $ex) {
+                throw $ex;
+            } catch (Exception $e) {
+                throw new ENabuLexerException(
+                    ENabuLexerException::ERROR_INVALID_GRAMMAR_RESOURCE_FILE,
+                    array(
+                        $filename
+                    )
+                );
+            }
 
-        if (is_array($json)) {
-            $this->processJSONHeader($json);
-            $retval = $this->processJSONRules($json);
+            if (is_array($json)) {
+                $this->processJSONHeader($json);
+                $retval = $this->processJSONRules($json);
+            }
         }
 
         return $retval;
     }
 
+    /**
+     * Process the JSON Resource header of a resources JSON definition.
+     * @param array $json JSON Array previously parsed with resources definition.
+     * @throws ENabuLexerException Throws an exception if the JSON is invalid.
+     */
     protected function processJSONHeader(array $json)
     {
         if (!array_key_exists(self::JSON_GRAMMAR_NODE, $json) ||
@@ -190,7 +246,7 @@ class CNabuLexer extends CNabuObject implements INabuLexer
             throw new ENabuLexerException(ENabuLexerException::ERROR_RESOURCE_GRAMMAR_DESCRIPTION_MISSING);
         }
 
-        if (!is_null(self::$grammar_name) && self::$grammar_name !== $language) {
+        if (!is_null(self::getGrammarName()) && self::getGrammarName() !== $language) {
             throw new ENabuLexerException(
                 ENabuLexerException::ERROR_RESOURCE_GRAMMAR_LANGUAGE_NOT_MATCH,
                 array(
@@ -200,7 +256,7 @@ class CNabuLexer extends CNabuObject implements INabuLexer
             );
         }
 
-        if (!is_null($version_min) && !is_null($version_max) && version_compare($version_min, $version_max, '<')) {
+        if (is_string($version_min) && is_string($version_max) && version_compare($version_min, $version_max) === 1) {
             throw new ENabuLexerException(
                 ENabuLexerException::ERROR_LEXER_GRAMMAR_INVALID_VERSIONS_RANGE,
                 array(
@@ -211,8 +267,24 @@ class CNabuLexer extends CNabuObject implements INabuLexer
         }
     }
 
+    /**
+     * Process the JSON Resource Rules list.
+     * @param array $json JSON Array previously parsed with resources definition.
+     * @return bool Returns true if all rules are processed.
+     * @throws ENabuLexerException Throws an exception if the JSON is invalid.
+     */
     protected function processJSONRules(array $json) : bool
     {
+        if (array_key_exists(self::JSON_RULES_NODE, $json) &&
+            is_array($json[self::JSON_RULES_NODE]) &&
+            count($json[self::JSON_RULES_NODE]) > 0
+        ) {
+            foreach ($json[self::JSON_RULES_NODE] as $key => $rule_desc) {
+                $rule = CNabuLexerRuleProxy::createRuleFromDescriptor($this, $rule_desc);
+                $this->rules_proxy->registerRule($key, $rule);
+            }
+        }
+
         return true;
     }
 }

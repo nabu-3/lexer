@@ -21,6 +21,8 @@
 
 namespace nabu\lexer\interfaces;
 
+use nabu\lexer\data\CNabuLexerData;
+
 use nabu\lexer\exceptions\ENabuLexerException;
 
 /**
@@ -64,10 +66,35 @@ interface INabuLexer
      */
     public static function isValidVersion(string $version) : bool;
     /**
+     * Get a Rule by his key.
+     * @param string $key Key to identify the Rule.
+     * @return INabuLexerRule Returns the Rule identified by the key.
+     * @throws ENabuLexerException Throws an exception if the Rule does not exists.
+     */
+    public function getRule(string $key): INabuLexerRule;
+    /**
+     * Register a Rule associated with a key. The @see { getRule() } method could get this stored rule using same key.
+     * @param string $key Key to identify the Rule.
+     * @param INabuLexerRule $rule Rule to be registered.
+     * @return INabuLexer Returns self pointer to grant fluent interface.
+     */
+    public function registerRule(string $key, INabuLexerRule $rule): INabuLexer;
+    /**
      * Load and setup the Lexer from a File Resources descriptor containing all grammar rules to work.
      * @param string $filename Name of file to load.
      * @return bool Returns true if file is valid and resources are loaded, or false if file is empty or have no rules.
      * @throws ENabuLexerException Throws an exception if the file does not exists or have errors.
      */
     public function loadFileResources(string $filename) : bool;
+    /**
+     * Get the data instance used by the Lexer.
+     * @return CNabuLexerData|null Returns the Lexer data instance if exists or null otherwise.
+     */
+    public function getData();
+    /**
+     * Set the data instance used by the Lexer.
+     * @param CNabuLexerData $data Data to be setted.
+     * @return INabuLexer Returns the self pointer to grant fluent implementation.
+     */
+    public function setData(CNabuLexerData $data): INabuLexer;
 }

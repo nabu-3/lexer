@@ -19,28 +19,20 @@
  *  limitations under the License.
  */
 
-namespace nabu\lexer\grammar\unittests3;
+namespace nabu\lexer\data;
 
-use nabu\lexer\grammar\CNabuAbstractLexerGrammarProxy;
+use nabu\data\CNabuDataObject;
+
+use nabu\data\traits\TNabuNestedData;
 
 /**
- * MySQL Lexer Language proxy.
+ * Lexer data instance to store Lexer analysis.
  * @author Rafael Gutierrez <rgutierrez@nabu-3.com>
  * @since 0.0.2
  * @version 0.0.2
- * @package \nabu\lexer\grammar\mysql
+ * @package \nabu\lexer\data
  */
-class CNabuLexerGrammarProxy extends CNabuAbstractLexerGrammarProxy
+class CNabuLexerData extends CNabuDataObject
 {
-    /** @var string|null Grammar name of this proxy. */
-    protected static $grammar_name = 'unittests3';
-
-    public function __construct()
-    {
-        $this->registerLexerVersionClasses(
-            array(
-                CNabuLexerGrammarTestSubclass4::class
-            )
-        );
-    }
+    use TNabuNestedData;
 }

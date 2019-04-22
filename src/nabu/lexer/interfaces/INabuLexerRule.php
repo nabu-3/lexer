@@ -34,17 +34,18 @@ interface INabuLexerRule
 {
     /**
      * Creates a Rule using a descriptor array info.
+     * @param INabuLexer $lexer Lexer that governs this Rule.
      * @param array $descriptor Descriptor information.
      * @return INabuLexerRule Returns a rule instance parametrized matching the descriptor.
      * @throws ENabuLexerException Throws an exception if the descriptor is invalid.
      */
-    public static function createFromDescriptor(array $descriptor) : INabuLexerRule;
+    public static function createFromDescriptor(INabuLexer $lexer, array $descriptor) : INabuLexerRule;
     /**
      * Init the instance using a descriptor array info.
      * @param array $descriptor The descriptor array to init the instance.
      * @throws ENabuLexerException Throws an exception if the descriptor is not valod.
      */
-    public function initFromDescriptor(array $descriptor);
+    public function initFromDescriptor(array $descriptor): void;
     /**
      * Applies the rule to a content string.
      * @param string $content The content to be analized.
@@ -65,15 +66,34 @@ interface INabuLexerRule
      * Set the value of the rule.
      * @param mixed $value The value to be stored. It can be of any type.
      * @param int $source_length Amount of characters used to detect and extract the value in the source string.
+     * @return INabuLexerRule Returns self pointer to grant fluent interface.
      */
-    public function setValue($value, int $source_length);
+    public function setValue($value, int $source_length): INabuLexerRule;
+    /**
+     * Append a value of the rule.
+     * @param mixed $value The value to be stored. It can be of any type.
+     * @param int $source_length Amount of characters used to detect and extract the value in the source string.
+     * @return INabuLexerRule Returns self pointer to grant fluent interface.
+     */
+    public function appendValue($value, int $source_length): INabuLexerRule;
     /**
      * Clear previous stored value of the rule.
+     * @return INabuLexerRule Returns self pointer to grant fluent interface.
      */
-    public function clearValue();
+    public function clearValue(): INabuLexerRule;
     /**
      * Check if the rule is a starter rule or could be placed in any moment.
      * @return bool Returns true if it is a starter rule.
      */
     public function isStarter() : bool;
+    /**
+     * Get the path of the value repressenting this rule.
+     * @return string|null Returns the path if setted or null otherwise.
+     */
+    public function getPath(): ?string;
+    /**
+     * Get the Lexer that governs this Rule.
+     * @return INabuLexer Returns assigned Lexer.
+     */
+    public function getLexer(): INabuLexer;
 }

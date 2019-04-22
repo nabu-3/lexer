@@ -34,10 +34,10 @@ use nabu\lexer\interfaces\INabuLexerRule;
  */
 class CNabuLexerRuleGroup extends CNabuLexerAbstractRule
 {
-    /** @var string Descriptor method node literal. */
-    const DESCRIPTOR_METHOD_NODE = 'method';
     /** @var string Descriptor group node literal. */
     const DESCRIPTOR_GROUP_NODE = 'group';
+    /** @var string Descriptor method node literal. */
+    const DESCRIPTOR_METHOD_NODE = 'method';
     /** @var string Descriptor tokenizer node literal. */
     const DESCRIPTOR_TOKENIZER_NODE = 'tokenizer';
 
@@ -58,7 +58,25 @@ class CNabuLexerRuleGroup extends CNabuLexerAbstractRule
     /** @var array $group Rule list applicable. */
     private $group = null;
 
-    public function initFromDescriptor(array $descriptor)
+    /**
+     * Get the method attribute.
+     * @return string|null Returns the value of method attribute.
+     */
+    public function getMethod(): ?string
+    {
+        return $this->method;
+    }
+
+    /**
+     * Get the tokenizer attribute.
+     * @return INabuLexerRule|null Returns the value of tokenizer attribute.
+     */
+    public function getTokenizer(): ?INabuLexerRule
+    {
+        return $this->tokenizer;
+    }
+
+    public function initFromDescriptor(array $descriptor): void
     {
         parent::initFromDescriptor($descriptor);
 
@@ -69,20 +87,16 @@ class CNabuLexerRuleGroup extends CNabuLexerAbstractRule
         if ($this->method === self::METHOD_SEQUENCE) {
             $separator = $this->checkMixedNode($descriptor, self::DESCRIPTOR_TOKENIZER_NODE, null, false, true);
             if (is_string($separator)) {
-                $this->tokenizer = CNabuLexerRuleKeyword::createFromDescriptor(
-                    array(
-                        CNabuLexerRuleKeyword::DESCRIPTOR_METHOD_NODE => CNabuLexerRuleKeyword::METHOD_LITERAL,
-                        CNabuLexerRuleKeyword::DESCRIPTOR_KEYWORD_NODE => $separator
-                    )
-                );
+                $this->tokenizer = $this->getLexer()->getRule($separator);
             } elseif (is_array($separator)) {
-                $this->tokenizer = CNabuLexerRuleProxy::createRuleFromDescriptor($separator);
+                $this->tokenizer = CNabuLexerRuleProxy::createRuleFromDescriptor($this->getLexer(), $separator);
             } else {
                 throw new ENabuLexerException(
                     ENabuLexerException::ERROR_RULE_NODE_INVALID_VALUE,
                     array(
                         self::DESCRIPTOR_TOKENIZER_NODE,
-                        'string, rule'
+                        var_export($separator, true),
+                        'rule, descriptor'
                     )
                 );
             }
@@ -95,13 +109,14 @@ class CNabuLexerRuleGroup extends CNabuLexerAbstractRule
         foreach ($group_desc as $rule_desc) {
             if (is_string($rule_desc)) {
                 $this->group[] = CNabuLexerRuleKeyword::createFromDescriptor(
+                    $this->getLexer(),
                     array(
                         CNabuLexerRuleKeyword::DESCRIPTOR_METHOD_NODE => CNabuLexerRuleKeyword::METHOD_LITERAL,
                         CNabuLexerRuleKeyword::DESCRIPTOR_KEYWORD_NODE => $rule_desc
                     )
                 );
             } else {
-                $this->group[] = CNabuLexerRuleProxy::createRuleFromDescriptor($rule_desc);
+                $this->group[] = CNabuLexerRuleProxy::createRuleFromDescriptor($this->getLexer(), $rule_desc);
             }
         }
     }
@@ -117,14 +132,13 @@ class CNabuLexerRuleGroup extends CNabuLexerAbstractRule
         $retval = false;
 
         switch ($this->method) {
-            case self::METHOD_CASE:
-                $retval = $this->applyRuleToContentAsCase($content);
-                break;
             case self::METHOD_SEQUENCE:
                 $retval = $this->applyRuleToContentAsSequence($content);
                 break;
+            case self::METHOD_CASE:
             default:
-                throw new ENabuLexerException(ENabuLexerException::ERROR_INVALID_RULE_METHOD, array($this->method));
+                $retval = $this->applyRuleToContentAsCase($content);
+                break;
         }
 
         return $retval;
@@ -179,6 +193,8 @@ class CNabuLexerRuleGroup extends CNabuLexerAbstractRule
                 }
             }
         }
+
+        (!$retval) && $this->clearValue();
 
         return $retval;
     }

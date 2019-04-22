@@ -21,26 +21,14 @@
 
 namespace nabu\lexer\grammar\unittests3;
 
-use nabu\lexer\grammar\CNabuAbstractLexerGrammarProxy;
-
 /**
- * MySQL Lexer Language proxy.
+ * Test class to check if safety policies loading grammars works fine.
  * @author Rafael Gutierrez <rgutierrez@nabu-3.com>
  * @since 0.0.2
  * @version 0.0.2
- * @package \nabu\lexer\grammar\mysql
+ * @package nabu\lexer\grammar\unittests
  */
-class CNabuLexerGrammarProxy extends CNabuAbstractLexerGrammarProxy
+class CNabuLexerGrammarTestSubclass4
 {
-    /** @var string|null Grammar name of this proxy. */
-    protected static $grammar_name = 'unittests3';
 
-    public function __construct()
-    {
-        $this->registerLexerVersionClasses(
-            array(
-                CNabuLexerGrammarTestSubclass4::class
-            )
-        );
-    }
 }
