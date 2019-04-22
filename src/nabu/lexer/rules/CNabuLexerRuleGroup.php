@@ -69,9 +69,9 @@ class CNabuLexerRuleGroup extends CNabuLexerAbstractRule
 
     /**
      * Get the tokenizer attribute.
-     * @return string|null Returns the value of tokenizer attribute.
+     * @return INabuLexerRule|null Returns the value of tokenizer attribute.
      */
-    public function getTokenizer(): ?string
+    public function getTokenizer(): ?INabuLexerRule
     {
         return $this->tokenizer;
     }
@@ -87,13 +87,7 @@ class CNabuLexerRuleGroup extends CNabuLexerAbstractRule
         if ($this->method === self::METHOD_SEQUENCE) {
             $separator = $this->checkMixedNode($descriptor, self::DESCRIPTOR_TOKENIZER_NODE, null, false, true);
             if (is_string($separator)) {
-                $this->tokenizer = CNabuLexerRuleKeyword::createFromDescriptor(
-                    $this->getLexer(),
-                    array(
-                        CNabuLexerRuleKeyword::DESCRIPTOR_METHOD_NODE => CNabuLexerRuleKeyword::METHOD_LITERAL,
-                        CNabuLexerRuleKeyword::DESCRIPTOR_KEYWORD_NODE => $separator
-                    )
-                );
+                $this->tokenizer = $this->getLexer()->getRule($separator);
             } elseif (is_array($separator)) {
                 $this->tokenizer = CNabuLexerRuleProxy::createRuleFromDescriptor($this->getLexer(), $separator);
             } else {
@@ -101,7 +95,8 @@ class CNabuLexerRuleGroup extends CNabuLexerAbstractRule
                     ENabuLexerException::ERROR_RULE_NODE_INVALID_VALUE,
                     array(
                         self::DESCRIPTOR_TOKENIZER_NODE,
-                        'string, rule'
+                        var_export($separator, true),
+                        'rule, descriptor'
                     )
                 );
             }
@@ -144,7 +139,6 @@ class CNabuLexerRuleGroup extends CNabuLexerAbstractRule
                 $retval = $this->applyRuleToContentAsSequence($content);
                 break;
             default:
-                throw new ENabuLexerException(ENabuLexerException::ERROR_INVALID_RULE_METHOD, array($this->method));
         }
 
         return $retval;
@@ -199,6 +193,8 @@ class CNabuLexerRuleGroup extends CNabuLexerAbstractRule
                 }
             }
         }
+
+        (!$retval) && $this->clearValue();
 
         return $retval;
     }
