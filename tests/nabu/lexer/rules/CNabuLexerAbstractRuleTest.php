@@ -1,7 +1,7 @@
 <?php
 
 /** @license
- *  Copyright 2019-2011 Rafael Gutierrez Martinez
+ *  Copyright 2009-2011 Rafael Gutierrez Martinez
  *  Copyright 2012-2013 Welma WEB MKT LABS, S.L.
  *  Copyright 2014-2016 Where Ideas Simply Come True, S.L.
  *  Copyright 2017 nabu-3 Group
@@ -1110,9 +1110,9 @@ class CNabuLexerAbstractRuleTestingLeafs extends CNabuLexerAbstractRule
         $this->array_null = $this->checkArrayNode($descriptor, 'array_null', null, true, true);
         $this->mixed_required = $this->checkMixedNode($descriptor, 'mixed_required', null, false, true);
         $this->mixed_null = $this->checkMixedNode($descriptor, 'mixed_null', null, true, true);
-        $this->regex_required = $this->checkRegExLeaf($descriptor, 'regex_required', null, false, true);
-        $this->regex_null = $this->checkRegExLeaf($descriptor, 'regex_null', null, true, true);
-        $this->regex_default = $this->checkRegExLeaf($descriptor, 'regex_default', '.*', true, false);
+        $this->regex_required = $this->checkRegExLeaf($descriptor, 'regex_required', false, null, false, true);
+        $this->regex_null = $this->checkRegExLeaf($descriptor, 'regex_null', false, null, true, true);
+        $this->regex_default = $this->checkRegExLeaf($descriptor, 'regex_default', false, '.*', true, false);
         $this->range_required = $this->checkRangeLeaf($descriptor, 'range_required', null, false, true);
         $this->range_null = $this->checkRangeLeaf($descriptor, 'range_null', '0..1', true, false);
     }

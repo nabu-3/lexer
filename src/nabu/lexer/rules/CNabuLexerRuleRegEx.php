@@ -1,7 +1,7 @@
 <?php
 
 /** @license
- *  Copyright 2019-2011 Rafael Gutierrez Martinez
+ *  Copyright 2009-2011 Rafael Gutierrez Martinez
  *  Copyright 2012-2013 Welma WEB MKT LABS, S.L.
  *  Copyright 2014-2016 Where Ideas Simply Come True, S.L.
  *  Copyright 2017 nabu-3 Group
@@ -20,10 +20,6 @@
  */
 
 namespace nabu\lexer\rules;
-
-use Exception;
-
-use nabu\lexer\exceptions\ENabuLexerException;
 
 /**
  * MySQL Lexer Rule to parse a Regular Expression.
@@ -53,6 +49,8 @@ class CNabuLexerRuleRegEx extends CNabuLexerAbstractRule
     private $method = null;
     /** @var string $match Match Regular Expression to apply. */
     private $match = null;
+    /** @var bool $use_unicode If true, Unicode is used in Regular expressions and /u is added to all preg_x functions. */
+    private $use_unicode = false;
 
     /**
      * Get the method attribute.
@@ -82,6 +80,15 @@ class CNabuLexerRuleRegEx extends CNabuLexerAbstractRule
     }
 
     /**
+     * Test if Rule allows Unicode Regular Expressions.
+     * @return bool Return true if Unicode is allowed.
+     */
+    public function isUnicodeAllowed(): bool
+    {
+        return is_bool($this->use_unicode) && $this->use_unicode;
+    }
+
+    /**
      * Get the Match Regular Expression of this Rule.
      * @return string|null Returns the Match Regular Expression if assigned or null otherwise.
      */
@@ -97,7 +104,10 @@ class CNabuLexerRuleRegEx extends CNabuLexerAbstractRule
         $this->method = $this->checkEnumLeaf(
             $descriptor, self::DESCRIPTOR_METHOD_NODE, self::METHOD_LIST, null, false, true
         );
-        $this->match = $this->checkRegExLeaf($descriptor, self::DESCRIPTOR_MATCH_NODE, null, false, true);
+        $this->use_unicode = $this->checkBooleanLeaf($descriptor, 'unicode');
+        $this->match = $this->checkRegExLeaf(
+            $descriptor, self::DESCRIPTOR_MATCH_NODE, $this->use_unicode, null, false, true
+        );
     }
 
     public function applyRuleToContent(string $content): bool
@@ -106,11 +116,9 @@ class CNabuLexerRuleRegEx extends CNabuLexerAbstractRule
         $this->clearValue();
 
         $matches = null;
-        $regex_modif = ($this->isCaseIgnored() ? 'i' : '');
+        $regex_modif = ($this->isCaseIgnored() ? 'i' : '') . ($this->isUnicodeAllowed() ? 'u' : '');
 
-        if (is_string($this->match) &&
-            preg_match("/^$this->match/$regex_modif", $content, $matches)
-        ) {
+        if (is_string($this->match) && preg_match("/^$this->match/$regex_modif", $content, $matches)) {
             $len = mb_strlen($matches[0]);
             $cnt = count($matches);
             if ($cnt < 3) {
@@ -120,8 +128,6 @@ class CNabuLexerRuleRegEx extends CNabuLexerAbstractRule
                 $this->setValue($matches, $len);
             }
             $result = true;
-        } else {
-            $this->setValue(null, 0);
         }
 
         return $result;

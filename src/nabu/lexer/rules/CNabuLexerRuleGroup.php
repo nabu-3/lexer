@@ -1,7 +1,7 @@
 <?php
 
 /** @license
- *  Copyright 2019-2011 Rafael Gutierrez Martinez
+ *  Copyright 2009-2011 Rafael Gutierrez Martinez
  *  Copyright 2012-2013 Welma WEB MKT LABS, S.L.
  *  Copyright 2014-2016 Where Ideas Simply Come True, S.L.
  *  Copyright 2017 nabu-3 Group
@@ -176,15 +176,17 @@ class CNabuLexerRuleGroup extends CNabuLexerAbstractRule
 
         if (is_array($this->group) && count($this->group) > 0 && mb_strlen($content) > 0) {
             foreach ($this->group as $rule) {
+                $len_token = 0;
                 if ($this->tokenizer instanceof INabuLexerRule &&
                     mb_strlen($content) > 0 &&
                     $this->tokenizer->applyRuleToContent($content)
                 ) {
-                    $content = mb_substr($content, $this->tokenizer->getSourceLength());
+                    $len_token = $this->tokenizer->getSourceLength();
+                    $content = mb_substr($content, $len_token);
                 }
                 if ($rule->applyRuleToContent($content)) {
                     $len = $rule->getSourceLength();
-                    $this->appendValue($rule->getValue(), $len);
+                    $this->appendValue($rule->getValue(), $len_token + $len);
                     $content = mb_substr($content, $len);
                     $retval = true;
                 } else {
