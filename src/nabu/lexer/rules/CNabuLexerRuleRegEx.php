@@ -104,8 +104,10 @@ class CNabuLexerRuleRegEx extends CNabuLexerAbstractRule
         $this->method = $this->checkEnumLeaf(
             $descriptor, self::DESCRIPTOR_METHOD_NODE, self::METHOD_LIST, null, false, true
         );
-        $this->match = $this->checkRegExLeaf($descriptor, self::DESCRIPTOR_MATCH_NODE, null, false, true);
         $this->use_unicode = $this->checkBooleanLeaf($descriptor, 'unicode');
+        $this->match = $this->checkRegExLeaf(
+            $descriptor, self::DESCRIPTOR_MATCH_NODE, $this->use_unicode, null, false, true
+        );
     }
 
     public function applyRuleToContent(string $content): bool

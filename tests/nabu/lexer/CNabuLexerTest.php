@@ -21,8 +21,6 @@
 
 namespace nabu\lexer;
 
-use PHPUnit\Framework\Error\Error;
-
 use PHPUnit\Framework\TestCase;
 
 use nabu\lexer\CNabuLexer;
@@ -40,7 +38,7 @@ use nabu\lexer\grammar\unittests2\CNabuLexerGrammarTestSubclass3;
 use nabu\lexer\interfaces\INabuLexer;
 
 /**
- * Test class for @see CNabuLexer.
+ * Test class for @see { CNabuLexer }.
  * @author Rafael Gutierrez <rgutierrez@nabu-3.com>
  * @since 0.0.2
  * @version 0.0.2

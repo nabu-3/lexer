@@ -66,7 +66,7 @@ class CNabuLexerRuleRegExTest extends TestCase
             [false, false, false, false, 'literal', '([a-z]+)', "123456", null, 0, false],
             [true, false, false, false, 'literal', '([a-z+', "test CASE", array('test'), 4, true],
 
-            [false, false, false, true, 'literal', "([\u{0080}-\u{FFFF}]+)", "\u{0080}\u{0100}\u{1FF00}", "\u{0080}\u{0100}", 2, true]
+            [false, false, false, true, 'literal', "([\x{0080}-\x{FFFF}]+)", "\u{0080}\u{0100}\u{1FF00}", "\u{0080}\u{0100}", 2, true]
         ];
     }
 

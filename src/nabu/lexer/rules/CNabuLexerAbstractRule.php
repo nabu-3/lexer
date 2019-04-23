@@ -369,6 +369,7 @@ abstract class CNabuLexerAbstractRule implements INabuLexerRule
      * Check if a leaf have a regular expression value and returns the value detected if it is valid.
      * @param array $descriptor The descriptor fragment to be analized. The leaf needs to be in the root of the array.
      * @param string $name Name of the leaf.
+     * @param bool $unicode If true then allows to use unicode values.
      * @param string|null $def_value Default value in case that the leaf does not exists.
      * @param bool $nullable If true, the node can contain a null value.
      * @param bool $raise_exception If true, throws an exception if the leaf des not exists.
@@ -376,12 +377,14 @@ abstract class CNabuLexerAbstractRule implements INabuLexerRule
      * @throws ENabuLexerException Throws an exception if value does not exists or is invalid.
      */
     protected function checkRegExLeaf(
-        array $descriptor, string $name, string $def_value = null, bool $nullable = true, bool $raise_exception = false
+        array $descriptor, string $name,
+        bool $unicode = false, string $def_value = null, bool $nullable = true,
+        bool $raise_exception = false
     ) {
 
         try {
             $regex = $this->checkStringLeaf($descriptor, $name, $def_value, $nullable, $raise_exception);
-            is_string($regex) && preg_match("/$regex/", 'test pattern');
+            is_string($regex) && preg_match("/$regex/" . ($unicode ? 'u' : ''), 'test pattern');
         } catch (ENabuLexerException $ex) {
             if ($ex->getCode() === ENabuLexerException::ERROR_RULE_NODE_INVALID_VALUE) {
                 throw new ENabuLexerException(
