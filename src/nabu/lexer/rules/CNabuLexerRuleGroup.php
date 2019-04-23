@@ -176,7 +176,6 @@ class CNabuLexerRuleGroup extends CNabuLexerAbstractRule
 
         if (is_array($this->group) && count($this->group) > 0 && mb_strlen($content) > 0) {
             foreach ($this->group as $rule) {
-                $len = $this->tokenizer->getSourceLength();
                 $len_token = 0;
                 if ($this->tokenizer instanceof INabuLexerRule &&
                     mb_strlen($content) > 0 &&
