@@ -27,6 +27,8 @@ use nabu\lexer\CNabuLexer;
 
 use nabu\lexer\grammar\mysql\CNabuLexerMySQL57;
 
+use nabu\lexer\interfaces\INabuLexerRule;
+
 /**
  * Test class for @see { CNabuLexerMySQL57 }.
  * @author Rafael Gutierrez <rgutierrez@nabu-3.com>
@@ -52,31 +54,54 @@ class CNabuLexerMySQL57Test extends TestCase
     {
         /** @todo Review @url { https://dev.mysql.com/doc/refman/5.7/en/identifiers.html } to complete rule details. */
         return [
-            [true, "ascii_schema", "ascii_schema", 12],
-            [true, "dollar\$\$\$schema", "dollar\$\$\$schema", 15],
-            [true, "unicode_schema\u{2605}", "unicode_schema\u{2605}", 15],
-            [true, "unicode\u{1FFFF}", "unicode", 7],
-            [true, "`ascii_schema`", "ascii_schema", 14],
-            [true, "`dollar\$\$\$schema`", "dollar\$\$\$schema", 17],
-            [true, "`unicode\u{2605}_test`", "unicode\u{2605}_test", 15],
+            /*
+            ["db_name", true, "ascii_schema", "ascii_schema", 12],
+            ["db_name", true, "dollar\$\$\$schema", "dollar\$\$\$schema", 15],
+            ["db_name", true, "unicode_schema\u{2605}", "unicode_schema\u{2605}", 15],
+            ["db_name", true, "unicode\u{1FFFF}", "unicode", 7],
+            ["db_name", true, "`ascii_schema`", "ascii_schema", 14],
+            ["db_name", true, "`dollar\$\$\$schema`", "dollar\$\$\$schema", 17],
+            ["db_name", true, "`unicode\u{2605}_test`", "unicode\u{2605}_test", 15],
+            ["db_name", true, "`nabu-3`", "nabu-3", 8],
 
-            [false, "-ascii-error"],
-            [false, "\u{000A}unicode_error"],
+            ["db_name", false, "-ascii-error"],
+            ["db_name", false, "\u{000A}unicode_error"],
+
+            ["comment", true, " ", " ", 1],
+            ["comment", true, "    ", "    ", 4],
+            ["comment", true, "    /* comment *//*", array("    ", " comment "), 17],
+            ["comment", true, "/* comment *//*  ", array(" comment ", "  "), 15],*/
+
+            ["if_not_exists", true, "IF NOT EXISTS", array("IF", "NOT", "EXISTS"), 13],
+
+            ["create_schema", true, 'CREATE DATABASE IF NOT EXISTS `nabu-3`',
+                array('CREATE', 'DATABASE', array('IF', 'NOT', 'EXISTS'), 'nabu-3'), 38],
+            ["create_schema", true, 'CREATE SCHEMA IF NOT EXISTS `nabu-3`',
+                array('CREATE', 'SCHEMA', array('IF', 'NOT', 'EXISTS'), 'nabu-3'), 36],
+            ["create_schema", true, 'CREATE DATABASE `nabu-3`',
+                array('CREATE', 'DATABASE', null, 'nabu-3'), 24],
+            ["create_schema", true, 'CREATE SCHEMA `nabu-3`',
+                array('CREATE', 'SCHEMA', null, 'nabu-3'), 22]
+
         ];
     }
     /**
      * Testing db_name Rule.
      * @dataProvider dbNameRuleDataProvider
+     * @param string $rule_name Rule name to apply.
      * @param bool $success Expected result: true => passed, false => fails.
      * @param string|null $sample Sample string to test rule.
-     * @param string|null $result Result string after apply rule.
+     * @param null $result Result value after apply rule.
      * @param int $length Expected source length after apply rule.
      */
-    public function testDbNameRule(bool $success = false, string $sample = null, string $result = null, int $length = 0): void
-    {
-        $rule = $this->lexer->getRule('db_name');
+    public function testDbNameRule(
+        string $rule_name, bool $success = false, string $sample = null, $result = null, int $length = 0
+    ): void {
+        $rule = $this->lexer->getRule($rule_name);
+        $this->assertInstanceOf(INabuLexerRule::class, $rule);
         if ($success) {
-            $this->assertTrue($rule->applyRuleToContent($sample));
+            $applied = $rule->applyRuleToContent($sample);
+            $this->assertTrue($applied);
             $this->assertSame($result, $rule->getValue());
             $this->assertSame($length, $rule->getSourceLength());
         } else {
@@ -86,16 +111,4 @@ class CNabuLexerMySQL57Test extends TestCase
         }
     }
 
-    /**
-     * Testing CREATE SCHEMA Syntax.
-     */
-    public function testCreateSchema()
-    {
-        $rule = $this->lexer->getRule('create_schema');
-
-        $this->assertTrue($rule->applyRuleToContent('CREATE DATABASE IF NOT EXISTS `nabu-3`'));
-        $this->assertTrue($rule->applyRuleToContent('CREATE SCHEMA IF NOT EXISTS `nabu-3`'));
-        $this->assertTrue($rule->applyRuleToContent('CREATE DATABASE `nabu-3`'));
-        $this->assertTrue($rule->applyRuleToContent('CREATE SCHEMA `nabu-3`'));
-    }
 }

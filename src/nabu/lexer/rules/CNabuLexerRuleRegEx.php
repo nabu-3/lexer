@@ -118,9 +118,7 @@ class CNabuLexerRuleRegEx extends CNabuLexerAbstractRule
         $matches = null;
         $regex_modif = ($this->isCaseIgnored() ? 'i' : '') . ($this->isUnicodeAllowed() ? 'u' : '');
 
-        if (is_string($this->match) &&
-            preg_match("/^$this->match/$regex_modif", $content, $matches)
-        ) {
+        if (is_string($this->match) && preg_match("/^$this->match/$regex_modif", $content, $matches)) {
             $len = mb_strlen($matches[0]);
             $cnt = count($matches);
             if ($cnt < 3) {
@@ -130,8 +128,6 @@ class CNabuLexerRuleRegEx extends CNabuLexerAbstractRule
                 $this->setValue($matches, $len);
             }
             $result = true;
-        } else {
-            $this->setValue(null, 0);
         }
 
         return $result;

@@ -30,10 +30,6 @@
         "comment": {
             "starter": true,
             "repeat": "1..n",
-            "tokenizer": {
-                "match": "\\s*",
-                "method": "literal"
-            },
             "rule": {
                 "method": "case",
                 "group": [
@@ -44,6 +40,10 @@
                     {
                         "method": "literal",
                         "match": "\\-\\-\\s+(.*?)\n"
+                    },
+                    {
+                        "method": "literal",
+                        "match": "\\s+?"
                     }
                 ]
             }
@@ -139,6 +139,8 @@
                 {
                     "rule": "db_name"
                 }
+            ],
+            "save": [
             ]
         },
 

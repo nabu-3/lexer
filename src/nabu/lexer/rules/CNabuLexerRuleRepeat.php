@@ -97,6 +97,8 @@ class CNabuLexerRuleRepeat extends CNabuLexerAbstractRule
         $cursor = $content;
         $iteration = 0;
 
+        $this->clearValue();
+
         do {
             $token_found = false;
             if ($this->tokenizer instanceof INabuLexerRule &&

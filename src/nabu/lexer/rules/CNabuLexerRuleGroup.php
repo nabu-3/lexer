@@ -176,15 +176,18 @@ class CNabuLexerRuleGroup extends CNabuLexerAbstractRule
 
         if (is_array($this->group) && count($this->group) > 0 && mb_strlen($content) > 0) {
             foreach ($this->group as $rule) {
+                $len = $this->tokenizer->getSourceLength();
+                $len_token = 0;
                 if ($this->tokenizer instanceof INabuLexerRule &&
                     mb_strlen($content) > 0 &&
                     $this->tokenizer->applyRuleToContent($content)
                 ) {
-                    $content = mb_substr($content, $this->tokenizer->getSourceLength());
+                    $len_token = $this->tokenizer->getSourceLength();
+                    $content = mb_substr($content, $len_token);
                 }
                 if ($rule->applyRuleToContent($content)) {
                     $len = $rule->getSourceLength();
-                    $this->appendValue($rule->getValue(), $len);
+                    $this->appendValue($rule->getValue(), $len_token + $len);
                     $content = mb_substr($content, $len);
                     $retval = true;
                 } else {
