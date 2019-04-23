@@ -22,6 +22,7 @@ install:
 
 script:
     - git fetch --unshallow
+    - git fetch --no-tags ${env.projUrl} +refs/heads/master:refs/remotes/origin/master
     - chmod a-r ./tests/nabu/lexer/resources/test-write-only-file.json
     - ./vendor/bin/phpunit
     - sonar-scanner
