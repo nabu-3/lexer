@@ -21,10 +21,6 @@
 
 namespace nabu\lexer\rules;
 
-use Exception;
-
-use nabu\lexer\exceptions\ENabuLexerException;
-
 /**
  * MySQL Lexer Rule to parse a Regular Expression.
  * @author Rafael Gutierrez <rgutierrez@nabu-3.com>
@@ -53,6 +49,8 @@ class CNabuLexerRuleRegEx extends CNabuLexerAbstractRule
     private $method = null;
     /** @var string $match Match Regular Expression to apply. */
     private $match = null;
+    /** @var bool $use_unicode If true, Unicode is used in Regular expressions and /u is added to all preg_x functions. */
+    private $use_unicode = false;
 
     /**
      * Get the method attribute.
@@ -82,6 +80,15 @@ class CNabuLexerRuleRegEx extends CNabuLexerAbstractRule
     }
 
     /**
+     * Test if Rule allows Unicode Regular Expressions.
+     * @return bool Return true if Unicode is allowed.
+     */
+    public function isUnicodeAllowed(): bool
+    {
+        return is_bool($this->use_unicode) && $this->use_unicode;
+    }
+
+    /**
      * Get the Match Regular Expression of this Rule.
      * @return string|null Returns the Match Regular Expression if assigned or null otherwise.
      */
@@ -98,6 +105,7 @@ class CNabuLexerRuleRegEx extends CNabuLexerAbstractRule
             $descriptor, self::DESCRIPTOR_METHOD_NODE, self::METHOD_LIST, null, false, true
         );
         $this->match = $this->checkRegExLeaf($descriptor, self::DESCRIPTOR_MATCH_NODE, null, false, true);
+        $this->use_unicode = $this->checkBooleanLeaf($descriptor, 'unicode');
     }
 
     public function applyRuleToContent(string $content): bool
@@ -106,7 +114,7 @@ class CNabuLexerRuleRegEx extends CNabuLexerAbstractRule
         $this->clearValue();
 
         $matches = null;
-        $regex_modif = ($this->isCaseIgnored() ? 'i' : '');
+        $regex_modif = ($this->isCaseIgnored() ? 'i' : '') . ($this->isUnicodeAllowed() ? 'u' : '');
 
         if (is_string($this->match) &&
             preg_match("/^$this->match/$regex_modif", $content, $matches)
