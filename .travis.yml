@@ -21,6 +21,7 @@ install:
     - travis_retry composer install
 
 script:
+    - git fetch --unshallow
     - chmod a-r ./tests/nabu/lexer/resources/test-write-only-file.json
     - ./vendor/bin/phpunit
     - sonar-scanner
