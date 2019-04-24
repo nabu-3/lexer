@@ -195,7 +195,8 @@ class CNabuLexer extends CNabuObject implements INabuLexer
 
         if (file_exists($filename)) {
             try {
-                if (($raw = file_get_contents($filename)) === false ||
+                if (mime_content_type($filename) !== 'text/plain' ||
+                    ($raw = file_get_contents($filename)) === false ||
                     !($json = json_decode($raw, JSON_OBJECT_AS_ARRAY))
                 ) {
                     throw new ENabuLexerException(
