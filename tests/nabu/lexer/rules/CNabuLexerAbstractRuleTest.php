@@ -46,6 +46,7 @@ class CNabuLexerAbstractRuleTest extends TestCase
 
     /**
      * @test getPath
+     * @test isHidden
      */
     public function testGetPath()
     {
@@ -65,11 +66,13 @@ class CNabuLexerAbstractRuleTest extends TestCase
                 'regex_null' => null,
                 'range_required' => '0..1',
                 'range_null' => null,
-                'path' => 'a.b.c'
+                'path' => 'a.b.c',
+                'hidden' => false
             )
         );
         $this->assertInstanceOf(CNabuLexerAbstractRuleTestingLeafs::class, $rule);
         $this->assertSame('a.b.c', $rule->getPath());
+        $this->assertFalse($rule->isHidden());
 
         $rule = CNabuLexerAbstractRuleTestingLeafs::createFromDescriptor(
             $this->lexer,
@@ -87,15 +90,18 @@ class CNabuLexerAbstractRuleTest extends TestCase
                 'regex_null' => null,
                 'range_required' => '0..1',
                 'range_null' => null,
-                'other' => 'a.b.c'
+                'other' => 'a.b.c',
+                'hidden' => true
             )
         );
         $this->assertInstanceOf(CNabuLexerAbstractRuleTestingLeafs::class, $rule);
         $this->assertNull($rule->getPath());
+        $this->assertTrue($rule->isHidden());
     }
 
     /**
      * @test checkBooleanLeaf
+     * @test isHidden
      */
     public function testCheckBooleanLeaf()
     {
@@ -119,6 +125,7 @@ class CNabuLexerAbstractRuleTest extends TestCase
         );
         $this->assertInstanceOf(CNabuLexerAbstractRuleTestingLeafs::class, $rule);
         $this->assertTrue($rule->getBoolRequired());
+        $this->assertFalse($rule->isHidden());
 
         $rule = CNabuLexerAbstractRuleTestingLeafs::createFromDescriptor(
             $this->lexer,

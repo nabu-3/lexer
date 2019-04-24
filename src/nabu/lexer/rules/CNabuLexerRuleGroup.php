@@ -85,12 +85,12 @@ class CNabuLexerRuleGroup extends CNabuLexerAbstractRule
         );
 
         if ($this->method === self::METHOD_SEQUENCE) {
-            $separator = $this->checkMixedNode($descriptor, self::DESCRIPTOR_TOKENIZER_NODE, null, false, true);
+            $separator = $this->checkMixedNode($descriptor, self::DESCRIPTOR_TOKENIZER_NODE);
             if (is_string($separator)) {
                 $this->tokenizer = $this->getLexer()->getRule($separator);
             } elseif (is_array($separator)) {
                 $this->tokenizer = CNabuLexerRuleProxy::createRuleFromDescriptor($this->getLexer(), $separator);
-            } else {
+            } elseif (!is_null($separator) && !($separator instanceof INabuLexerRule)) {
                 throw new ENabuLexerException(
                     ENabuLexerException::ERROR_RULE_NODE_INVALID_VALUE,
                     array(
@@ -154,10 +154,12 @@ class CNabuLexerRuleGroup extends CNabuLexerAbstractRule
         $retval = false;
         $this->clearValue();
 
-        foreach ($this->group as $rule) {
-            if ($retval = $rule->applyRuleToContent($content)) {
-                $this->setValue($rule->getValue(), $rule->getSourceLength());
-                break;
+        if (mb_strlen($content) > 0) {
+            foreach ($this->group as $rule) {
+                if ($retval = $rule->applyRuleToContent($content)) {
+                    $this->setValue($rule->getValue(), $rule->getSourceLength());
+                    break;
+                }
             }
         }
 
@@ -174,29 +176,44 @@ class CNabuLexerRuleGroup extends CNabuLexerAbstractRule
         $retval = false;
         $this->clearValue();
 
-        if (is_array($this->group) && count($this->group) > 0 && mb_strlen($content) > 0) {
+        if (is_array($this->group) && count($this->group) > 0) {
             foreach ($this->group as $rule) {
-                $len_token = 0;
-                if ($this->tokenizer instanceof INabuLexerRule &&
-                    mb_strlen($content) > 0 &&
-                    $this->tokenizer->applyRuleToContent($content)
-                ) {
-                    $len_token = $this->tokenizer->getSourceLength();
-                    $content = mb_substr($content, $len_token);
-                }
-                if ($rule->applyRuleToContent($content)) {
-                    $len = $rule->getSourceLength();
-                    $this->appendValue($rule->getValue(), $len_token + $len);
-                    $content = mb_substr($content, $len);
-                    $retval = true;
-                } else {
-                    $retval = false;
+                if (!($retval = $this->applyRuleToContentAsSequenceInternal($rule, $content))) {
                     break;
                 }
             }
         }
 
-        (!$retval) && $this->clearValue();
+        return $retval;
+    }
+
+    /**
+     * Subprocess to aply Rule to content as Sequence.
+     * @param INabuLexerRule $rule Rule to be applied.
+     * @param string &$content Current content buffer to be analized.
+     * @return bool Returns true if Rule was applied.
+     */
+    private function applyRuleToContentAsSequenceInternal(INabuLexerRule $rule, string &$content): bool
+    {
+        $retval = false;
+        $len_token = 0;
+
+        if ($this->tokenizer instanceof INabuLexerRule &&
+            $this->tokenizer->applyRuleToContent($content)
+        ) {
+            $len_token = $this->tokenizer->getSourceLength();
+            $content = mb_substr($content, $len_token);
+        }
+
+        if ($rule->applyRuleToContent($content)) {
+            $len = $rule->getSourceLength();
+            $this->appendValue($rule->getValue(), $len_token + $len);
+            $content = mb_substr($content, $len);
+            $retval = true;
+        } else {
+            $this->clearValue();
+            $retval = false;
+        }
 
         return $retval;
     }

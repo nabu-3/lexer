@@ -27,6 +27,14 @@
             "rule": "object_name"
         },
 
+        "charset_name": {
+            "rule": "object_name"
+        },
+
+        "collate_name": {
+            "rule": "object_name"
+        },
+
         "comment": {
             "starter": true,
             "repeat": "1..n",
@@ -43,9 +51,20 @@
                     },
                     {
                         "method": "literal",
-                        "match": "\\s+?"
+                        "match": "\\s+"
                     }
                 ]
+            }
+        },
+
+        "end_sentence": {
+            "starter": true,
+            "repeat": "1..n",
+            "tokenizer": "comment",
+            "hidden": true,
+            "rule": {
+                "method": "literal",
+                "match": "(;|$)"
             }
         },
 
@@ -68,16 +87,6 @@
             ]
         },
 
-        "charset_name": {
-            "method": "case",
-            "group": [
-                {
-                    "keyword": "utf8",
-                    "method": "ignore case"
-                }
-            ]
-        },
-
         "create_specification": {
             "method": "sequence",
             "tokenizer": "comment",
@@ -85,27 +94,68 @@
                 {
                     "repeat": "0..1",
                     "rule": {
-                        "keyword": "DEFAULT",
-                        "method": "ignore case"
+                        "method": "sequence",
+                        "tokenizer": "comment",
+                        "group": [
+                            {
+                                "repeat": "0..1",
+                                "rule": {
+                                    "keyword": "DEFAULT",
+                                    "method": "ignore case"
+                                }
+                            },
+                            {
+                                "keyword": "CHARACTER",
+                                "method": "ignore case"
+                            },
+                            {
+                                "keyword": "SET",
+                                "method": "ignore case"
+                            },
+                            {
+                                "repeat": "0..1",
+                                "rule": {
+                                    "keyword": "=",
+                                    "method": "ignore case"
+                                }
+                            },
+                            {
+                                "rule": "charset_name"
+                            }
+                        ]
                     }
-                },
-                {
-                    "keyword": "CHARACTER",
-                    "method": "ignore case"
-                },
-                {
-                    "keyword": "SET",
-                    "method": "ignore case"
+
                 },
                 {
                     "repeat": "0..1",
                     "rule": {
-                        "keyword": "=",
-                        "method": "ignore case"
+                        "method": "sequence",
+                        "tokenizer": "comment",
+                        "group": [
+                            {
+                                "repeat": "0..1",
+                                "rule": {
+                                    "keyword": "DEFAULT",
+                                    "method": "ignore case"
+                                }
+                            },
+                            {
+                                "keyword": "COLLATE",
+                                "method": "ignore case"
+                            },
+                            {
+                                "repeat": "0..1",
+                                "rule": {
+                                    "keyword": "=",
+                                    "method": "ignore case"
+                                }
+                            },
+                            {
+                                "rule": "collate_name"
+                            }
+                        ]
                     }
-                },
-                {
-                    "rule": "charset_name"
+
                 }
             ]
         },
@@ -142,6 +192,9 @@
                 {
                     "repeat": "0..1",
                     "rule": "create_specification"
+                },
+                {
+                    "rule": "end_sentence"
                 }
             ],
             "save": [

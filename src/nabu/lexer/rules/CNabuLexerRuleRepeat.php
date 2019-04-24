@@ -127,10 +127,11 @@ class CNabuLexerRuleRepeat extends CNabuLexerAbstractRule
             mb_strlen($cursor) > 0
         );
 
-        if (!($success = $iteration >= $this->min_repeat &&
-              ($this->max_repeat === CNabuLexerAbstractRule::RANGE_N || $iteration <= $this->max_repeat)
-             )
-         ) {
+        if (!($success = ($iteration >= $this->min_repeat &&
+                          ($this->max_repeat === CNabuLexerAbstractRule::RANGE_N ||
+                           $iteration <= $this->max_repeat
+             )))
+        ) {
             $this->clearValue();
         }
 
