@@ -138,6 +138,10 @@
                 },
                 {
                     "rule": "db_name"
+                },
+                {
+                    "repeat": "0..1",
+                    "rule": "create_specification"
                 }
             ],
             "save": [

@@ -21,7 +21,7 @@ install:
     - travis_retry composer install
 
 script:
-    - git fetch --unshallow
+    - if [[ -a .git/shallow ]]; then git fetch --unshallow; fi
     - git fetch --no-tags https://github.com/nabu-3/lexer.git +refs/heads/master:refs/remotes/origin/master
     - chmod a-r ./tests/nabu/lexer/resources/test-write-only-file.json
     - ./vendor/bin/phpunit

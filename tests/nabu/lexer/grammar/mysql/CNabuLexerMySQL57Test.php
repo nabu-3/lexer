@@ -75,13 +75,24 @@ class CNabuLexerMySQL57Test extends TestCase
             ["if_not_exists", true, "IF NOT EXISTS", array("IF", "NOT", "EXISTS"), 13],
 
             ["create_schema", true, 'CREATE DATABASE IF NOT EXISTS `nabu-3`',
-                array('CREATE', 'DATABASE', array('IF', 'NOT', 'EXISTS'), 'nabu-3'), 38],
+                array('CREATE', 'DATABASE', array('IF', 'NOT', 'EXISTS'), 'nabu-3', null), 38],
             ["create_schema", true, 'CREATE SCHEMA IF NOT EXISTS `nabu-3`',
-                array('CREATE', 'SCHEMA', array('IF', 'NOT', 'EXISTS'), 'nabu-3'), 36],
+                array('CREATE', 'SCHEMA', array('IF', 'NOT', 'EXISTS'), 'nabu-3', null), 36],
             ["create_schema", true, 'CREATE DATABASE `nabu-3`',
-                array('CREATE', 'DATABASE', null, 'nabu-3'), 24],
+                array('CREATE', 'DATABASE', null, 'nabu-3', null), 24],
             ["create_schema", true, 'CREATE SCHEMA `nabu-3`',
-                array('CREATE', 'SCHEMA', null, 'nabu-3'), 22]
+                array('CREATE', 'SCHEMA', null, 'nabu-3', null), 22],
+
+            ["create_schema", true, 'CREATE SCHEMA IF NOT EXISTS `nabu-3` DEFAULT CHARACTER SET = utf8',
+                array(
+                    'CREATE',
+                    'SCHEMA',
+                    array('IF', 'NOT', 'EXISTS'),
+                    'nabu-3',
+                    array('DEFAULT', 'CHARACTER', 'SET', '=', 'utf8')
+                ),
+                65
+            ]
 
         ];
     }
