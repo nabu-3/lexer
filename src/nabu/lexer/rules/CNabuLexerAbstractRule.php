@@ -44,6 +44,8 @@ abstract class CNabuLexerAbstractRule implements INabuLexerRule
     const DESCRIPTOR_STARTER_NODE = 'starter';
     /** @var string Descriptor path node literal. */
     const DESCRIPTOR_PATH_NODE = 'path';
+    /** @var string Descriptor hidden node literal. */
+    const DESCRIPTOR_HIDDEN_NODE = 'hidden';
 
     /** @var string Range regular expression to extract parts. */
     private const RANGE_REGEX = "/^(((0|[1-9][0-9]*)(\\.\\.|\\-|,)(n|infinity|inf|∞|[1-9][0-9]*))|(n|infinity|inf|∞|[1-9][0-9]*))$/i";
@@ -76,6 +78,9 @@ abstract class CNabuLexerAbstractRule implements INabuLexerRule
     /** @var int $sourceLength Length of original string needed to detect the value. */
     private $sourceLength = 0;
 
+    /** @var bool $hidden If true, methods setValue and appendValue only considers the source length. */
+    private $hidden = false;
+
     /** @var CNabuLexer $lexer Lexer that manages this rule. */
     private $lexer = null;
 
@@ -101,6 +106,7 @@ abstract class CNabuLexerAbstractRule implements INabuLexerRule
     {
         $this->starter = $this->checkBooleanLeaf($descriptor, self::DESCRIPTOR_STARTER_NODE);
         $this->path = $this->checkStringLeaf($descriptor, self::DESCRIPTOR_PATH_NODE);
+        $this->hidden = $this->checkBooleanLeaf($descriptor, self::DESCRIPTOR_HIDDEN_NODE);
     }
 
     public function getValue()
@@ -115,7 +121,9 @@ abstract class CNabuLexerAbstractRule implements INabuLexerRule
 
     public function setValue($value, int $sourceLength): INabuLexerRule
     {
-        $this->value = $value;
+        if (!$this->isHidden() && !is_null($value)) {
+            $this->value = $value;
+        }
         $this->sourceLength = $sourceLength;
 
         return $this;
@@ -123,12 +131,18 @@ abstract class CNabuLexerAbstractRule implements INabuLexerRule
 
     public function appendValue($value, int $source_length): INabuLexerRule
     {
-        if (is_null($this->value)) {
-            $this->value = $value;
-        } elseif (is_array($this->value)) {
-            $this->value[] = $value;
-        } else {
-            $this->value = array($this->value, $value);
+        if (!$this->isHidden() && !is_null($value)) {
+            if (is_null($this->value)) {
+                $this->value = $value;
+            } elseif (is_array($this->value)) {
+                if (is_array($value)) {
+                    $this->value = array_merge($this->value, $value);
+                } elseif (!is_string($value) || mb_strlen($value) > 0) {
+                    $this->value[] = $value;
+                }
+            } else {
+                $this->value = array($this->value, $value);
+            }
         }
         $this->sourceLength += $source_length;
 
@@ -151,6 +165,11 @@ abstract class CNabuLexerAbstractRule implements INabuLexerRule
     public function getPath(): ?string
     {
         return $this->path;
+    }
+
+    public function isHidden(): bool
+    {
+        return $this->hidden;
     }
 
     public function getLexer(): INabuLexer

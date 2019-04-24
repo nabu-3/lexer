@@ -92,6 +92,11 @@ interface INabuLexerRule
      */
     public function getPath(): ?string;
     /**
+     * Check if the rule have his value hidden or visible.
+     * @return bool Returns true if the value is hidden.
+     */
+    public function isHidden(): bool;
+    /**
      * Get the Lexer that governs this Rule.
      * @return INabuLexer Returns assigned Lexer.
      */

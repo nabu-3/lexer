@@ -54,7 +54,6 @@ class CNabuLexerMySQL57Test extends TestCase
     {
         /** @todo Review @url { https://dev.mysql.com/doc/refman/5.7/en/identifiers.html } to complete rule details. */
         return [
-            /*
             ["db_name", true, "ascii_schema", "ascii_schema", 12],
             ["db_name", true, "dollar\$\$\$schema", "dollar\$\$\$schema", 15],
             ["db_name", true, "unicode_schema\u{2605}", "unicode_schema\u{2605}", 15],
@@ -69,30 +68,64 @@ class CNabuLexerMySQL57Test extends TestCase
 
             ["comment", true, " ", " ", 1],
             ["comment", true, "    ", "    ", 4],
-            ["comment", true, "    /* comment *//*", array("    ", " comment "), 17],
-            ["comment", true, "/* comment *//*  ", array(" comment ", "  "), 15],*/
+            ["comment", true, "    /* comment */", array("    ", " comment "), 17],
+            ["comment", true, "/* comment */  ", array(" comment ", "  "), 15],
 
             ["if_not_exists", true, "IF NOT EXISTS", array("IF", "NOT", "EXISTS"), 13],
 
             ["create_schema", true, 'CREATE DATABASE IF NOT EXISTS `nabu-3`',
-                array('CREATE', 'DATABASE', array('IF', 'NOT', 'EXISTS'), 'nabu-3', null), 38],
+                array('CREATE', 'DATABASE', 'IF', 'NOT', 'EXISTS', 'nabu-3'), 38],
             ["create_schema", true, 'CREATE SCHEMA IF NOT EXISTS `nabu-3`',
-                array('CREATE', 'SCHEMA', array('IF', 'NOT', 'EXISTS'), 'nabu-3', null), 36],
+                array('CREATE', 'SCHEMA', 'IF', 'NOT', 'EXISTS', 'nabu-3'), 36],
             ["create_schema", true, 'CREATE DATABASE `nabu-3`',
-                array('CREATE', 'DATABASE', null, 'nabu-3', null), 24],
+                array('CREATE', 'DATABASE', 'nabu-3'), 24],
             ["create_schema", true, 'CREATE SCHEMA `nabu-3`',
-                array('CREATE', 'SCHEMA', null, 'nabu-3', null), 22],
+                array('CREATE', 'SCHEMA', 'nabu-3'), 22],
 
             ["create_schema", true, 'CREATE SCHEMA IF NOT EXISTS `nabu-3` DEFAULT CHARACTER SET = utf8',
                 array(
-                    'CREATE',
-                    'SCHEMA',
-                    array('IF', 'NOT', 'EXISTS'),
-                    'nabu-3',
-                    array('DEFAULT', 'CHARACTER', 'SET', '=', 'utf8')
+                    'CREATE', 'SCHEMA', 'IF', 'NOT', 'EXISTS', 'nabu-3', 'DEFAULT', 'CHARACTER', 'SET', '=', 'utf8'
                 ),
                 65
-            ]
+            ],
+            ["create_schema", true, 'CREATE SCHEMA IF NOT EXISTS `nabu-3` CHARACTER SET = utf8',
+                array(
+                    'CREATE', 'SCHEMA', 'IF', 'NOT', 'EXISTS', 'nabu-3', 'CHARACTER', 'SET', '=', 'utf8'
+                ),
+                57
+            ],
+            ["create_schema", true, 'CREATE SCHEMA IF NOT EXISTS `nabu-3` CHARACTER SET=utf8',
+                array(
+                    'CREATE', 'SCHEMA', 'IF', 'NOT', 'EXISTS', 'nabu-3', 'CHARACTER', 'SET', '=', 'utf8'
+                ),
+                55
+            ],
+            ["create_schema", true, 'CREATE SCHEMA `nabu-3` CHARACTER SET=utf8',
+                array(
+                    'CREATE', 'SCHEMA', 'nabu-3', 'CHARACTER', 'SET', '=', 'utf8'
+                ),
+                41
+            ],
+            ["create_schema", true, 'CREATE SCHEMA IF NOT EXISTS `nabu-3` DEFAULT COLLATE = utf8_general_ci',
+                array(
+                    'CREATE', 'SCHEMA', 'IF', 'NOT', 'EXISTS', 'nabu-3', 'DEFAULT', 'COLLATE', '=', 'utf8_general_ci'
+                ),
+                70
+            ],
+            ["create_schema", true, 'CREATE SCHEMA IF NOT EXISTS `nabu-3` DEFAULT CHARACTER SET = utf8 DEFAULT COLLATE = utf8_general_ci',
+                array(
+                    'CREATE', 'SCHEMA', 'IF', 'NOT', 'EXISTS', 'nabu-3',
+                    'DEFAULT', 'CHARACTER', 'SET', '=', 'utf8',
+                    'DEFAULT', 'COLLATE', '=', 'utf8_general_ci'
+                ),
+                99
+            ],
+
+            ["create_schema", true, 'CREATE SCHEMA DEFAULT; CHARACTER SET', array('CREATE', 'SCHEMA', 'DEFAULT'), 22],
+            ["create_schema", true, 'CREATE SCHEMA test; CHARACTER SET', array('CREATE', 'SCHEMA', 'test'), 19],
+
+            ["create_schema", false, 'CREATE SCHEMA DEFAULT CHARACTER SET', array('CREATE', 'SCHEMA', 'DEFAULT'), 22],
+            ["create_schema", false, 'CREATE SCHEMA test CHARACTER SET', array('CREATE', 'SCHEMA', 'test'), 19]
 
         ];
     }
@@ -116,7 +149,8 @@ class CNabuLexerMySQL57Test extends TestCase
             $this->assertSame($result, $rule->getValue());
             $this->assertSame($length, $rule->getSourceLength());
         } else {
-            $this->assertFalse($rule->applyRuleToContent($sample));
+            $applied = $rule->applyRuleToContent($sample);
+            $this->assertFalse($applied);
             $this->assertNull($rule->getValue());
             $this->assertSame(0, $rule->getSourceLength());
         }
