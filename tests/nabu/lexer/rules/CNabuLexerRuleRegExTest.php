@@ -29,6 +29,8 @@ use nabu\lexer\CNabuCustomLexer;
 
 use nabu\lexer\exceptions\ENabuLexerException;
 
+use nabu\lexer\interfaces\INabuLexerRule;
+
 /**
  * Test class for @see CNabuLexerRuleRegEx.
  * @author Rafael Gutierrez <rgutierrez@nabu-3.com>
@@ -54,19 +56,22 @@ class CNabuLexerRuleRegExTest extends TestCase
     public function dataProviderCreateInitFromDescriptor()
     {
         return [
-            [false, false, false, false, 'literal', "^''|'(.*?[^\\\\])'",
+            [false, false, false, false, 'literal', "^''|'(.*?[^\\\\])'", null,
                 "'test \'with single quotes\' inside #0' and more test", "test \'with single quotes\' inside #0", 39, true],
-            [false, false, false, false, 'literal', "^'()'|'(.*?[^\\\\])'",
+            [false, false, false, false, 'literal', "^'()'|'(.*?[^\\\\])'", null,
                 "'' and more test", "", 2, true],
-            [false, false, false, false, 'literal', "('\\s*'|'.*?[^\\\\]')",
+            [false, false, false, false, 'literal', "('\\s*'|'.*?[^\\\\]')", null,
                 "'test \'with single quotes\' inside #1' and more test", "'test \'with single quotes\' inside #1'", 39, true],
-            [false, false, false, false, 'literal', '([a-z]+) ([A-Z]+)',
+            [false, false, false, false, 'literal', '([a-z]+) ([A-Z]+)', null,
                 "test CASE with multiple params", array('test', 'CASE'), 9, true],
 
-            [false, false, false, false, 'literal', '([a-z]+)', "123456", null, 0, false],
-            [true, false, false, false, 'literal', '([a-z+', "test CASE", array('test'), 4, true],
+            [false, false, false, false, 'literal', '([a-z]+)', null,
+                "123456", null, 0, false],
+            [true, false, false, false, 'literal', '([a-z+', null,
+                "test CASE", array('test'), 4, true],
 
-            [false, false, false, true, 'literal', "([\x{0080}-\x{FFFF}]+)", "\u{0080}\u{0100}\u{1FF00}", "\u{0080}\u{0100}", 2, true]
+            [false, false, false, true, 'literal', "([\x{0080}-\x{FFFF}]+)", null,
+                "\u{0080}\u{0100}\u{1FF00}", "\u{0080}\u{0100}", 2, true]
         ];
     }
 
@@ -77,11 +82,13 @@ class CNabuLexerRuleRegExTest extends TestCase
      * @param bool|null $unicode If different of null, applies Unicode boolean attribute.
      * @param string|null $method If null acts as not declared.
      * @param string|null $match If null acts as not declared.
+     * @param mixed|null $exclude Exclude rule to apply.
      * @return array|null If, at least, one parameter is different than null, then returns a well formed descriptor.
      * Otherwise, returns null.
      */
     private function createDescriptor(
-        bool $starter = null, bool $case_ignored = null, bool $unicode = null, string $method = null, string $match = null
+        bool $starter = null, bool $case_ignored = null, bool $unicode = null, string $method = null,
+        string $match = null, $exclude = null
     ) {
         $params = array();
         if (is_bool($starter)) {
@@ -98,6 +105,9 @@ class CNabuLexerRuleRegExTest extends TestCase
         }
         if (is_string($match)) {
             $params['match'] = $match;
+        }
+        if (!is_null($exclude)) {
+            $params['exclude'] = $exclude;
         }
         if (count($params) === 0) {
             $params = null;
@@ -118,6 +128,7 @@ class CNabuLexerRuleRegExTest extends TestCase
      * @param bool|null $unicode If different of null, applies Unicode boolean attribute.
      * @param string|null $method If null acts as not declared.
      * @param string|null $match If null acts as not declared.
+     * @param mixed|null $exclude Exclude rule to apply.
      * @param string|null $content Content to test case.
      * @param mixed|null $result Expected result.
      * @param int $length Source length expected result.
@@ -125,11 +136,11 @@ class CNabuLexerRuleRegExTest extends TestCase
      */
     public function testCreateInitFromDescriptor(
         bool $throwable, bool $starter = null, bool $case_ignored = null, bool $unicode = null,
-        string $method = null, string $match = null, string $content = null,
+        string $method = null, string $match = null, $exclude = null, string $content = null,
         $result = null, int $length = 0, bool $passed = false
     ) {
         $lexer = CNabuCustomLexer::getLexer();
-        $params = $this->createDescriptor($starter, $case_ignored, $unicode, $method, $match);
+        $params = $this->createDescriptor($starter, $case_ignored, $unicode, $method, $match, $exclude);
 
         if ($throwable) {
             $this->expectException(ENabuLexerException::class);
@@ -165,8 +176,10 @@ class CNabuLexerRuleRegExTest extends TestCase
         $this->assertSame($method, $rule->getMethod());
         $this->assertSame($match, $rule->getMatchRegularExpression());
 
-        if ($throwable) {
-            $this->expectException(null);
+        if (is_null($exclude)) {
+            $this->assertNull($rule->getExclusionRule());
+        } else {
+            $this->assertInstanceOf(INabuLexerRule::class, $rule->getExclusionRule());
         }
     }
 
@@ -175,6 +188,7 @@ class CNabuLexerRuleRegExTest extends TestCase
      * @test initFromDescriptor
      * @test CnabuLexerAbstractRule::isStarter
      * @test isCaseIgnored
+     * @test getExclusionRule
      * @dataProvider dataProviderCreateInitFromDescriptor
      * @param bool $throwable If true expects that this test throws an exception in any moment.
      * @param bool|null $starter If null acts as not declared.
@@ -182,6 +196,7 @@ class CNabuLexerRuleRegExTest extends TestCase
      * @param bool|null $unicode If different of null, applies Unicode boolean attribute.
      * @param string|null $method If null acts as not declared.
      * @param string|null $match If null acts as not declared.
+     * @param mixed|null $exclude Exclude rule to apply.
      * @param string|null $content Content to test case.
      * @param mixed|null $result Expected result.
      * @param int $length Source length expected result.
@@ -189,7 +204,7 @@ class CNabuLexerRuleRegExTest extends TestCase
      */
     public function testApplyRuleToContent(
         bool $throwable, bool $starter = null, bool $case_ignored = null, bool $unicode = null,
-        string $method = null, string $match = null, string $content = null,
+        string $method = null, string $match = null, $exclude = null, string $content = null,
         $result = null, int $length = 0, bool $passed = false
     ) {
         if ($throwable) {
@@ -199,7 +214,7 @@ class CNabuLexerRuleRegExTest extends TestCase
             try {
                 $rule = CNabuLexerRuleRegEx::createFromDescriptor(
                     $lexer,
-                    $this->createDescriptor($starter, $case_ignored, $unicode, $method, $match)
+                    $this->createDescriptor($starter, $case_ignored, $unicode, $method, $match, $exclude)
                 );
             } catch (Exception $ex) {
                 $this->assertInstanceOf(ENabuLexerException::class, $ex);
@@ -208,6 +223,11 @@ class CNabuLexerRuleRegExTest extends TestCase
 
             if (!is_null($rule)) {
                 $this->assertInstanceOf(CNabuLexerRuleRegEx::class, $rule);
+                if (is_null($exclude)) {
+                    $this->assertNull($rule->getExclusionRule());
+                } else {
+                    $this->assertInstanceOf(INabuLexerRule::class, $rule->getExclusionRule());
+                }
                 if ($passed) {
                     $this->assertTrue($rule->applyRuleToContent($content));
                     $this->assertSame($result, $rule->getValue());
