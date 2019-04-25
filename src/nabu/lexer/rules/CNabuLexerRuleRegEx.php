@@ -21,6 +21,8 @@
 
 namespace nabu\lexer\rules;
 
+use nabu\lexer\interfaces\INabuLexerRule;
+
 /**
  * MySQL Lexer Rule to parse a Regular Expression.
  * @author Rafael Gutierrez <rgutierrez@nabu-3.com>
@@ -51,6 +53,8 @@ class CNabuLexerRuleRegEx extends CNabuLexerAbstractRule
     private $match = null;
     /** @var bool $use_unicode If true, Unicode is used in Regular expressions and /u is added to all preg_x functions. */
     private $use_unicode = false;
+    /** @var INabuLexerRule|null $exclusion_rule Rule to evaluate if extracted string from Regular Expression is not valid. */
+    private $exclusion_rule = null;
 
     /**
      * Get the method attribute.
@@ -95,6 +99,15 @@ class CNabuLexerRuleRegEx extends CNabuLexerAbstractRule
     public function getMatchRegularExpression(): ?string
     {
         return $this->match;
+    }
+
+    /**
+     * Get the Rule to detect exclusion values.
+     * @return INabuLexerRule|null Returns the assigned rule if exists or null otherwise.
+     */
+    public function getExclusionRule(): ?INabuLexerRule
+    {
+        return $this->exclusion_rule;
     }
 
     public function initFromDescriptor(array $descriptor): void

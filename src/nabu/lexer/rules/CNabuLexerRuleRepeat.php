@@ -66,6 +66,7 @@ class CNabuLexerRuleRepeat extends CNabuLexerAbstractRule
         list($this->min_repeat, $this->max_repeat) =
             $this->checkRangeLeaf($descriptor, self::DESCRIPTOR_REPEAT_NODE, null, false, true);
 
+        /** @todo: Create a method in Abstract Rule to parse this kind of nodes. */
         if (array_key_exists(self::DESCRIPTOR_TOKENIZER_NODE, $descriptor)) {
             $separator = $this->checkMixedNode($descriptor, self::DESCRIPTOR_TOKENIZER_NODE, null);
             if (is_array($separator)) {
