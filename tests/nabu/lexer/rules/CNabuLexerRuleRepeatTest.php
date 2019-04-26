@@ -21,6 +21,8 @@
 
 namespace nabu\lexer\rules;
 
+use stdClass;
+
 use PHPUnit\Framework\TestCase;
 
 use nabu\lexer\CNabuCustomLexer;
@@ -312,6 +314,24 @@ class CNabuLexerRuleRepeatTest extends TestCase
      * @test CNabuLexer::registerRule
      */
     public function testInitFromDescriptorFails2()
+    {
+        $lexer = CNabuCustomLexer::getLexer();
+        $this->expectException(ENabuLexerException::class);
+        $this->expectExceptionCode(ENabuLexerException::ERROR_RULE_NOT_FOUND_FOR_DESCRIPTOR);
+        $rule_5 = CNabuLexerRuleRepeat::createFromDescriptor(
+            $lexer,
+            array(
+                'repeat' => '1..3',
+                'rule' => new stdClass()
+            )
+        );
+    }
+
+    /**
+     * @test initFromDescriptor
+     * @test CNabuLexer::registerRule
+     */
+    public function testInitFromDescriptorFails3()
     {
         $lexer = CNabuCustomLexer::getLexer();
         $this->expectException(ENabuLexerException::class);

@@ -308,7 +308,7 @@ trait TNabuLexerNodeChecker
 
             $match = null;
             if (is_string($str_range) &&
-                preg_match(LEXER_RANGE_REGEX, $str_range, $match) &&
+                preg_match(NABU_LEXER_RANGE_REGEX, $str_range, $match) &&
                 is_array($match) &&
                 (($c = count($match)) === 6 || $c === 7)
             ) {
@@ -348,8 +348,8 @@ trait TNabuLexerNodeChecker
     {
         if (is_numeric($value)) {
             $range = array((int)$value, (int)$value);
-        } elseif (is_string($value) && in_array(mb_strtolower($value), LEXER_RANGE_INFINITE_VALUES)) {
-            $range = array(1, LEXER_RANGE_N);
+        } elseif (is_string($value) && in_array(mb_strtolower($value), NABU_LEXER_RANGE_INFINITE_VALUES)) {
+            $range = array(1, NABU_LEXER_RANGE_N);
         }
 
         return $range;
@@ -367,8 +367,8 @@ trait TNabuLexerNodeChecker
      */
     private function checkRangeNodeTupla(string $min_value, string $max_value): array
     {
-        if (in_array($max_value, LEXER_RANGE_INFINITE_VALUES)) {
-            $max_value = LEXER_RANGE_N;
+        if (in_array($max_value, NABU_LEXER_RANGE_INFINITE_VALUES)) {
+            $max_value = NABU_LEXER_RANGE_N;
         } else {
             $max_value = (int)$max_value;
         }
