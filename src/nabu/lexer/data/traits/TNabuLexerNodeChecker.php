@@ -25,6 +25,10 @@ use Exception;
 
 use nabu\lexer\exceptions\ENabuLexerException;
 
+use nabu\lexer\interfaces\INabuLexerRule;
+
+use nabu\lexer\rules\CNabuLexerRuleProxy;
+
 /**
  * Trait to add check operations for array elements.
  * @author Rafael Gutierrez <rgutierrez@nabu-3.com>
@@ -35,16 +39,16 @@ use nabu\lexer\exceptions\ENabuLexerException;
 trait TNabuLexerNodeChecker
 {
     /**
-     * Check if a leaf have a boolean value and returns the value detected if it is valid.
-     * @param array $descriptor The descriptor fragment to be analized. The leaf needs to be in the root of the array.
-     * @param string $name Name of the leaf.
-     * @param bool $def_value Default value in case that the leaf does not exists.
-     * @param bool $raise_exception If true, throws an exception if the leaf des not exists.
+     * Check if a node have a boolean value and returns the value detected if it is valid.
+     * @param array $descriptor The descriptor fragment to be analized. The node needs to be in the root of the array.
+     * @param string $name Name of the node.
+     * @param bool $def_value Default value in case that the node does not exists.
+     * @param bool $throwable If true, throws an exception if the node des not exists.
      * @return bool Returns the detected value.
      * @throws ENabuLexerException Throws an exception if value does not exists or is invalid.
      */
-    protected function checkBooleanLeaf(
-        array $descriptor, string $name, bool $def_value = false, bool $raise_exception = false
+    protected function checkBooleanNode(
+        array $descriptor, string $name, bool $def_value = false, bool $throwable = false
     ): bool {
         $boolValue = $def_value;
 
@@ -61,7 +65,7 @@ trait TNabuLexerNodeChecker
                     )
                 );
             }
-        } elseif ($raise_exception) {
+        } elseif ($throwable) {
             throw new ENabuLexerException(
                 ENabuLexerException::ERROR_RULE_NODE_NOT_FOUND_IN_DESCRIPTOR,
                 array($name, var_export($descriptor, true))
@@ -72,24 +76,24 @@ trait TNabuLexerNodeChecker
     }
 
     /**
-     * Check if a leaf have a string value and returns the value detected if it is valid.
-     * @param array $descriptor The descriptor fragment to be analized. The leaf needs to be in the root of the array.
-     * @param string $name Name of the leaf.
-     * @param string|null $def_value Default value in case that the leaf does not exists.
+     * Check if a node have a string value and returns the value detected if it is valid.
+     * @param array $descriptor The descriptor fragment to be analized. The node needs to be in the root of the array.
+     * @param string $name Name of the node.
+     * @param string|null $def_value Default value in case that the node does not exists.
      * @param bool $nullable If true, the node can contain a null value.
-     * @param bool $raise_exception If true, throws an exception if the leaf des not exists.
+     * @param bool $throwable If true, throws an exception if the node des not exists.
      * @return string|null Returns the detected value.
      * @throws ENabuLexerException Throws an exception if value does not exists or is invalid.
      */
-    protected function checkStringLeaf(
-        array $descriptor, string $name, string $def_value = null, bool $nullable = true, bool $raise_exception = false
+    protected function checkStringNode(
+        array $descriptor, string $name, string $def_value = null, bool $nullable = true, bool $throwable = false
     ) {
         $stringValue = $def_value;
 
         if (array_key_exists($name, $descriptor)) {
             if (is_string($descriptor[$name]) || ($nullable && is_null($descriptor[$name]))) {
                 $stringValue = $descriptor[$name];
-            } elseif ($raise_exception) {
+            } elseif ($throwable) {
                 if ($nullable) {
                     throw new ENabuLexerException(
                         ENabuLexerException::ERROR_RULE_NODE_INVALID_VALUE,
@@ -110,7 +114,7 @@ trait TNabuLexerNodeChecker
                     );
                 }
             }
-        } elseif ($raise_exception) {
+        } elseif ($throwable) {
             throw new ENabuLexerException(
                 ENabuLexerException::ERROR_RULE_NODE_NOT_FOUND_IN_DESCRIPTOR,
                 array($name, var_export($descriptor, true))
@@ -121,20 +125,20 @@ trait TNabuLexerNodeChecker
     }
 
     /**
-     * Check if a leaf have a scalar value contained in an enumeration of values and returns the value detected
+     * Check if a node have a scalar value contained in an enumeration of values and returns the value detected
      * if it is valid.
-     * @param array $descriptor The descriptor fragment to be analized. The leaf needs to be in the root of the array.
-     * @param string $name Name of the leaf.
+     * @param array $descriptor The descriptor fragment to be analized. The node needs to be in the root of the array.
+     * @param string $name Name of the node.
      * @param array $enum_values Array of possible enumerated values.
-     * @param mixed|null $def_value Default value in case that the leaf does not exists.
+     * @param mixed|null $def_value Default value in case that the node does not exists.
      * @param bool $nullable If true, the node can contain a null value.
-     * @param bool $raise_exception If true, throws an exception if the leaf des not exists.
+     * @param bool $throwable If true, throws an exception if the node des not exists.
      * @return mixed Returns the detected value.
      * @throws ENabuLexerException Throws an exception if value does not exists or is invalid.
      */
-    protected function checkEnumLeaf(
+    protected function checkEnumNode(
         array $descriptor, string $name, array $enum_values, $def_value = null, bool $nullable = false,
-        bool $raise_exception = false
+        bool $throwable = false
     ) {
         $enum_val = $def_value;
 
@@ -143,7 +147,7 @@ trait TNabuLexerNodeChecker
                 (is_scalar($descriptor[$name]) && in_array($descriptor[$name], $enum_values))
             ) {
                 $enum_val = $descriptor[$name];
-            } elseif ($raise_exception) {
+            } elseif ($throwable) {
                 if ($nullable) {
                     throw new ENabuLexerException(
                         ENabuLexerException::ERROR_RULE_NODE_INVALID_VALUE,
@@ -156,7 +160,7 @@ trait TNabuLexerNodeChecker
                     );
                 }
             }
-        } elseif ($raise_exception) {
+        } elseif ($throwable) {
             throw new ENabuLexerException(
                 ENabuLexerException::ERROR_RULE_NODE_NOT_FOUND_IN_DESCRIPTOR,
                 array($name, var_export($descriptor, true))
@@ -169,22 +173,22 @@ trait TNabuLexerNodeChecker
     /**
      * Check if a node is an array and returns the array found.
      * @param array $descriptor The descriptor fragment to be analized. The node needs to be in the root of the array.
-     * @param string $name Name of the leaf.
-     * @param array|null $def_value Default value in case that the leaf does not exists.
+     * @param string $name Name of the node.
+     * @param array|null $def_value Default value in case that the node does not exists.
      * @param bool $nullable If true, allows the node to be null.
-     * @param bool $raise_exception If true, throws an exception if the node des not exists.
+     * @param bool $throwable If true, throws an exception if the node des not exists.
      * @return array|null Returns the array found or null if allowed.
      * @throws ENabuLexerException Throws an exception if value does not exists or is invalid.
      */
     protected function checkArrayNode(
-        array $descriptor, string $name, array $def_value = null, bool $nullable = true, bool $raise_exception = false
+        array $descriptor, string $name, array $def_value = null, bool $nullable = true, bool $throwable = false
     ) {
         $array_value = $def_value;
 
         if (array_key_exists($name, $descriptor)) {
             if (is_array($descriptor[$name]) || ($nullable && is_null($descriptor[$name]))) {
                 $array_value = $descriptor[$name];
-            } elseif ($raise_exception) {
+            } elseif ($throwable) {
                 if ($nullable) {
                     throw new ENabuLexerException(
                         ENabuLexerException::ERROR_RULE_NODE_INVALID_VALUE,
@@ -197,7 +201,7 @@ trait TNabuLexerNodeChecker
                     );
                 }
             }
-        } elseif ($raise_exception) {
+        } elseif ($throwable) {
             throw new ENabuLexerException(
                 ENabuLexerException::ERROR_RULE_NODE_NOT_FOUND_IN_DESCRIPTOR,
                 array($name, var_export($descriptor, true))
@@ -210,28 +214,28 @@ trait TNabuLexerNodeChecker
     /**
      * Check if a node have a mixed value and returns the value found.
      * @param array $descriptor The descriptor fragment to be analized. The node needs to be in the root of the array.
-     * @param string $name Name of the leaf.
-     * @param mixed|null $def_value Default value in case that the leaf does not exists.
+     * @param string $name Name of the node.
+     * @param mixed|null $def_value Default value in case that the node does not exists.
      * @param bool $nullable If true, allows the node to be null.
-     * @param bool $raise_exception If true, throws an exception if the node des not exists.
+     * @param bool $throwable If true, throws an exception if the node des not exists.
      * @return array|null Returns the array found or null if allowed.
      * @throws ENabuLexerException Throws an exception if value does not exists or is invalid.
      */
     protected function checkMixedNode(
-        array $descriptor, string $name, $def_value = null, bool $nullable = false, bool $raise_exception = false
+        array $descriptor, string $name, $def_value = null, bool $nullable = false, bool $throwable = false
     ) {
         $mixedValue = $def_value;
 
         if (array_key_exists($name, $descriptor)) {
             if ($nullable || !is_null($descriptor[$name])) {
                 $mixedValue = $descriptor[$name];
-            } elseif ($raise_exception) {
+            } elseif ($throwable) {
                 throw new ENabuLexerException(
                     ENabuLexerException::ERROR_RULE_NODE_INVALID_VALUE,
                     array($name, var_export($descriptor[$name], true), 'mixed')
                 );
             }
-        } elseif ($raise_exception) {
+        } elseif ($throwable) {
             throw new ENabuLexerException(
                 ENabuLexerException::ERROR_RULE_NODE_NOT_FOUND_IN_DESCRIPTOR,
                 array($name, var_export($descriptor, true))
@@ -242,24 +246,24 @@ trait TNabuLexerNodeChecker
     }
 
     /**
-     * Check if a leaf have a regular expression value and returns the value detected if it is valid.
-     * @param array $descriptor The descriptor fragment to be analized. The leaf needs to be in the root of the array.
-     * @param string $name Name of the leaf.
+     * Check if a node have a regular expression value and returns the value detected if it is valid.
+     * @param array $descriptor The descriptor fragment to be analized. The node needs to be in the root of the array.
+     * @param string $name Name of the node.
      * @param bool $unicode If true then allows to use unicode values.
-     * @param string|null $def_value Default value in case that the leaf does not exists.
+     * @param string|null $def_value Default value in case that the node does not exists.
      * @param bool $nullable If true, the node can contain a null value.
-     * @param bool $raise_exception If true, throws an exception if the leaf des not exists.
+     * @param bool $throwable If true, throws an exception if the node des not exists.
      * @return string|null Returns the detected value.
      * @throws ENabuLexerException Throws an exception if value does not exists or is invalid.
      */
-    protected function checkRegExLeaf(
+    protected function checkRegExNode(
         array $descriptor, string $name,
         bool $unicode = false, string $def_value = null, bool $nullable = true,
-        bool $raise_exception = false
+        bool $throwable = false
     ) {
 
         try {
-            $regex = $this->checkStringLeaf($descriptor, $name, $def_value, $nullable, $raise_exception);
+            $regex = $this->checkStringNode($descriptor, $name, $def_value, $nullable, $throwable);
             is_string($regex) && preg_match("/$regex/" . ($unicode ? 'u' : ''), 'test pattern');
         } catch (ENabuLexerException $ex) {
             if ($ex->getCode() === ENabuLexerException::ERROR_RULE_NODE_INVALID_VALUE) {
@@ -271,7 +275,7 @@ trait TNabuLexerNodeChecker
                 throw $ex;
             }
         } catch (Exception $ex) {
-            if ($raise_exception) {
+            if ($throwable) {
                 throw new ENabuLexerException(
                     ENabuLexerException::ERROR_RULE_NODE_INVALID_VALUE,
                     array($name, var_export($descriptor[$name], true), 'Regular Expression')
@@ -285,22 +289,22 @@ trait TNabuLexerNodeChecker
     }
 
     /**
-     * Check if a leaf have a range value and returns the range detected if it is valid.
-     * @param array $descriptor The descriptor fragment to be analized. The leaf needs to be in the root of the array.
-     * @param string $name Name of the leaf.
-     * @param string|null $def_value Default value in case that the leaf does not exists.
+     * Check if a node have a range value and returns the range detected if it is valid.
+     * @param array $descriptor The descriptor fragment to be analized. The node needs to be in the root of the array.
+     * @param string $name Name of the node.
+     * @param string|null $def_value Default value in case that the node does not exists.
      * @param bool $nullable If true, the node can contain a null value.
-     * @param bool $raise_exception If true, throws an exception if the leaf des not exists.
+     * @param bool $throwable If true, throws an exception if the node des not exists.
      * @return array Returns the detected value. He can be received as a list assignement.
      * @throws ENabuLexerException Throws an exception if value does not exists or is invalid.
      */
-    protected function checkRangeLeaf(
-        array $descriptor, string $name, string $def_value = null, bool $nullable = true, bool $raise_exception = false
+    protected function checkRangeNode(
+        array $descriptor, string $name, string $def_value = null, bool $nullable = true, bool $throwable = false
     ) {
         $range = null;
 
         try {
-            $str_range = $this->checkStringLeaf($descriptor, $name, $def_value, $nullable, $raise_exception);
+            $str_range = $this->checkStringNode($descriptor, $name, $def_value, $nullable, $throwable);
 
             $match = null;
             if (is_string($str_range) &&
@@ -309,9 +313,9 @@ trait TNabuLexerNodeChecker
                 (($c = count($match)) === 6 || $c === 7)
             ) {
                 if ($c === 7) {
-                    $range = $this->checkRangeLeafSingleValue($match[6]);
+                    $range = $this->checkRangeNodeSingleValue($match[6]);
                 } else {
-                    $range = $this->checkRangeLeafTupla($match[3], $match[5]);
+                    $range = $this->checkRangeNodeTupla($match[3], $match[5]);
                 }
             } elseif (!is_null($str_range) || !$nullable) {
                 throw new ENabuLexerException(
@@ -340,7 +344,7 @@ trait TNabuLexerNodeChecker
      * @param string $value Value range to parse.
      * @return array Returns an array with min and max values of the range.
      */
-    private function checkRangeLeafSingleValue(string $value): array
+    private function checkRangeNodeSingleValue(string $value): array
     {
         if (is_numeric($value)) {
             $range = array((int)$value, (int)$value);
@@ -361,7 +365,7 @@ trait TNabuLexerNodeChecker
      * @param string $max_value Maximum value fragment to parse.
      * @return array Returns an array with min and max values of the range.
      */
-    private function checkRangeLeafTupla(string $min_value, string $max_value): array
+    private function checkRangeNodeTupla(string $min_value, string $max_value): array
     {
         if (in_array($max_value, LEXER_RANGE_INFINITE_VALUES)) {
             $max_value = LEXER_RANGE_N;
@@ -370,5 +374,47 @@ trait TNabuLexerNodeChecker
         }
 
         return array((int)$min_value, $max_value);
+    }
+
+    /**
+     * Check if a node is a Rule descriptor or a named Rule and returns the Rule instance if it is valid.
+     * @param array $descriptor The descriptor fragment to be analized. The node needs to be in the root of the array.
+     * @param string $name Name of the node.
+     * @param string|null $def_value Default value in case that the node does not exists.
+     * @param bool $nullable If true, the node can contain a null value.
+     * @param bool $throwable If true, throws an exception if the node des not exists.
+     * @return array Returns the detected value. He can be received as a list assignement.
+     * @throws ENabuLexerException Throws an exception if value does not exists or is invalid.
+     */
+    public function checkRuleNode(
+        array $descriptor, string $name, $def_value = null, bool $nullable = true, bool $throwable = false
+    ) {
+        $rule = null;
+        $lexer = $this->getLexer();
+
+        try {
+            $rule_desc = $this->checkMixedNode($descriptor, $name, $def_value, $nullable, $throwable);
+            if (is_array($rule_desc)) {
+                $rule = CNabuLexerRuleProxy::createRuleFromDescriptor($lexer, $rule_desc);
+            } elseif (is_string($rule_desc)) {
+                $rule = $lexer->getRule($rule_desc);
+            } elseif (!($rule_desc instanceof INabuLexerRule) && (!is_null($rule_desc) || !$nullable)) {
+                throw new ENabuLexerException(
+                    ENabuLexerException::ERROR_RULE_NOT_FOUND_FOR_DESCRIPTOR,
+                    array(var_export($descriptor[$name], true))
+                );
+            }
+        } catch (ENabuLexerException $ex) {
+            if ($ex->getCode() === ENabuLexerException::ERROR_RULE_NODE_INVALID_VALUE) {
+                throw new ENabuLexerException(
+                    ENabuLexerException::ERROR_RULE_NOT_FOUND_FOR_DESCRIPTOR,
+                    array(var_export($descriptor[$name], true))
+                );
+            } else {
+                throw $ex;
+            }
+        }
+
+        return $rule;
     }
 }

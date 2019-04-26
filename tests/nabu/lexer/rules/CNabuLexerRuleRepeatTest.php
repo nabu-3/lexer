@@ -284,7 +284,42 @@ class CNabuLexerRuleRepeatTest extends TestCase
             array(
                 'repeat' => '1..3',
                 'tokenizer' => null,
-                'rule' => 'repeater'
+                'rule' => null
+            )
+        );
+    }
+
+    /**
+     * @test initFromDescriptor
+     * @test CNabuLexer::registerRule
+     */
+    public function testInitFromDescriptorFails1()
+    {
+        $lexer = CNabuCustomLexer::getLexer();
+        $this->expectException(ENabuLexerException::class);
+        $this->expectExceptionCode(ENabuLexerException::ERROR_RULE_NOT_FOUND_FOR_DESCRIPTOR);
+        $rule_5 = CNabuLexerRuleRepeat::createFromDescriptor(
+            $lexer,
+            array(
+                'repeat' => '1..3',
+                'rule' => null
+            )
+        );
+    }
+
+    /**
+     * @test initFromDescriptor
+     * @test CNabuLexer::registerRule
+     */
+    public function testInitFromDescriptorFails2()
+    {
+        $lexer = CNabuCustomLexer::getLexer();
+        $this->expectException(ENabuLexerException::class);
+        $this->expectExceptionCode(ENabuLexerException::ERROR_RULE_NODE_NOT_FOUND_IN_DESCRIPTOR);
+        $rule_5 = CNabuLexerRuleRepeat::createFromDescriptor(
+            $lexer,
+            array(
+                'repeat' => '1..3'
             )
         );
     }

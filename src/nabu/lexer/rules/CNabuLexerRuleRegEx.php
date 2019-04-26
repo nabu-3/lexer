@@ -114,11 +114,11 @@ class CNabuLexerRuleRegEx extends CNabuLexerAbstractRule
     {
         parent::initFromDescriptor($descriptor);
 
-        $this->method = $this->checkEnumLeaf(
+        $this->method = $this->checkEnumNode(
             $descriptor, self::DESCRIPTOR_METHOD_NODE, self::METHOD_LIST, null, false, true
         );
-        $this->use_unicode = $this->checkBooleanLeaf($descriptor, 'unicode');
-        $this->match = $this->checkRegExLeaf(
+        $this->use_unicode = $this->checkBooleanNode($descriptor, 'unicode');
+        $this->match = $this->checkRegExNode(
             $descriptor, self::DESCRIPTOR_MATCH_NODE, $this->use_unicode, null, false, true
         );
     }

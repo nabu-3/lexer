@@ -85,9 +85,9 @@ abstract class CNabuLexerAbstractRule implements INabuLexerRule
 
     public function initFromDescriptor(array $descriptor): void
     {
-        $this->starter = $this->checkBooleanLeaf($descriptor, self::DESCRIPTOR_STARTER_NODE);
-        $this->path = $this->checkStringLeaf($descriptor, self::DESCRIPTOR_PATH_NODE);
-        $this->hidden = $this->checkBooleanLeaf($descriptor, self::DESCRIPTOR_HIDDEN_NODE);
+        $this->starter = $this->checkBooleanNode($descriptor, self::DESCRIPTOR_STARTER_NODE);
+        $this->path = $this->checkStringNode($descriptor, self::DESCRIPTOR_PATH_NODE);
+        $this->hidden = $this->checkBooleanNode($descriptor, self::DESCRIPTOR_HIDDEN_NODE);
     }
 
     public function getValue()

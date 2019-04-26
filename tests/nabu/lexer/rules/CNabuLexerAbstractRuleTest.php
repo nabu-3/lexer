@@ -50,7 +50,7 @@ class CNabuLexerAbstractRuleTest extends TestCase
      */
     public function testGetPath()
     {
-        $rule = CNabuLexerAbstractRuleTestingLeafs::createFromDescriptor(
+        $rule = CNabuLexerAbstractRuleTestingNodes::createFromDescriptor(
             $this->lexer,
             array(
                 'bool_required' => true,
@@ -70,11 +70,11 @@ class CNabuLexerAbstractRuleTest extends TestCase
                 'hidden' => false
             )
         );
-        $this->assertInstanceOf(CNabuLexerAbstractRuleTestingLeafs::class, $rule);
+        $this->assertInstanceOf(CNabuLexerAbstractRuleTestingNodes::class, $rule);
         $this->assertSame('a.b.c', $rule->getPath());
         $this->assertFalse($rule->isHidden());
 
-        $rule = CNabuLexerAbstractRuleTestingLeafs::createFromDescriptor(
+        $rule = CNabuLexerAbstractRuleTestingNodes::createFromDescriptor(
             $this->lexer,
             array(
                 'bool_required' => true,
@@ -94,18 +94,18 @@ class CNabuLexerAbstractRuleTest extends TestCase
                 'hidden' => true
             )
         );
-        $this->assertInstanceOf(CNabuLexerAbstractRuleTestingLeafs::class, $rule);
+        $this->assertInstanceOf(CNabuLexerAbstractRuleTestingNodes::class, $rule);
         $this->assertNull($rule->getPath());
         $this->assertTrue($rule->isHidden());
     }
 
     /**
-     * @test checkBooleanLeaf
+     * @test checkBooleanNode
      * @test isHidden
      */
-    public function testCheckBooleanLeaf()
+    public function testCheckBooleanNode()
     {
-        $rule = CNabuLexerAbstractRuleTestingLeafs::createFromDescriptor(
+        $rule = CNabuLexerAbstractRuleTestingNodes::createFromDescriptor(
             $this->lexer,
             array(
                 'bool_required' => true,
@@ -123,11 +123,11 @@ class CNabuLexerAbstractRuleTest extends TestCase
                 'range_null' => null
             )
         );
-        $this->assertInstanceOf(CNabuLexerAbstractRuleTestingLeafs::class, $rule);
+        $this->assertInstanceOf(CNabuLexerAbstractRuleTestingNodes::class, $rule);
         $this->assertTrue($rule->getBoolRequired());
         $this->assertFalse($rule->isHidden());
 
-        $rule = CNabuLexerAbstractRuleTestingLeafs::createFromDescriptor(
+        $rule = CNabuLexerAbstractRuleTestingNodes::createFromDescriptor(
             $this->lexer,
             array(
                 'bool_required' => false,
@@ -145,12 +145,12 @@ class CNabuLexerAbstractRuleTest extends TestCase
                 'range_null' => null
             )
         );
-        $this->assertInstanceOf(CNabuLexerAbstractRuleTestingLeafs::class, $rule);
+        $this->assertInstanceOf(CNabuLexerAbstractRuleTestingNodes::class, $rule);
         $this->assertFalse($rule->getBoolRequired());
 
         $this->expectException(ENabuLexerException::class);
         $this->expectExceptionCode(ENabuLexerException::ERROR_RULE_NODE_NOT_FOUND_IN_DESCRIPTOR);
-        $rule = CNabuLexerAbstractRuleTestingLeafs::createFromDescriptor(
+        $rule = CNabuLexerAbstractRuleTestingNodes::createFromDescriptor(
             $this->lexer,
             array(
                 'string_required' => 'required',
@@ -171,13 +171,13 @@ class CNabuLexerAbstractRuleTest extends TestCase
     }
 
     /**
-     * @test checkBooleanLeaf
+     * @test checkBooleanNode
      */
-    public function testCheckBooleanLeafFails()
+    public function testCheckBooleanNodeFails()
     {
         $this->expectException(ENabuLexerException::class);
         $this->expectExceptionCode(ENabuLexerException::ERROR_RULE_NODE_INVALID_VALUE);
-        $rule = CNabuLexerAbstractRuleTestingLeafs::createFromDescriptor(
+        $rule = CNabuLexerAbstractRuleTestingNodes::createFromDescriptor(
             $this->lexer,
             array(
                 'bool_required' => 'test string',
@@ -198,11 +198,11 @@ class CNabuLexerAbstractRuleTest extends TestCase
     }
 
     /**
-     * @test checkStringLeaf
+     * @test checkStringNode
      */
-    public function testCheckStringLeaf()
+    public function testCheckStringNode()
     {
-        $rule = CNabuLexerAbstractRuleTestingLeafs::createFromDescriptor(
+        $rule = CNabuLexerAbstractRuleTestingNodes::createFromDescriptor(
             $this->lexer,
             array(
                 'bool_required' => false,
@@ -220,14 +220,14 @@ class CNabuLexerAbstractRuleTest extends TestCase
                 'range_null' => null
             )
         );
-        $this->assertInstanceOf(CNabuLexerAbstractRuleTestingLeafs::class, $rule);
+        $this->assertInstanceOf(CNabuLexerAbstractRuleTestingNodes::class, $rule);
         $this->assertSame('required', $rule->getStringRequired());
         $this->assertNull($rule->getStringNull());
 
         $this->expectException(ENabuLexerException::class);
         $this->expectExceptionCode(ENabuLexerException::ERROR_RULE_NODE_INVALID_VALUE);
         $this->expectExceptionMessage('[string]');
-        $rule = CNabuLexerAbstractRuleTestingLeafs::createFromDescriptor(
+        $rule = CNabuLexerAbstractRuleTestingNodes::createFromDescriptor(
             $this->lexer,
             array(
                 'bool_required' => false,
@@ -246,14 +246,14 @@ class CNabuLexerAbstractRuleTest extends TestCase
     }
 
     /**
-     * @test checkStringLeaf
+     * @test checkStringNode
      */
-    public function testCheckStringLeafFails1()
+    public function testCheckStringNodeFails1()
     {
         $this->expectException(ENabuLexerException::class);
         $this->expectExceptionCode(ENabuLexerException::ERROR_RULE_NODE_INVALID_VALUE);
         $this->expectExceptionMessage('[string, null]');
-        $rule = CNabuLexerAbstractRuleTestingLeafs::createFromDescriptor(
+        $rule = CNabuLexerAbstractRuleTestingNodes::createFromDescriptor(
             $this->lexer,
             array(
                 'bool_required' => false,
@@ -274,13 +274,13 @@ class CNabuLexerAbstractRuleTest extends TestCase
     }
 
     /**
-     * @test checkStringLeaf
+     * @test checkStringNode
      */
-    public function testCheckStringLeafFails2()
+    public function testCheckStringNodeFails2()
     {
         $this->expectException(ENabuLexerException::class);
         $this->expectExceptionCode(ENabuLexerException::ERROR_RULE_NODE_NOT_FOUND_IN_DESCRIPTOR);
-        $rule = CNabuLexerAbstractRuleTestingLeafs::createFromDescriptor(
+        $rule = CNabuLexerAbstractRuleTestingNodes::createFromDescriptor(
             $this->lexer,
             array(
                 'bool_required' => false,
@@ -300,11 +300,11 @@ class CNabuLexerAbstractRuleTest extends TestCase
     }
 
     /**
-     * @test checkEnumLeaf
+     * @test checkEnumNode
      */
-    public function testCheckEnumLeaf()
+    public function testCheckEnumNode()
     {
-        $rule = CNabuLexerAbstractRuleTestingLeafs::createFromDescriptor(
+        $rule = CNabuLexerAbstractRuleTestingNodes::createFromDescriptor(
             $this->lexer,
             array(
                 'bool_required' => false,
@@ -322,14 +322,14 @@ class CNabuLexerAbstractRuleTest extends TestCase
                 'range_null' => null
             )
         );
-        $this->assertInstanceOf(CNabuLexerAbstractRuleTestingLeafs::class, $rule);
+        $this->assertInstanceOf(CNabuLexerAbstractRuleTestingNodes::class, $rule);
         $this->assertSame('literal', $rule->getEnumRequired());
         $this->assertNull($rule->getEnumNull());
 
         $this->expectException(ENabuLexerException::class);
         $this->expectExceptionCode(ENabuLexerException::ERROR_RULE_NODE_INVALID_VALUE);
         $this->expectExceptionMessage('[literal, ignore case]');
-        $rule = CNabuLexerAbstractRuleTestingLeafs::createFromDescriptor(
+        $rule = CNabuLexerAbstractRuleTestingNodes::createFromDescriptor(
             $this->lexer,
             array(
                 'bool_required' => false,
@@ -350,14 +350,14 @@ class CNabuLexerAbstractRuleTest extends TestCase
     }
 
     /**
-     * @test checkEnumLeaf
+     * @test checkEnumNode
      */
-    public function testCheckEnumLeafFails1()
+    public function testCheckEnumNodeFails1()
     {
         $this->expectException(ENabuLexerException::class);
         $this->expectExceptionCode(ENabuLexerException::ERROR_RULE_NODE_INVALID_VALUE);
         $this->expectExceptionMessage('[literal, ignore case, null]');
-        $rule = CNabuLexerAbstractRuleTestingLeafs::createFromDescriptor(
+        $rule = CNabuLexerAbstractRuleTestingNodes::createFromDescriptor(
             $this->lexer,
             array(
                 'bool_required' => false,
@@ -378,13 +378,13 @@ class CNabuLexerAbstractRuleTest extends TestCase
     }
 
     /**
-     * @test checkEnumLeaf
+     * @test checkEnumNode
      */
-    public function testCheckEnumLeafFails2()
+    public function testCheckEnumNodeFails2()
     {
         $this->expectException(ENabuLexerException::class);
         $this->expectExceptionCode(ENabuLexerException::ERROR_RULE_NODE_NOT_FOUND_IN_DESCRIPTOR);
-        $rule = CNabuLexerAbstractRuleTestingLeafs::createFromDescriptor(
+        $rule = CNabuLexerAbstractRuleTestingNodes::createFromDescriptor(
             $this->lexer,
             array(
                 'bool_required' => false,
@@ -404,11 +404,11 @@ class CNabuLexerAbstractRuleTest extends TestCase
     }
 
     /**
-     * @test checkArrayLeaf
+     * @test checkArrayNode
      */
-    public function testCheckArrayLeaf()
+    public function testCheckArrayNode()
     {
-        $rule = CNabuLexerAbstractRuleTestingLeafs::createFromDescriptor(
+        $rule = CNabuLexerAbstractRuleTestingNodes::createFromDescriptor(
             $this->lexer,
             array(
                 'bool_required' => false,
@@ -426,14 +426,14 @@ class CNabuLexerAbstractRuleTest extends TestCase
                 'range_null' => null
             )
         );
-        $this->assertInstanceOf(CNabuLexerAbstractRuleTestingLeafs::class, $rule);
+        $this->assertInstanceOf(CNabuLexerAbstractRuleTestingNodes::class, $rule);
         $this->assertSame(array('value'), $rule->getArrayRequired());
         $this->assertNull($rule->getArrayNull());
 
         $this->expectException(ENabuLexerException::class);
         $this->expectExceptionCode(ENabuLexerException::ERROR_RULE_NODE_INVALID_VALUE);
         $this->expectExceptionMessage('[array]');
-        $rule = CNabuLexerAbstractRuleTestingLeafs::createFromDescriptor(
+        $rule = CNabuLexerAbstractRuleTestingNodes::createFromDescriptor(
             $this->lexer,
             array(
                 'bool_required' => false,
@@ -454,14 +454,14 @@ class CNabuLexerAbstractRuleTest extends TestCase
     }
 
     /**
-     * @test checkArrayLeaf
+     * @test checkArrayNode
      */
-    public function testCheckArrayLeafFails1()
+    public function testCheckArrayNodeFails1()
     {
         $this->expectException(ENabuLexerException::class);
         $this->expectExceptionCode(ENabuLexerException::ERROR_RULE_NODE_INVALID_VALUE);
         $this->expectExceptionMessage('[array, null]');
-        $rule = CNabuLexerAbstractRuleTestingLeafs::createFromDescriptor(
+        $rule = CNabuLexerAbstractRuleTestingNodes::createFromDescriptor(
             $this->lexer,
             array(
                 'bool_required' => false,
@@ -482,13 +482,13 @@ class CNabuLexerAbstractRuleTest extends TestCase
     }
 
     /**
-     * @test checkArrayLeaf
+     * @test checkArrayNode
      */
-    public function testCheckArrayLeafFails2()
+    public function testCheckArrayNodeFails2()
     {
         $this->expectException(ENabuLexerException::class);
         $this->expectExceptionCode(ENabuLexerException::ERROR_RULE_NODE_NOT_FOUND_IN_DESCRIPTOR);
-        $rule = CNabuLexerAbstractRuleTestingLeafs::createFromDescriptor(
+        $rule = CNabuLexerAbstractRuleTestingNodes::createFromDescriptor(
             $this->lexer,
             array(
                 'bool_required' => false,
@@ -508,11 +508,11 @@ class CNabuLexerAbstractRuleTest extends TestCase
     }
 
     /**
-     * @test checkMixedLeaf
+     * @test checkMixedNode
      */
-    public function testCheckMixedLeaf()
+    public function testCheckMixedNode()
     {
-        $rule = CNabuLexerAbstractRuleTestingLeafs::createFromDescriptor(
+        $rule = CNabuLexerAbstractRuleTestingNodes::createFromDescriptor(
             $this->lexer,
             array(
                 'bool_required' => false,
@@ -530,14 +530,14 @@ class CNabuLexerAbstractRuleTest extends TestCase
                 'range_null' => null
             )
         );
-        $this->assertInstanceOf(CNabuLexerAbstractRuleTestingLeafs::class, $rule);
+        $this->assertInstanceOf(CNabuLexerAbstractRuleTestingNodes::class, $rule);
         $this->assertSame('mixed', $rule->getMixedRequired());
         $this->assertNull($rule->getMixedNull());
 
         $this->expectException(ENabuLexerException::class);
         $this->expectExceptionCode(ENabuLexerException::ERROR_RULE_NODE_INVALID_VALUE);
         $this->expectExceptionMessage('[mixed]');
-        $rule = CNabuLexerAbstractRuleTestingLeafs::createFromDescriptor(
+        $rule = CNabuLexerAbstractRuleTestingNodes::createFromDescriptor(
             $this->lexer,
             array(
                 'bool_required' => false,
@@ -558,13 +558,13 @@ class CNabuLexerAbstractRuleTest extends TestCase
     }
 
     /**
-     * @test checkMixedLeaf
+     * @test checkMixedNode
      */
-    public function testCheckMixedLeafFails1()
+    public function testCheckMixedNodeFails1()
     {
         $this->expectException(ENabuLexerException::class);
         $this->expectExceptionCode(ENabuLexerException::ERROR_RULE_NODE_NOT_FOUND_IN_DESCRIPTOR);
-        $rule = CNabuLexerAbstractRuleTestingLeafs::createFromDescriptor(
+        $rule = CNabuLexerAbstractRuleTestingNodes::createFromDescriptor(
             $this->lexer,
             array(
                 'bool_required' => false,
@@ -584,11 +584,11 @@ class CNabuLexerAbstractRuleTest extends TestCase
     }
 
     /**
-     * @test checkRegExLeaf
+     * @test checkRegExNode
      */
-    public function testCheckRegExLeaf()
+    public function testCheckRegExNode()
     {
-        $rule = CNabuLexerAbstractRuleTestingLeafs::createFromDescriptor(
+        $rule = CNabuLexerAbstractRuleTestingNodes::createFromDescriptor(
             $this->lexer,
             array(
                 'bool_required' => false,
@@ -606,12 +606,12 @@ class CNabuLexerAbstractRuleTest extends TestCase
                 'range_null' => null
             )
         );
-        $this->assertInstanceOf(CNabuLexerAbstractRuleTestingLeafs::class, $rule);
+        $this->assertInstanceOf(CNabuLexerAbstractRuleTestingNodes::class, $rule);
         $this->assertSame('\s+', $rule->getRegExRequired());
         $this->assertNull($rule->getRegExNull());
         $this->assertSame('.*', $rule->getRegExDefault());
 
-        $rule = CNabuLexerAbstractRuleTestingLeafs::createFromDescriptor(
+        $rule = CNabuLexerAbstractRuleTestingNodes::createFromDescriptor(
             $this->lexer,
             array(
                 'bool_required' => false,
@@ -635,7 +635,7 @@ class CNabuLexerAbstractRuleTest extends TestCase
         $this->expectException(ENabuLexerException::class);
         $this->expectExceptionCode(ENabuLexerException::ERROR_RULE_NODE_INVALID_VALUE);
         $this->expectExceptionMessage('[Regular Expression]');
-        $rule = CNabuLexerAbstractRuleTestingLeafs::createFromDescriptor(
+        $rule = CNabuLexerAbstractRuleTestingNodes::createFromDescriptor(
             $this->lexer,
             array(
                 'bool_required' => false,
@@ -656,14 +656,14 @@ class CNabuLexerAbstractRuleTest extends TestCase
     }
 
     /**
-     * @test checkRegExLeaf
+     * @test checkRegExNode
      */
-    public function testCheckRegExLeafFails1()
+    public function testCheckRegExNodeFails1()
     {
         $this->expectException(ENabuLexerException::class);
         $this->expectExceptionCode(ENabuLexerException::ERROR_RULE_NODE_INVALID_VALUE);
         $this->expectExceptionMessage('[Regular Expression]');
-        $rule = CNabuLexerAbstractRuleTestingLeafs::createFromDescriptor(
+        $rule = CNabuLexerAbstractRuleTestingNodes::createFromDescriptor(
             $this->lexer,
             array(
                 'bool_required' => false,
@@ -684,13 +684,13 @@ class CNabuLexerAbstractRuleTest extends TestCase
     }
 
     /**
-     * @test checkRegExLeaf
+     * @test checkRegExNode
      */
-    public function testCheckRegExLeafFails2()
+    public function testCheckRegExNodeFails2()
     {
         $this->expectException(ENabuLexerException::class);
         $this->expectExceptionCode(ENabuLexerException::ERROR_RULE_NODE_NOT_FOUND_IN_DESCRIPTOR);
-        $rule = CNabuLexerAbstractRuleTestingLeafs::createFromDescriptor(
+        $rule = CNabuLexerAbstractRuleTestingNodes::createFromDescriptor(
             $this->lexer,
             array(
                 'bool_required' => false,
@@ -710,9 +710,9 @@ class CNabuLexerAbstractRuleTest extends TestCase
     }
 
     /**
-     * Data Provider to perform normal tests of checkRangeLeaf 1
+     * Data Provider to perform normal tests of checkRangeNode 1
      */
-    public function checkRangeLeaf1DataProvider()
+    public function checkRangeNode1DataProvider()
     {
         return [
             [ '1', array(1, 1) ],
@@ -777,16 +777,16 @@ class CNabuLexerAbstractRuleTest extends TestCase
     }
 
     /**
-     * @test checkRangeLeaf
-     * @test checkRangeLeafSingleValue
-     * @test checkRangeLeafTupla
-     * @dataProvider checkRangeLeaf1DataProvider
+     * @test checkRangeNode
+     * @test checkRangeNodeSingleValue
+     * @test checkRangeNodeTupla
+     * @dataProvider checkRangeNode1DataProvider
      * @param string $value Value to insert in the test.
      * @param array $range Range to obtain after call.
      */
-    public function testCheckRangeLeaf1(string $value, array $range)
+    public function testCheckRangeNode1(string $value, array $range)
     {
-        $rule = CNabuLexerAbstractRuleTestingLeafs::createFromDescriptor(
+        $rule = CNabuLexerAbstractRuleTestingNodes::createFromDescriptor(
             $this->lexer,
             array(
                 'bool_required' => false,
@@ -804,7 +804,7 @@ class CNabuLexerAbstractRuleTest extends TestCase
                 'range_null' => null
             )
         );
-        $this->assertInstanceOf(CNabuLexerAbstractRuleTestingLeafs::class, $rule);
+        $this->assertInstanceOf(CNabuLexerAbstractRuleTestingNodes::class, $rule);
         $parsed_range = $rule->getRangeRequired();
         if (is_array($range)) {
             $this->assertIsArray($parsed_range);
@@ -815,26 +815,26 @@ class CNabuLexerAbstractRuleTest extends TestCase
     }
 
     /**
-     * Data Provider to perform normal tests of checkRangeLeaf 1
+     * Data Provider to perform normal tests of checkRangeNode 1
      */
-    public function checkRangeLeaf2DataProvider()
+    public function checkRangeNode2DataProvider()
     {
-        return array_merge($this->checkRangeLeaf1DataPrivder(), [
+        return array_merge($this->checkRangeNode1DataPrivder(), [
             [ null, null ]
         ]);
     }
 
     /**
-     * @test checkRangeLeaf
-     * @test checkRangeLeafSingleValue
-     * @test checkRangeLeafTupla
-     * @dataProvider checkRangeLeaf1DataProvider
+     * @test checkRangeNode
+     * @test checkRangeNodeSingleValue
+     * @test checkRangeNodeTupla
+     * @dataProvider checkRangeNode1DataProvider
      * @param string|null $value Value to insert in the test.
      * @param array|null $range Range to obtain after call.
      */
-    public function testCheckRangeLeaf2(string $value = null, array $range = null)
+    public function testCheckRangeNode2(string $value = null, array $range = null)
     {
-        $rule = CNabuLexerAbstractRuleTestingLeafs::createFromDescriptor(
+        $rule = CNabuLexerAbstractRuleTestingNodes::createFromDescriptor(
             $this->lexer,
             array(
                 'bool_required' => false,
@@ -852,7 +852,7 @@ class CNabuLexerAbstractRuleTest extends TestCase
                 'range_null' => $value
             )
         );
-        $this->assertInstanceOf(CNabuLexerAbstractRuleTestingLeafs::class, $rule);
+        $this->assertInstanceOf(CNabuLexerAbstractRuleTestingNodes::class, $rule);
         $parsed_range = $rule->getRangeNull();
         if (is_array($range)) {
             $this->assertIsArray($parsed_range);
@@ -863,13 +863,13 @@ class CNabuLexerAbstractRuleTest extends TestCase
     }
 
     /**
-     * @test checkRangeLeaf
-     * @test checkRangeLeafSingleValue
-     * @test checkRangeLeafTupla
+     * @test checkRangeNode
+     * @test checkRangeNodeSingleValue
+     * @test checkRangeNodeTupla
      */
-    public function testCheckRangeLeaf3()
+    public function testCheckRangeNode3()
     {
-        $rule = CNabuLexerAbstractRuleTestingLeafs::createFromDescriptor(
+        $rule = CNabuLexerAbstractRuleTestingNodes::createFromDescriptor(
             $this->lexer,
             array(
                 'bool_required' => false,
@@ -886,7 +886,7 @@ class CNabuLexerAbstractRuleTest extends TestCase
                 'range_required' => '1..n'
             )
         );
-        $this->assertInstanceOf(CNabuLexerAbstractRuleTestingLeafs::class, $rule);
+        $this->assertInstanceOf(CNabuLexerAbstractRuleTestingNodes::class, $rule);
         $parsed_range = $rule->getRangeNull();
         $this->assertSame(array(1, 'n'), $rule->getRangeRequired());
         $this->assertIsArray($parsed_range);
@@ -894,9 +894,9 @@ class CNabuLexerAbstractRuleTest extends TestCase
     }
 
     /**
-     * Data Provier for checkRangeLeaf fails
+     * Data Provier for checkRangeNode fails
      */
-    public function checkRangeLeafFailsDataProvider()
+    public function checkRangeNodeFailsDataProvider()
     {
         return [
             [ '0' ],
@@ -916,17 +916,17 @@ class CNabuLexerAbstractRuleTest extends TestCase
     }
 
     /**
-     * @test checkRangeLeaf
-     * @test checkRangeLeafSingleValue
-     * @test checkRangeLeafTupla
-     * @dataProvider checkRangeLeafFailsDataProvider
+     * @test checkRangeNode
+     * @test checkRangeNodeSingleValue
+     * @test checkRangeNodeTupla
+     * @dataProvider checkRangeNodeFailsDataProvider
      * @param mixed $value Value to insert in the test.
      */
-    public function testCheckRangeLeafFails($value)
+    public function testCheckRangeNodeFails($value)
     {
         $this->expectException(ENabuLexerException::class);
         $this->expectExceptionCode(ENabuLexerException::ERROR_INVALID_RANGE_VALUES);
-        $rule = CNabuLexerAbstractRuleTestingLeafs::createFromDescriptor(
+        $rule = CNabuLexerAbstractRuleTestingNodes::createFromDescriptor(
             $this->lexer,
             array(
                 'bool_required' => false,
@@ -947,7 +947,7 @@ class CNabuLexerAbstractRuleTest extends TestCase
     }
 }
 
-class CNabuLexerAbstractRuleTestingLeafs extends CNabuLexerAbstractRule
+class CNabuLexerAbstractRuleTestingNodes extends CNabuLexerAbstractRule
 {
     /** @var bool $bool_required Required bool parameter. */
     private $bool_required = false;
@@ -1094,10 +1094,10 @@ class CNabuLexerAbstractRuleTestingLeafs extends CNabuLexerAbstractRule
     {
         parent::initFromDescriptor($descriptor);
 
-        $this->bool_required = $this->checkBooleanLeaf($descriptor, 'bool_required', false, true);
-        $this->string_required = $this->checkStringLeaf($descriptor, 'string_required', null, false, true);
-        $this->string_null = $this->checkStringLeaf($descriptor, 'string_null', null, true, true);
-        $this->enum_required = $this->checkEnumLeaf(
+        $this->bool_required = $this->checkBooleanNode($descriptor, 'bool_required', false, true);
+        $this->string_required = $this->checkStringNode($descriptor, 'string_required', null, false, true);
+        $this->string_null = $this->checkStringNode($descriptor, 'string_null', null, true, true);
+        $this->enum_required = $this->checkEnumNode(
             $descriptor,
             'enum_required',
             array('literal', 'ignore case'),
@@ -1105,7 +1105,7 @@ class CNabuLexerAbstractRuleTestingLeafs extends CNabuLexerAbstractRule
             false,
             true
         );
-        $this->enum_null = $this->checkEnumLeaf(
+        $this->enum_null = $this->checkEnumNode(
             $descriptor,
             'enum_null',
             array('literal', 'ignore case'),
@@ -1117,11 +1117,11 @@ class CNabuLexerAbstractRuleTestingLeafs extends CNabuLexerAbstractRule
         $this->array_null = $this->checkArrayNode($descriptor, 'array_null', null, true, true);
         $this->mixed_required = $this->checkMixedNode($descriptor, 'mixed_required', null, false, true);
         $this->mixed_null = $this->checkMixedNode($descriptor, 'mixed_null', null, true, true);
-        $this->regex_required = $this->checkRegExLeaf($descriptor, 'regex_required', false, null, false, true);
-        $this->regex_null = $this->checkRegExLeaf($descriptor, 'regex_null', false, null, true, true);
-        $this->regex_default = $this->checkRegExLeaf($descriptor, 'regex_default', false, '.*', true, false);
-        $this->range_required = $this->checkRangeLeaf($descriptor, 'range_required', null, false, true);
-        $this->range_null = $this->checkRangeLeaf($descriptor, 'range_null', '0..1', true, false);
+        $this->regex_required = $this->checkRegExNode($descriptor, 'regex_required', false, null, false, true);
+        $this->regex_null = $this->checkRegExNode($descriptor, 'regex_null', false, null, true, true);
+        $this->regex_default = $this->checkRegExNode($descriptor, 'regex_default', false, '.*', true, false);
+        $this->range_required = $this->checkRangeNode($descriptor, 'range_required', null, false, true);
+        $this->range_null = $this->checkRangeNode($descriptor, 'range_null', '0..1', true, false);
     }
 
     public function applyRuleToContent(string $content): bool
