@@ -124,12 +124,12 @@ class CNabuLexerRuleRepeat extends CNabuLexerAbstractRule
             }
             $iteration++;
         } while (
-            ($this->max_repeat === CNabuLexerAbstractRule::RANGE_N || $iteration < $this->max_repeat) &&
+            ($this->max_repeat === LEXER_RANGE_N || $iteration < $this->max_repeat) &&
             mb_strlen($cursor) > 0
         );
 
         if (!($success = ($iteration >= $this->min_repeat &&
-                          ($this->max_repeat === CNabuLexerAbstractRule::RANGE_N ||
+                          ($this->max_repeat === LEXER_RANGE_N ||
                            $iteration <= $this->max_repeat
              )))
         ) {
