@@ -86,7 +86,11 @@ class CNabuLexer extends CNabuObject implements INabuLexer
         $this->rules_proxy = new CNabuLexerRuleProxy($this);
 
         if (is_string(self::getGrammarName())) {
-            $this->preloadFileResources();
+            $dirname = __DIR__ . NABU_LEXER_GRAMMAR_FOLDER . DIRECTORY_SEPARATOR . self::getGrammarName() .  NABU_LEXER_RESOURCE_FOLDER;
+            $class_name = (new ReflectionClass(get_called_class()))->getShortName();
+            $filename = realpath($dirname . DIRECTORY_SEPARATOR . $class_name . '.json');
+
+            $this->loadFileResources($filename);
         }
     }
 
@@ -166,19 +170,6 @@ class CNabuLexer extends CNabuObject implements INabuLexer
         $this->rules_proxy->registerRule($key, $rule);
 
         return $this;
-    }
-
-    /**
-     * Load the default File Resource descriptor to prepare the Lexer.
-     * @throws ENabuLexerException Throws an exception if the file exists but their content is not valid.
-     */
-    protected function preloadFileResources()
-    {
-        $dirname = __DIR__ . NABU_LEXER_GRAMMAR_FOLDER . DIRECTORY_SEPARATOR . self::getGrammarName() .  NABU_LEXER_RESOURCE_FOLDER;
-        $class_name = (new ReflectionClass(get_called_class()))->getShortName();
-        $filename = realpath($dirname . DIRECTORY_SEPARATOR . $class_name . '.json');
-
-        $this->loadFileResources($filename);
     }
 
     public function loadFileResources(string $filename) : bool
