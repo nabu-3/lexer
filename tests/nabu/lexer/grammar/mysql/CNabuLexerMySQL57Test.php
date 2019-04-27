@@ -121,11 +121,12 @@ class CNabuLexerMySQL57Test extends TestCase
                 99
             ],
 
-            ["create_schema", true, 'CREATE SCHEMA DEFAULT; CHARACTER SET', array('CREATE', 'SCHEMA', 'DEFAULT'), 22],
             ["create_schema", true, 'CREATE SCHEMA test; CHARACTER SET', array('CREATE', 'SCHEMA', 'test'), 19],
 
-            ["create_schema", false, 'CREATE SCHEMA DEFAULT CHARACTER SET', array('CREATE', 'SCHEMA', 'DEFAULT'), 22],
-            ["create_schema", false, 'CREATE SCHEMA test CHARACTER SET', array('CREATE', 'SCHEMA', 'test'), 19]
+            ["create_schema", false, 'CREATE SCHEMA DEFAULT; CHARACTER SET', array('CREATE', 'SCHEMA', 'DEFAULT'), 22],
+            ["create_schema", false, 'CREATE SCHEMA DEFAULT CHARACTER SET'],
+            ["create_schema", false, 'CREATE SCHEMA test CHARACTER SET'],
+            ["create_schema", false, 'CREATE SCHEMA DEFAULT']
 
         ];
     }

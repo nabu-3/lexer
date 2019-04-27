@@ -61,35 +61,10 @@ class CNabuLexerRuleRepeat extends CNabuLexerAbstractRule
     {
         parent::initFromDescriptor($descriptor);
 
-        $lexer = $this->getLexer();
-
         list($this->min_repeat, $this->max_repeat) =
-            $this->checkRangeLeaf($descriptor, self::DESCRIPTOR_REPEAT_NODE, null, false, true);
-
-        if (array_key_exists(self::DESCRIPTOR_TOKENIZER_NODE, $descriptor)) {
-            $separator = $this->checkMixedNode($descriptor, self::DESCRIPTOR_TOKENIZER_NODE, null);
-            if (is_array($separator)) {
-                $this->tokenizer = CNabuLexerRuleProxy::createRuleFromDescriptor($lexer, $separator);
-            } elseif (is_string($separator)) {
-                $this->tokenizer = $lexer->getRule($separator);
-            } else {
-                throw new ENabuLexerException(
-                    ENabuLexerException::ERROR_RULE_NOT_FOUND_FOR_DESCRIPTOR,
-                    array(var_export($descriptor[self::DESCRIPTOR_TOKENIZER_NODE], true))
-                );
-            }
-        } else {
-            $this->tokenizer = null;
-        }
-
-        if (array_key_exists(CNabuLexerRuleProxy::DESCRIPTOR_RULE_NODE, $descriptor)) {
-            $rule_name = $this->checkStringLeaf($descriptor, CNabuLexerRuleProxy::DESCRIPTOR_RULE_NODE);
-            if (is_string($rule_name)) {
-                $this->repeater = $lexer->getRule($rule_name);
-            } else {
-                $this->repeater = CNabuLexerRuleProxy::createRuleFromDescriptor($lexer, $descriptor[CNabuLexerRuleProxy::DESCRIPTOR_RULE_NODE]);
-            }
-        }
+            $this->checkRangeNode($descriptor, self::DESCRIPTOR_REPEAT_NODE, null, false, true);
+        $this->tokenizer = $this->checkRuleNode($descriptor, self::DESCRIPTOR_TOKENIZER_NODE);
+        $this->repeater = $this->checkRuleNode($descriptor, CNabuLexerRuleProxy::DESCRIPTOR_RULE_NODE, null, false, true);
     }
 
     public function applyRuleToContent(string $content): bool
@@ -123,12 +98,12 @@ class CNabuLexerRuleRepeat extends CNabuLexerAbstractRule
             }
             $iteration++;
         } while (
-            ($this->max_repeat === CNabuLexerAbstractRule::RANGE_N || $iteration < $this->max_repeat) &&
+            ($this->max_repeat === NABU_LEXER_RANGE_N || $iteration < $this->max_repeat) &&
             mb_strlen($cursor) > 0
         );
 
         if (!($success = ($iteration >= $this->min_repeat &&
-                          ($this->max_repeat === CNabuLexerAbstractRule::RANGE_N ||
+                          ($this->max_repeat === NABU_LEXER_RANGE_N ||
                            $iteration <= $this->max_repeat
              )))
         ) {

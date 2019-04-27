@@ -21,6 +21,8 @@
 
 namespace nabu\lexer\rules;
 
+use nabu\lexer\interfaces\INabuLexerRule;
+
 /**
  * MySQL Lexer Rule to parse a Regular Expression.
  * @author Rafael Gutierrez <rgutierrez@nabu-3.com>
@@ -51,6 +53,8 @@ class CNabuLexerRuleRegEx extends CNabuLexerAbstractRule
     private $match = null;
     /** @var bool $use_unicode If true, Unicode is used in Regular expressions and /u is added to all preg_x functions. */
     private $use_unicode = false;
+    /** @var INabuLexerRule|null $exclusion_rule Rule to evaluate if extracted string from Regular Expression is not valid. */
+    private $exclusion_rule = null;
 
     /**
      * Get the method attribute.
@@ -97,17 +101,27 @@ class CNabuLexerRuleRegEx extends CNabuLexerAbstractRule
         return $this->match;
     }
 
+    /**
+     * Get the Rule to detect exclusion values.
+     * @return INabuLexerRule|null Returns the assigned rule if exists or null otherwise.
+     */
+    public function getExclusionRule(): ?INabuLexerRule
+    {
+        return $this->exclusion_rule;
+    }
+
     public function initFromDescriptor(array $descriptor): void
     {
         parent::initFromDescriptor($descriptor);
 
-        $this->method = $this->checkEnumLeaf(
+        $this->method = $this->checkEnumNode(
             $descriptor, self::DESCRIPTOR_METHOD_NODE, self::METHOD_LIST, null, false, true
         );
-        $this->use_unicode = $this->checkBooleanLeaf($descriptor, 'unicode');
-        $this->match = $this->checkRegExLeaf(
+        $this->use_unicode = $this->checkBooleanNode($descriptor, 'unicode');
+        $this->match = $this->checkRegExNode(
             $descriptor, self::DESCRIPTOR_MATCH_NODE, $this->use_unicode, null, false, true
         );
+        $this->exclusion_rule = $this->checkRuleNode($descriptor, 'exclude');
     }
 
     public function applyRuleToContent(string $content): bool
@@ -120,16 +134,43 @@ class CNabuLexerRuleRegEx extends CNabuLexerAbstractRule
 
         if (is_string($this->match) && preg_match("/^$this->match/$regex_modif", $content, $matches)) {
             $len = mb_strlen($matches[0]);
-            $cnt = count($matches);
-            if ($cnt < 3) {
-                $this->setValue($matches[-1 + $cnt], $len);
-            } else {
-                array_shift($matches);
-                $this->setValue($matches, $len);
+            count($matches) > 1 && array_shift($matches);
+            $values = $this->applyExclusionRuleToMatches($matches);
+
+            if (count($matches) === count($values)) {
+                if (count($values) < 2) {
+                    $this->setValue($values[0], $len);
+                } else {
+                    $this->setValue($values, $len);
+                }
+                $result = true;
             }
-            $result = true;
         }
 
         return $result;
+    }
+
+    /**
+     * Apply Exclusion Rule to parsed content.
+     * @param array $matches Array of match strings after apply a Regular expression.
+     * @return array Returns $matches filtered.
+     */
+    private function applyExclusionRuleToMatches(array $matches): array
+    {
+        if ($this->exclusion_rule instanceof INabuLexerRule) {
+            $cnt = count($matches);
+            $values = array();
+            for ($i = 0; $i < $cnt; $i++) {
+                if (!$this->exclusion_rule->applyRuleToContent($matches[$i]) ||
+                    mb_strlen($matches[$i]) !== $this->exclusion_rule->getSourceLength()
+                ) {
+                    $values[$i] = $matches[$i];
+                }
+            }
+        } else {
+            $values = $matches;
+        }
+
+        return $values;
     }
 }

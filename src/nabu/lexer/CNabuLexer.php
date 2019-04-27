@@ -51,7 +51,7 @@ class CNabuLexer extends CNabuObject implements INabuLexer
 
     /** @var string JSON Grammar branch name */
     private const JSON_GRAMMAR_NODE = 'grammar';
-    /** @var string JSON Grammar Language leaf name */
+    /** @var string JSON Grammar Language node name */
     private const JSON_LANGUAGE_NODE = 'language';
     /** @var string JSON Grammar Version branch name */
     private const JSON_VERSION_NODE = 'version';

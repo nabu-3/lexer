@@ -90,10 +90,10 @@ class CNabuLexerRuleKeyword extends CNabuLexerAbstractRule
     {
         parent::initFromDescriptor($descriptor);
 
-        $this->method = $this->checkEnumLeaf(
+        $this->method = $this->checkEnumNode(
             $descriptor, self::DESCRIPTOR_METHOD_NODE, self::METHOD_LIST, null, false, true
         );
-        $this->keyword = $this->checkStringLeaf($descriptor, self::DESCRIPTOR_KEYWORD_NODE, null, false, true);
+        $this->keyword = $this->checkStringNode($descriptor, self::DESCRIPTOR_KEYWORD_NODE, null, false, true);
     }
 
     public function applyRuleToContent(string $content): bool
