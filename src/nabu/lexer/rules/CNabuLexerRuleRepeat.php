@@ -61,37 +61,9 @@ class CNabuLexerRuleRepeat extends CNabuLexerAbstractRule
     {
         parent::initFromDescriptor($descriptor);
 
-        // $lexer = $this->getLexer();
-        //
         list($this->min_repeat, $this->max_repeat) =
             $this->checkRangeNode($descriptor, self::DESCRIPTOR_REPEAT_NODE, null, false, true);
-
-        /** @todo: Create a method in Abstract Rule to parse this kind of nodes. */
-        // if (array_key_exists(self::DESCRIPTOR_TOKENIZER_NODE, $descriptor)) {
-        //     $separator = $this->checkMixedNode($descriptor, self::DESCRIPTOR_TOKENIZER_NODE, null);
-        //     if (is_array($separator)) {
-        //         $this->tokenizer = CNabuLexerRuleProxy::createRuleFromDescriptor($lexer, $separator);
-        //     } elseif (is_string($separator)) {
-        //         $this->tokenizer = $lexer->getRule($separator);
-        //     } else {
-        //         throw new ENabuLexerException(
-        //             ENabuLexerException::ERROR_RULE_NOT_FOUND_FOR_DESCRIPTOR,
-        //             array(var_export($descriptor[self::DESCRIPTOR_TOKENIZER_NODE], true))
-        //         );
-        //     }
-        // } else {
-        //     $this->tokenizer = null;
-        // }
         $this->tokenizer = $this->checkRuleNode($descriptor, self::DESCRIPTOR_TOKENIZER_NODE);
-
-        // if (array_key_exists(CNabuLexerRuleProxy::DESCRIPTOR_RULE_NODE, $descriptor)) {
-        //     $rule_name = $this->checkStringNode($descriptor, CNabuLexerRuleProxy::DESCRIPTOR_RULE_NODE);
-        //     if (is_string($rule_name)) {
-        //         $this->repeater = $lexer->getRule($rule_name);
-        //     } else {
-        //         $this->repeater = CNabuLexerRuleProxy::createRuleFromDescriptor($lexer, $descriptor[CNabuLexerRuleProxy::DESCRIPTOR_RULE_NODE]);
-        //     }
-        // }
         $this->repeater = $this->checkRuleNode($descriptor, CNabuLexerRuleProxy::DESCRIPTOR_RULE_NODE, null, false, true);
     }
 
