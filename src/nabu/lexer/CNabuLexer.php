@@ -22,12 +22,13 @@
 namespace nabu\lexer;
 
 use Error;
-use Exception;
 use ReflectionClass;
 
 use nabu\lexer\data\CNabuLexerData;
 
 use nabu\lexer\exceptions\ENabuLexerException;
+
+use nabu\lexer\grammar\CNabuLexerGrammarLoader;
 
 use nabu\lexer\interfaces\INabuLexer;
 use nabu\lexer\interfaces\INabuLexerRule;
@@ -48,15 +49,6 @@ class CNabuLexer extends CNabuObject implements INabuLexer
 {
     /** @var string Language MySQL */
     public const GRAMMAR_MYSQL = 'mysql';
-
-    /** @var string JSON Grammar branch name */
-    private const JSON_GRAMMAR_NODE = 'grammar';
-    /** @var string JSON Grammar Language node name */
-    private const JSON_LANGUAGE_NODE = 'language';
-    /** @var string JSON Grammar Version branch name */
-    private const JSON_VERSION_NODE = 'version';
-    /** @var string JSON Rules branch name. */
-    private const JSON_RULES_NODE = 'rules';
 
     /** @var string Language name used by this Lexer. */
     protected static $grammar_name = null;
@@ -191,101 +183,7 @@ class CNabuLexer extends CNabuObject implements INabuLexer
 
     public function loadFileResources(string $filename) : bool
     {
-        $retval = false;
-
-        if (file_exists($filename)) {
-            try {
-                if (mime_content_type($filename) !== 'text/plain' ||
-                    ($raw = file_get_contents($filename)) === false ||
-                    !($json = json_decode($raw, JSON_OBJECT_AS_ARRAY))
-                ) {
-                    throw new ENabuLexerException(
-                        ENabuLexerException::ERROR_INVALID_GRAMMAR_RESOURCE_FILE,
-                        array(
-                            $filename
-                        )
-                    );
-                }
-            } catch (ENabuLexerException $ex) {
-                throw $ex;
-            } catch (Exception $e) {
-                throw new ENabuLexerException(
-                    ENabuLexerException::ERROR_INVALID_GRAMMAR_RESOURCE_FILE,
-                    array(
-                        $filename
-                    )
-                );
-            }
-
-            if (is_array($json)) {
-                $this->processJSONHeader($json);
-                $retval = $this->processJSONRules($json);
-            }
-        }
-
-        return $retval;
-    }
-
-    /**
-     * Process the JSON Resource header of a resources JSON definition.
-     * @param array $json JSON Array previously parsed with resources definition.
-     * @throws ENabuLexerException Throws an exception if the JSON is invalid.
-     */
-    protected function processJSONHeader(array $json)
-    {
-        if (!array_key_exists(self::JSON_GRAMMAR_NODE, $json) ||
-            !is_array($grammar = $json[self::JSON_GRAMMAR_NODE]) ||
-            !array_key_exists(self::JSON_LANGUAGE_NODE, $grammar) ||
-            !is_string($language = $grammar[self::JSON_LANGUAGE_NODE]) ||
-            !array_key_exists(self::JSON_VERSION_NODE, $grammar) ||
-            !is_array($version = $grammar[self::JSON_VERSION_NODE]) ||
-            !array_key_exists('min', $version) ||
-            !(is_string($version_min = $version['min']) || is_null($version_min)) ||
-            !array_key_exists('max', $version) ||
-            !(is_string($version_max = $version['max']) || is_null($version_max))
-        ) {
-            throw new ENabuLexerException(ENabuLexerException::ERROR_RESOURCE_GRAMMAR_DESCRIPTION_MISSING);
-        }
-
-        if (!is_null(self::getGrammarName()) && self::getGrammarName() !== $language) {
-            throw new ENabuLexerException(
-                ENabuLexerException::ERROR_RESOURCE_GRAMMAR_LANGUAGE_NOT_MATCH,
-                array(
-                    self::$grammar_name,
-                    $language
-                )
-            );
-        }
-
-        if (is_string($version_min) && is_string($version_max) && version_compare($version_min, $version_max) === 1) {
-            throw new ENabuLexerException(
-                ENabuLexerException::ERROR_LEXER_GRAMMAR_INVALID_VERSIONS_RANGE,
-                array(
-                    $version_min,
-                    $version_max
-                )
-            );
-        }
-    }
-
-    /**
-     * Process the JSON Resource Rules list.
-     * @param array $json JSON Array previously parsed with resources definition.
-     * @return bool Returns true if all rules are processed.
-     * @throws ENabuLexerException Throws an exception if the JSON is invalid.
-     */
-    protected function processJSONRules(array $json) : bool
-    {
-        if (array_key_exists(self::JSON_RULES_NODE, $json) &&
-            is_array($json[self::JSON_RULES_NODE]) &&
-            count($json[self::JSON_RULES_NODE]) > 0
-        ) {
-            foreach ($json[self::JSON_RULES_NODE] as $key => $rule_desc) {
-                $rule = CNabuLexerRuleProxy::createRuleFromDescriptor($this, $rule_desc);
-                $this->rules_proxy->registerRule($key, $rule);
-            }
-        }
-
-        return true;
+        $loader = new CNabuLexerGrammarLoader($this);
+        return $loader->loadFileResources($filename);
     }
 }
