@@ -33,7 +33,7 @@ use nabu\min\CNabuObject;
  * @author Rafael Gutierrez <rgutierrez@nabu-3.com>
  * @since 0.0.2
  * @version 0.0.2
- * @package \nabu\lexer\grammar\mysql
+ * @package \nabu\lexer\grammar
  */
 abstract class CNabuAbstractLexerGrammarProxy extends CNabuObject implements INabuLexerGrammarProxy
 {
