@@ -25,6 +25,8 @@ use PHPUnit\Framework\TestCase;
 
 use nabu\lexer\CNabuCustomLexer;
 
+use nabu\lexer\exceptions\ENabuLexerException;
+
 /**
  * Test class for @see { CNabuLexerGrammarLoader }.
  * @author Rafael Gutierrez <rgutierrez@nabu-3.com>
@@ -45,5 +47,70 @@ class CNabuLexerGrammarLoaderText extends TestCase
         $loader = new CNabuLexerGrammarLoader($lexer);
         $this->assertInstanceOf(CNabuCustomLexer::class, $loader->getLexer());
         $this->assertSame($lexer, $loader->getLexer());
+    }
+
+    /**
+     * @test loadFileResources
+     */
+    public function testLoadFileResourcesRWError()
+    {
+        $lexer = CNabuCustomLexer::getLexer();
+        $this->assertInstanceOf(CNabuCustomLexer::class, $lexer);
+
+        $this->expectException(ENabuLexerException::class);
+        $this->expectExceptionCode(ENabuLexerException::ERROR_INVALID_GRAMMAR_RESOURCE_FILE);
+        $lexer->loadFileResources(__DIR__ . DIRECTORY_SEPARATOR . 'resources' . DIRECTORY_SEPARATOR . 'test-write-only-file.json');
+    }
+
+    /**
+     * @test loadFileResources
+     */
+    public function testLoadFileResourcesJSONParseError()
+    {
+        $lexer = CNabuCustomLexer::getLexer();
+        $this->assertInstanceOf(CNabuCustomLexer::class, $lexer);
+
+        $this->expectException(ENabuLexerException::class);
+        $this->expectExceptionCode(ENabuLexerException::ERROR_INVALID_GRAMMAR_RESOURCE_FILE);
+        $lexer->loadFileResources(__DIR__ . DIRECTORY_SEPARATOR . 'resources' . DIRECTORY_SEPARATOR . 'test-json-error.json');
+    }
+
+    /**
+     * @test processJSONHeader
+     */
+    public function testProcessJSONHeaderGrammarMissing()
+    {
+        $lexer = CNabuCustomLexer::getLexer();
+        $this->assertInstanceOf(CNabuCustomLexer::class, $lexer);
+
+        $this->expectException(ENabuLexerException::class);
+        $this->expectExceptionCode(ENabuLexerException::ERROR_RESOURCE_GRAMMAR_DESCRIPTION_MISSING);
+        $lexer->loadFileResources(__DIR__ . DIRECTORY_SEPARATOR . 'resources' . DIRECTORY_SEPARATOR . 'test-read-only-file.json');
+    }
+
+    /**
+     * @test processJSONHeader
+     */
+    public function testProcessJSONHeaderGrammarNameNotMatch()
+    {
+        $lexer = CNabuCustomLexer::getLexer();
+        $this->assertInstanceOf(CNabuCustomLexer::class, $lexer);
+
+        $this->expectException(ENabuLexerException::class);
+        $this->expectExceptionCode(ENabuLexerException::ERROR_RESOURCE_GRAMMAR_LANGUAGE_NOT_MATCH);
+        $lexer->loadFileResources(__DIR__ . DIRECTORY_SEPARATOR . 'resources' . DIRECTORY_SEPARATOR . 'test-grammar-not-match-file.json');
+    }
+
+    /**
+     * @test processJSONHeader
+     */
+    public function testProcessJSONHeaderGrammarInvalidVersionRange()
+    {
+        $lexer = CNabuCustomLexer::getLexer();
+        $this->assertInstanceOf(CNabuCustomLexer::class, $lexer);
+
+        $this->expectException(ENabuLexerException::class);
+        $this->expectExceptionCode(ENabuLexerException::ERROR_LEXER_GRAMMAR_INVALID_VERSIONS_RANGE);
+        $lexer->loadFileResources(__DIR__ . DIRECTORY_SEPARATOR . 'resources' . DIRECTORY_SEPARATOR . 'test-grammar-version-error-file.json');
     }
 }
