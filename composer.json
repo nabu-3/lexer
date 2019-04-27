@@ -29,7 +29,7 @@
         "nabu-3/minimal-class": "dev-master"
     },
     "require-dev": {
-        "phpunit/phpunit": "^8"
+        "phpunit/phpunit": "^8.1"
     },
     "autoload": {
         "classmap": [

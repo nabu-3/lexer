@@ -8,6 +8,12 @@
         "email": "rgutierrez@nabu-3.com",
         "role": "Developer"
     },
+    "dependencies": {
+        "nabu-3/minimal-class": "~3.0.2"
+    },
+    "devDependencies": {
+        "phpunit/phpunit/": "^8.1"
+    },
     "repository": [
         {
             "type": "git",
