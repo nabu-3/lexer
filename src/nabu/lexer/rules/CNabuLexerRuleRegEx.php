@@ -121,6 +121,7 @@ class CNabuLexerRuleRegEx extends CNabuLexerAbstractRule
         $this->match = $this->checkRegExNode(
             $descriptor, self::DESCRIPTOR_MATCH_NODE, $this->use_unicode, null, false, true
         );
+        $this->exclusion_rule = $this->checkRuleNode($descriptor, 'exclude');
     }
 
     public function applyRuleToContent(string $content): bool
@@ -133,16 +134,43 @@ class CNabuLexerRuleRegEx extends CNabuLexerAbstractRule
 
         if (is_string($this->match) && preg_match("/^$this->match/$regex_modif", $content, $matches)) {
             $len = mb_strlen($matches[0]);
-            $cnt = count($matches);
-            if ($cnt < 3) {
-                $this->setValue($matches[-1 + $cnt], $len);
-            } else {
-                array_shift($matches);
-                $this->setValue($matches, $len);
+            count($matches) > 1 && array_shift($matches);
+            $values = $this->applyExclusionRuleToMatches($matches);
+
+            if (count($matches) === count($values)) {
+                if (count($values) < 2) {
+                    $this->setValue($values[0], $len);
+                } else {
+                    $this->setValue($values, $len);
+                }
+                $result = true;
             }
-            $result = true;
         }
 
         return $result;
+    }
+
+    /**
+     * Apply Exclusion Rule to parsed content.
+     * @param array $matches Array of match strings after apply a Regular expression.
+     * @return array Returns $matches filtered.
+     */
+    private function applyExclusionRuleToMatches(array $matches): array
+    {
+        if ($this->exclusion_rule instanceof INabuLexerRule) {
+            $cnt = count($matches);
+            $values = array();
+            for ($i = 0; $i < $cnt; $i++) {
+                if (!$this->exclusion_rule->applyRuleToContent($matches[$i]) ||
+                    mb_strlen($matches[$i]) !== $this->exclusion_rule->getSourceLength()
+                ) {
+                    $values[$i] = $matches[$i];
+                }
+            }
+        } else {
+            $values = $matches;
+        }
+
+        return $values;
     }
 }
