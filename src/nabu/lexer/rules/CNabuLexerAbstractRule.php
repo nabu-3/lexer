@@ -68,7 +68,7 @@ abstract class CNabuLexerAbstractRule implements INabuLexerRule
     /** @var int $sourceLength Length of original string needed to detect the tokens. */
     private $sourceLength = 0;
 
-    /** @var bool $hidden If true, methods setToken and apeendTokens only considers the source length. */
+    /** @var bool $hidden If true, methods setToken and appendTokens only considers the source length. */
     private $hidden = false;
 
     /** @var CNabuLexer $lexer Lexer that manages this rule. */
@@ -124,7 +124,7 @@ abstract class CNabuLexerAbstractRule implements INabuLexerRule
         return $this;
     }
 
-    public function apeendTokens($token, int $source_length): INabuLexerRule
+    public function appendTokens($token, int $source_length): INabuLexerRule
     {
         if (!$this->isHidden() && !is_null($token)) {
             if (is_null($this->tokens)) {

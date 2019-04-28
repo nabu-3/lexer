@@ -207,7 +207,7 @@ class CNabuLexerRuleGroup extends CNabuLexerAbstractRule
 
         if ($rule->applyRuleToContent($content)) {
             $len = $rule->getSourceLength();
-            $this->apeendTokens($rule->getTokens(), $len_token + $len);
+            $this->appendTokens($rule->getTokens(), $len_token + $len);
             $content = mb_substr($content, $len);
             $retval = true;
         } else {

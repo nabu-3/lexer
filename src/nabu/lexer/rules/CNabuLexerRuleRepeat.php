@@ -85,11 +85,11 @@ class CNabuLexerRuleRepeat extends CNabuLexerAbstractRule
             $this->repeater->clearTokens();
             if ($this->repeater->applyRuleToContent($cursor)) {
                 if ($token_found) {
-                    $this->apeendTokens($tkv, $tkl);
+                    $this->appendTokens($tkv, $tkl);
                 }
                 $v = $this->repeater->getTokens();
                 $l = $this->repeater->getSourceLength();
-                $this->apeendTokens($v, $l);
+                $this->appendTokens($v, $l);
                 $cursor = mb_substr($cursor, $l);
             } else {
                 break;

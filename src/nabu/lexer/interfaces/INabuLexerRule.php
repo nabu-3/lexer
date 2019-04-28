@@ -75,7 +75,7 @@ interface INabuLexerRule
      * @param int $source_length Amount of characters used to detect and extract the value in the source string.
      * @return INabuLexerRule Returns self pointer to grant fluent interface.
      */
-    public function apeendTokens($token, int $source_length): INabuLexerRule;
+    public function appendTokens($token, int $source_length): INabuLexerRule;
     /**
      * Clear previous stored value of the rule.
      * @return INabuLexerRule Returns self pointer to grant fluent interface.
