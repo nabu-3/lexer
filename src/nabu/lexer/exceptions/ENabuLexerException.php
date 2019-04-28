@@ -66,6 +66,8 @@ class ENabuLexerException extends ENabuException
     public const ERROR_RULE_DOES_NOT_EXISTS                         = 0x000f;
     /** @var int Invalid Range values. Requires range as string. */
     public const ERROR_INVALID_RANGE_VALUES                         = 0x0010;
+    /** @var int Lexer Data instance not set. */
+    public const ERROR_LEXER_DATA_INSTANCE_NOT_SET                  = 0x0011;
 
     /** @var array English error messages array. */
     private static $error_messages = array(
@@ -100,7 +102,9 @@ class ENabuLexerException extends ENabuException
         ENabuLexerException::ERROR_RULE_DOES_NOT_EXISTS =>
             'Rule [%s] does not exists.',
         ENabuLexerException::ERROR_INVALID_RANGE_VALUES =>
-            'Invalid Range values [%s].'
+            'Invalid Range values [%s].',
+        ENabuLexerException::ERROR_LEXER_DATA_INSTANCE_NOT_SET =>
+            'Lexer Data instance not set.'
     );
 
     /**

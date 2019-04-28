@@ -23,7 +23,11 @@ namespace nabu\lexer\rules;
 
 use nabu\lexer\CNabuLexer;
 
+use nabu\lexer\data\CNabuLexerData;
+
 use nabu\lexer\data\traits\TNabuLexerNodeChecker;
+
+use nabu\lexer\exceptions\ENabuLexerException;
 
 use nabu\lexer\interfaces\INabuLexer;
 use nabu\lexer\interfaces\INabuLexerRule;
@@ -136,6 +140,21 @@ abstract class CNabuLexerAbstractRule implements INabuLexerRule
     {
         $this->tokens = null;
         $this->sourceLength = 0;
+
+        return $this;
+    }
+
+    public function setPathValue($value = null): INabuLexerRule
+    {
+        $data = $this->getLexer()->getData();
+
+        if ($data instanceof CNabuLexerData) {
+            if (is_string($this->path)) {
+                $data->setValue($this->path, $value);
+            }
+        } else {
+            throw new ENabuLexerException(ENabuLexerException::ERROR_LEXER_DATA_INSTANCE_NOT_SET);
+        }
 
         return $this;
     }

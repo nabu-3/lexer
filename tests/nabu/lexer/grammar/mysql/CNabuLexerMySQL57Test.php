@@ -49,6 +49,11 @@ class CNabuLexerMySQL57Test extends TestCase
         self::$lexer = CNabuLexer::getLexer('mysql', '5.7');
     }
 
+    public function setUp(): void
+    {
+        self::$lexer->setData(new CNabuLexerData());
+    }
+
     /**
      * Data Provider for testDbNameRule
      */

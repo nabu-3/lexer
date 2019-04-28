@@ -82,6 +82,13 @@ interface INabuLexerRule
      */
     public function clearTokens(): INabuLexerRule;
     /**
+     * Sets the Path value in the associated @see { CNabuLexerData } object.
+     * @param mixed|null $value Value to be setted.
+     * @return INabuLexerRule Returns the self pointer to grant fluent interfaces.
+     * @throws ENabuLexerException Throw an exception if something unexpected happens.
+     */
+    public function setPathValue($value = null): INabuLexerRule;
+    /**
      * Check if the rule is a starter rule or could be placed in any moment.
      * @return bool Returns true if it is a starter rule.
      */

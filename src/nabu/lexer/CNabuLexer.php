@@ -180,7 +180,7 @@ class CNabuLexer extends CNabuObject implements INabuLexer
     public function analyze(string $content): bool
     {
         $result = false;
-        $this->data = new CNabuLexerData();
+        $this->setData(new CNabuLexerData());
 
         foreach ($this->rules_proxy as $key => $rule) {
             if ($rule->isStarter() && $rule->applyRuleToContent($content)) {

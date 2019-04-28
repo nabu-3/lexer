@@ -27,6 +27,8 @@ use PHPUnit\Framework\TestCase;
 
 use nabu\lexer\CNabuCustomLexer;
 
+use nabu\lexer\data\CNabuLexerData;
+
 use nabu\lexer\exceptions\ENabuLexerException;
 
 /**
@@ -38,6 +40,15 @@ use nabu\lexer\exceptions\ENabuLexerException;
  */
 class CNabuLexerRuleKeywordTest extends TestCase
 {
+    /** @var CNabuCustomLexer Lexer used for tests. */
+    private $lexer = null;
+
+    public function setUp(): void
+    {
+        $this->lexer = CNabuCustomLexer::getLexer();
+        $this->lexer->setData(new CNabuLexerData());
+    }
+
     /**
      * @test __construct
      */
@@ -132,14 +143,13 @@ class CNabuLexerRuleKeywordTest extends TestCase
         string $method = null, string $keyword = null, string $content = null, array $result = null,
         bool $passed = false
     ) {
-        $lexer = CNabuCustomLexer::getLexer();
         $params = $this->createDescriptor($starter, $case_ignored, $method, $keyword);
 
         if ($throwable) {
             $this->expectException(ENabuLexerException::class);
         }
 
-        $rule = CNabuLexerRuleKeyword::createFromDescriptor($lexer, $params);
+        $rule = CNabuLexerRuleKeyword::createFromDescriptor($this->lexer, $params);
         $this->assertInstanceOf(CNabuLexerRuleKeyword::class, $rule);
 
         if (is_bool($starter)) {
@@ -189,10 +199,9 @@ class CNabuLexerRuleKeywordTest extends TestCase
         if ($throwable) {
             $this->assertTrue($throwable);
         } else {
-            $lexer = CNabuCustomLexer::getLexer();
             try {
                 $rule = CNabuLexerRuleKeyword::createFromDescriptor(
-                    $lexer,
+                    $this->lexer,
                     $this->createDescriptor($starter, $case_ignored, $method, $keyword)
                 );
             } catch (Exception $ex) {
