@@ -24,7 +24,7 @@ namespace nabu\lexer\exceptions;
 use PHPUnit\Framework\TestCase;
 
 /**
- * Test class for @see ENabuLexerException.
+ * Test class for @see { ENabuLexerException }.
  * @author Rafael Gutierrez <rgutierrez@nabu-3.com>
  * @since 0.0.2
  * @version 0.0.2

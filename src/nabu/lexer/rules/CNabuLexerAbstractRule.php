@@ -124,16 +124,16 @@ abstract class CNabuLexerAbstractRule implements INabuLexerRule
         return $this;
     }
 
-    public function appendTokens($token, int $source_length): INabuLexerRule
+    public function appendTokens($tokens, int $source_length): INabuLexerRule
     {
-        if (!$this->isHidden() && !is_null($token)) {
+        if (!$this->isHidden() && !is_null($tokens)) {
             if (is_null($this->tokens)) {
-                $this->tokens = $token;
+                $this->tokens = $tokens;
             } else {
-                if (is_array($token)) {
-                    $this->tokens = array_merge($this->tokens, $token);
-                } elseif (!is_string($token) || mb_strlen($token) > 0) {
-                    $this->tokens[] = $token;
+                if (is_array($tokens)) {
+                    $this->tokens = array_merge($this->tokens, $tokens);
+                } elseif (!is_string($tokens) || mb_strlen($tokens) > 0) {
+                    $this->tokens[] = $tokens;
                 }
             }
         }

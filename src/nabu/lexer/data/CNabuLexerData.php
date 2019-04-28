@@ -86,7 +86,7 @@ class CNabuLexerData extends CNabuDataObject
     /**
      * @return string|null
      */
-    public function getMainRulename(): ?string
+    public function getMainRuleName(): ?string
     {
         return $this->main_rule_name;
     }
