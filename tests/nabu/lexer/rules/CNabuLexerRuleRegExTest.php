@@ -230,11 +230,11 @@ class CNabuLexerRuleRegExTest extends TestCase
                 }
                 if ($passed) {
                     $this->assertTrue($rule->applyRuleToContent($content));
-                    $this->assertSame($result, $rule->getValue());
+                    $this->assertSame($result, $rule->getTokens());
                     $this->assertSame($length, $rule->getSourceLength());
                 } else {
                     $this->assertFalse($rule->applyRuleToContent($content));
-                    $this->assertNull($rule->getValue());
+                    $this->assertNull($rule->getTokens());
                     $this->assertSame(0, $rule->getSourceLength());
                 }
             }

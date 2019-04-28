@@ -73,7 +73,7 @@ class CNabuLexerRuleRepeatTest extends TestCase
         $this->assertInstanceOf(CNabuLexerRuleRepeat::class, $repeat);
         $this->assertInstanceOf(CNabuLexerRuleRegEx::class, $repeat->getTokenizer());
         $this->assertTrue($repeat->applyRuleToContent("    /* Test 1 */\n\r/* Test 2 */   /* Test /* 3 */"));
-        $this->assertSame(array('    ', ' Test 1 '), $repeat->getValue());
+        $this->assertSame(array('    ', ' Test 1 '), $repeat->getTokens());
         $this->assertSame(16, $repeat->getSourceLength());
 
         $repeat = CNabuLexerRuleRepeat::createFromDescriptor(
@@ -92,7 +92,7 @@ class CNabuLexerRuleRepeatTest extends TestCase
         );
         $this->assertInstanceOf(CNabuLexerRuleRepeat::class, $repeat);
         $this->assertTrue($repeat->applyRuleToContent("    /* Test 1 */\n\r/* Test 2 */   /* Test /* 3 */"));
-        $this->assertSame(array('    ', ' Test 1 ', "\n\r", ' Test 2 ', '   ', ' Test /* 3 '), $repeat->getValue());
+        $this->assertSame(array('    ', ' Test 1 ', "\n\r", ' Test 2 ', '   ', ' Test /* 3 '), $repeat->getTokens());
         $this->assertSame(48, $repeat->getSourceLength());
 
         $repeat = CNabuLexerRuleRepeat::createFromDescriptor(
@@ -111,7 +111,7 @@ class CNabuLexerRuleRepeatTest extends TestCase
         );
         $this->assertInstanceOf(CNabuLexerRuleRepeat::class, $repeat);
         $this->assertTrue($repeat->applyRuleToContent("    /* Test 1 */\n\r/* Test 2 */   /* Test /* 3 */"));
-        $this->assertSame(array('    ', ' Test 1 ', "\n\r", ' Test 2 ', '   ', ' Test /* 3 '), $repeat->getValue());
+        $this->assertSame(array('    ', ' Test 1 ', "\n\r", ' Test 2 ', '   ', ' Test /* 3 '), $repeat->getTokens());
         $this->assertSame(48, $repeat->getSourceLength());
 
         $repeat = CNabuLexerRuleRepeat::createFromDescriptor(
@@ -130,7 +130,7 @@ class CNabuLexerRuleRepeatTest extends TestCase
         );
         $this->assertInstanceOf(CNabuLexerRuleRepeat::class, $repeat);
         $this->assertTrue($repeat->applyRuleToContent("    /* Test 1 */\n\r/* Test 2 */   /* Test /* 3 */   Test 4"));
-        $this->assertSame(array('    ', ' Test 1 ', "\n\r", ' Test 2 ', '   ', ' Test /* 3 '), $repeat->getValue());
+        $this->assertSame(array('    ', ' Test 1 ', "\n\r", ' Test 2 ', '   ', ' Test /* 3 '), $repeat->getTokens());
         $this->assertSame(48, $repeat->getSourceLength());
 
         $repeat = CNabuLexerRuleRepeat::createFromDescriptor(
@@ -149,7 +149,7 @@ class CNabuLexerRuleRepeatTest extends TestCase
         );
         $this->assertInstanceOf(CNabuLexerRuleRepeat::class, $repeat);
         $this->assertTrue($repeat->applyRuleToContent("    /* Test 1 */\n\r/* Test 2 */   /* Test /* 3 */   Test 4"));
-        $this->assertSame(array('    ', ' Test 1 ', "\n\r", ' Test 2 ', '   ', ' Test /* 3 '), $repeat->getValue());
+        $this->assertSame(array('    ', ' Test 1 ', "\n\r", ' Test 2 ', '   ', ' Test /* 3 '), $repeat->getTokens());
         $this->assertSame(48, $repeat->getSourceLength());
 
         $repeat = CNabuLexerRuleRepeat::createFromDescriptor(
@@ -168,7 +168,7 @@ class CNabuLexerRuleRepeatTest extends TestCase
         );
         $this->assertInstanceOf(CNabuLexerRuleRepeat::class, $repeat);
         $this->assertTrue($repeat->applyRuleToContent("    /* Test 1 */\n\r/* Test 2 */   /* Test /* 3 */   Test 4"));
-        $this->assertSame(array('    ', ' Test 1 ', "\n\r", ' Test 2 ', '   ', ' Test /* 3 '), $repeat->getValue());
+        $this->assertSame(array('    ', ' Test 1 ', "\n\r", ' Test 2 ', '   ', ' Test /* 3 '), $repeat->getTokens());
         $this->assertSame(48, $repeat->getSourceLength());
 
         $repeat = CNabuLexerRuleRepeat::createFromDescriptor(
@@ -187,7 +187,7 @@ class CNabuLexerRuleRepeatTest extends TestCase
         );
         $this->assertInstanceOf(CNabuLexerRuleRepeat::class, $repeat);
         $this->assertTrue($repeat->applyRuleToContent("    /* Test 1 */\n\r/* Test 2 */   /* Test /* 3 */   Test 4"));
-        $this->assertSame(array('    ', ' Test 1 ', "\n\r", ' Test 2 ', '   ', ' Test /* 3 '), $repeat->getValue());
+        $this->assertSame(array('    ', ' Test 1 ', "\n\r", ' Test 2 ', '   ', ' Test /* 3 '), $repeat->getTokens());
         $this->assertSame(48, $repeat->getSourceLength());
 
         $repeat = CNabuLexerRuleRepeat::createFromDescriptor(
@@ -206,7 +206,7 @@ class CNabuLexerRuleRepeatTest extends TestCase
         );
         $this->assertInstanceOf(CNabuLexerRuleRepeat::class, $repeat);
         $this->assertTrue($repeat->applyRuleToContent("    /* Test 1 */\n\r/* Test 2 */   /* Test /* 3 */"));
-        $this->assertSame(array('    ', ' Test 1 ', "\n\r", ' Test 2 '), $repeat->getValue());
+        $this->assertSame(array('    ', ' Test 1 ', "\n\r", ' Test 2 '), $repeat->getTokens());
         $this->assertSame(30, $repeat->getSourceLength());
 
         $repeat = CNabuLexerRuleRepeat::createFromDescriptor(
@@ -225,7 +225,7 @@ class CNabuLexerRuleRepeatTest extends TestCase
         );
         $this->assertInstanceOf(CNabuLexerRuleRepeat::class, $repeat);
         $this->assertTrue($repeat->applyRuleToContent("    /* Test 1 */\n\r/* Test 2 */   /* Test /* 3 */"));
-        $this->assertSame(array('    ', ' Test 1 ', "\n\r", ' Test 2 '), $repeat->getValue());
+        $this->assertSame(array('    ', ' Test 1 ', "\n\r", ' Test 2 '), $repeat->getTokens());
         $this->assertSame(30, $repeat->getSourceLength());
 
         $repeat = CNabuLexerRuleRepeat::createFromDescriptor(
@@ -276,7 +276,7 @@ class CNabuLexerRuleRepeatTest extends TestCase
         );
         $this->assertInstanceOf(INabuLexer::class, $lexer->registerRule('comment', $rule_3));
         $this->assertTrue($rule_3->applyRuleToContent("    /* Test 1 */\n\r/* Test 2 */   /* Test /* 3 */   Test 4"));
-        $this->assertSame(array('    ', ' Test 1 ', "\n\r", ' Test 2 ', '   ', ' Test /* 3 '), $rule_3->getValue());
+        $this->assertSame(array('    ', ' Test 1 ', "\n\r", ' Test 2 ', '   ', ' Test /* 3 '), $rule_3->getTokens());
         $this->assertSame(48, $rule_3->getSourceLength());
 
         $this->expectException(ENabuLexerException::class);
@@ -366,7 +366,7 @@ class CNabuLexerRuleRepeatTest extends TestCase
         );
         $this->assertInstanceOf(CNabuLexerRuleRepeat::class, $repeat);
         $this->assertTrue($repeat->applyRuleToContent("    /* Test 1 */\n\r/* Test 2 */   /* Test /* 3 */"));
-        $this->assertSame(array('    ', ' Test 1 ', "\n\r", ' Test 2 ', '   ', ' Test /* 3 '), $repeat->getValue());
+        $this->assertSame(array('    ', ' Test 1 ', "\n\r", ' Test 2 ', '   ', ' Test /* 3 '), $repeat->getTokens());
         $this->assertSame(48, $repeat->getSourceLength());
         $this->assertFalse($repeat->applyRuleToContent("Test without comments"));
         $this->assertFalse($repeat->applyRuleToContent("      Test without comments"));

@@ -123,7 +123,7 @@ class CNabuLexerRuleGroup extends CNabuLexerAbstractRule
 
     public function applyRuleToContent(string $content): bool
     {
-        $this->clearValue();
+        $this->clearTokens();
 
         if (!is_array($this->group) || count($this->group) === 0) {
             throw new ENabuLexerException(ENabuLexerException::ERROR_EMPTY_GROUP_RULE);
@@ -152,12 +152,12 @@ class CNabuLexerRuleGroup extends CNabuLexerAbstractRule
     private function applyRuleToContentAsCase(string $content): bool
     {
         $retval = false;
-        $this->clearValue();
+        $this->clearTokens();
 
         if (mb_strlen($content) > 0) {
             foreach ($this->group as $rule) {
                 if ($retval = $rule->applyRuleToContent($content)) {
-                    $this->setValue($rule->getValue(), $rule->getSourceLength());
+                    $this->setToken($rule->getTokens(), $rule->getSourceLength());
                     break;
                 }
             }
@@ -174,7 +174,7 @@ class CNabuLexerRuleGroup extends CNabuLexerAbstractRule
     private function applyRuleToContentAsSequence(string $content): bool
     {
         $retval = false;
-        $this->clearValue();
+        $this->clearTokens();
 
         if (is_array($this->group) && count($this->group) > 0) {
             foreach ($this->group as $rule) {
@@ -207,11 +207,11 @@ class CNabuLexerRuleGroup extends CNabuLexerAbstractRule
 
         if ($rule->applyRuleToContent($content)) {
             $len = $rule->getSourceLength();
-            $this->appendValue($rule->getValue(), $len_token + $len);
+            $this->apeendTokens($rule->getTokens(), $len_token + $len);
             $content = mb_substr($content, $len);
             $retval = true;
         } else {
-            $this->clearValue();
+            $this->clearTokens();
             $retval = false;
         }
 

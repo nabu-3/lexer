@@ -72,26 +72,26 @@ class CNabuLexerRuleRepeat extends CNabuLexerAbstractRule
         $cursor = $content;
         $iteration = 0;
 
-        $this->clearValue();
+        $this->clearTokens();
 
         do {
             $token_found = false;
             if ($this->tokenizer instanceof INabuLexerRule &&
                 $this->tokenizer->applyRuleToContent($cursor)
             ) {
-                $tkv = $this->tokenizer->getValue();
+                $tkv = $this->tokenizer->getTokens();
                 $tkl = $this->tokenizer->getSourceLength();
                 $token_found = true;
                 $cursor = mb_substr($cursor, $tkl);
             }
-            $this->repeater->clearValue();
+            $this->repeater->clearTokens();
             if ($this->repeater->applyRuleToContent($cursor)) {
                 if ($token_found) {
-                    $this->appendValue($tkv, $tkl);
+                    $this->apeendTokens($tkv, $tkl);
                 }
-                $v = $this->repeater->getValue();
+                $v = $this->repeater->getTokens();
                 $l = $this->repeater->getSourceLength();
-                $this->appendValue($v, $l);
+                $this->apeendTokens($v, $l);
                 $cursor = mb_substr($cursor, $l);
             } else {
                 break;
@@ -107,7 +107,7 @@ class CNabuLexerRuleRepeat extends CNabuLexerAbstractRule
                            $iteration <= $this->max_repeat
              )))
         ) {
-            $this->clearValue();
+            $this->clearTokens();
         }
 
         return $success;

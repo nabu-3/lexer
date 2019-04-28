@@ -127,7 +127,7 @@ class CNabuLexerRuleRegEx extends CNabuLexerAbstractRule
     public function applyRuleToContent(string $content): bool
     {
         $result = false;
-        $this->clearValue();
+        $this->clearTokens();
 
         $matches = null;
         $regex_modif = ($this->isCaseIgnored() ? 'i' : '') . ($this->isUnicodeAllowed() ? 'u' : '');
@@ -135,13 +135,13 @@ class CNabuLexerRuleRegEx extends CNabuLexerAbstractRule
         if (is_string($this->match) && preg_match("/^$this->match/$regex_modif", $content, $matches)) {
             $len = mb_strlen($matches[0]);
             count($matches) > 1 && array_shift($matches);
-            $values = $this->applyExclusionRuleToMatches($matches);
+            $tokens = $this->applyExclusionRuleToMatches($matches);
 
-            if (count($matches) === count($values)) {
-                if (count($values) < 2) {
-                    $this->setValue($values[0], $len);
+            if (count($matches) === count($tokens)) {
+                if (count($tokens) < 2) {
+                    $this->setToken($tokens[0], $len);
                 } else {
-                    $this->setValue($values, $len);
+                    $this->setToken($tokens, $len);
                 }
                 $result = true;
             }
@@ -159,18 +159,18 @@ class CNabuLexerRuleRegEx extends CNabuLexerAbstractRule
     {
         if ($this->exclusion_rule instanceof INabuLexerRule) {
             $cnt = count($matches);
-            $values = array();
+            $tokens = array();
             for ($i = 0; $i < $cnt; $i++) {
                 if (!$this->exclusion_rule->applyRuleToContent($matches[$i]) ||
                     mb_strlen($matches[$i]) !== $this->exclusion_rule->getSourceLength()
                 ) {
-                    $values[$i] = $matches[$i];
+                    $tokens[$i] = $matches[$i];
                 }
             }
         } else {
-            $values = $matches;
+            $tokens = $matches;
         }
 
-        return $values;
+        return $tokens;
     }
 }

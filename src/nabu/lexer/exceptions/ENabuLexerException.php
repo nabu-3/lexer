@@ -106,7 +106,7 @@ class ENabuLexerException extends ENabuException
     /**
      * Creates a Lexer Exception instance.
      * @param int $code Integer code of the exception.
-     * @param array|null $values Valus to be inserted in the translated message if needed.
+     * @param array|null $values Values to be inserted in the translated message if needed.
      * @throws ErrorException Trhos an exception if $code value is not supported.
      */
     public function __construct(int $code, array $values = null)

@@ -53,13 +53,13 @@ abstract class CNabuLexerAbstractRule implements INabuLexerRule
     /** @var string Path to store extracted value. */
     private $path = null;
 
-    /** @var array|null $value Rule value extrated from content. */
-    private $value = null;
+    /** @var array|null $tokens Rule tokens extracted from content. */
+    private $tokens = null;
 
-    /** @var int $sourceLength Length of original string needed to detect the value. */
+    /** @var int $sourceLength Length of original string needed to detect the tokens. */
     private $sourceLength = 0;
 
-    /** @var bool $hidden If true, methods setValue and appendValue only considers the source length. */
+    /** @var bool $hidden If true, methods setToken and apeendTokens only considers the source length. */
     private $hidden = false;
 
     /** @var CNabuLexer $lexer Lexer that manages this rule. */
@@ -90,9 +90,9 @@ abstract class CNabuLexerAbstractRule implements INabuLexerRule
         $this->hidden = $this->checkBooleanNode($descriptor, self::DESCRIPTOR_HIDDEN_NODE);
     }
 
-    public function getValue()
+    public function getTokens()
     {
-        return $this->value;
+        return $this->tokens;
     }
 
     public function getSourceLength(): int
@@ -100,13 +100,13 @@ abstract class CNabuLexerAbstractRule implements INabuLexerRule
         return $this->sourceLength;
     }
 
-    public function setValue($value, int $sourceLength): INabuLexerRule
+    public function setToken($token, int $sourceLength): INabuLexerRule
     {
-        if (!$this->isHidden() && !is_null($value)) {
-            if (is_array($value)) {
-                $this->value = $value;
+        if (!$this->isHidden() && !is_null($token)) {
+            if (is_array($token)) {
+                $this->tokens = $token;
             } else {
-                $this->value = array($value);
+                $this->tokens = array($token);
             }
         }
         $this->sourceLength = $sourceLength;
@@ -114,16 +114,16 @@ abstract class CNabuLexerAbstractRule implements INabuLexerRule
         return $this;
     }
 
-    public function appendValue($value, int $source_length): INabuLexerRule
+    public function apeendTokens($token, int $source_length): INabuLexerRule
     {
-        if (!$this->isHidden() && !is_null($value)) {
-            if (is_null($this->value)) {
-                $this->value = $value;
+        if (!$this->isHidden() && !is_null($token)) {
+            if (is_null($this->tokens)) {
+                $this->tokens = $token;
             } else {
-                if (is_array($value)) {
-                    $this->value = array_merge($this->value, $value);
-                } elseif (!is_string($value) || mb_strlen($value) > 0) {
-                    $this->value[] = $value;
+                if (is_array($token)) {
+                    $this->tokens = array_merge($this->tokens, $token);
+                } elseif (!is_string($token) || mb_strlen($token) > 0) {
+                    $this->tokens[] = $token;
                 }
             }
         }
@@ -132,9 +132,9 @@ abstract class CNabuLexerAbstractRule implements INabuLexerRule
         return $this;
     }
 
-    public function clearValue(): INabuLexerRule
+    public function clearTokens(): INabuLexerRule
     {
-        $this->value = null;
+        $this->tokens = null;
         $this->sourceLength = 0;
 
         return $this;

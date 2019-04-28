@@ -204,10 +204,10 @@ class CNabuLexerRuleKeywordTest extends TestCase
                 $this->assertInstanceOf(CNabuLexerRuleKeyword::class, $rule);
                 if ($passed) {
                     $this->assertTrue($rule->applyRuleToContent($content));
-                    $this->assertSame($result, $rule->getValue());
+                    $this->assertSame($result, $rule->getTokens());
                 } else {
                     $this->assertFalse($rule->applyRuleToContent($content));
-                    $this->assertNull($rule->getValue());
+                    $this->assertNull($rule->getTokens());
                 }
             }
         }

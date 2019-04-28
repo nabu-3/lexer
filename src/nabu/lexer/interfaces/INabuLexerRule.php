@@ -56,7 +56,7 @@ interface INabuLexerRule
      * Returns the value stored in the last execution of the rule.
      * @return mixed Returns the value according to rule specifications. If case of no value setted, then returns null.
      */
-    public function getValue();
+    public function getTokens();
     /**
      * Returns the amount of characters needed in the source string to detect and extract the value.
      * @return int Returns the amount.
@@ -64,23 +64,23 @@ interface INabuLexerRule
     public function getSourceLength() : int;
     /**
      * Set the value of the rule.
-     * @param mixed $value The value to be stored. It can be of any type.
+     * @param mixed $token The value to be stored. It can be of any type.
      * @param int $source_length Amount of characters used to detect and extract the value in the source string.
      * @return INabuLexerRule Returns self pointer to grant fluent interface.
      */
-    public function setValue($value, int $source_length): INabuLexerRule;
+    public function setToken($token, int $source_length): INabuLexerRule;
     /**
      * Append a value of the rule.
-     * @param mixed $value The value to be stored. It can be of any type.
+     * @param mixed $token The value to be stored. It can be of any type.
      * @param int $source_length Amount of characters used to detect and extract the value in the source string.
      * @return INabuLexerRule Returns self pointer to grant fluent interface.
      */
-    public function appendValue($value, int $source_length): INabuLexerRule;
+    public function apeendTokens($token, int $source_length): INabuLexerRule;
     /**
      * Clear previous stored value of the rule.
      * @return INabuLexerRule Returns self pointer to grant fluent interface.
      */
-    public function clearValue(): INabuLexerRule;
+    public function clearTokens(): INabuLexerRule;
     /**
      * Check if the rule is a starter rule or could be placed in any moment.
      * @return bool Returns true if it is a starter rule.

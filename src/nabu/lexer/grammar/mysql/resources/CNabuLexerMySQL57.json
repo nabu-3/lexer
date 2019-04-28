@@ -408,7 +408,8 @@
             "group": [
                 {
                     "keyword": "CREATE",
-                    "method": "ignore case"
+                    "method": "ignore case",
+                    "path": "action"
                 },
                 {
                     "method": "case",
@@ -416,11 +417,15 @@
                     "group": [
                         {
                             "keyword": "DATABASE",
-                            "method": "ignore case"
+                            "method": "ignore case",
+                            "path": "type",
+                            "value": "schema"
                         },
                         {
                             "keyword": "SCHEMA",
-                            "method": "ignore case"
+                            "method": "ignore case",
+                            "path": "type",
+                            "value": "schema"
                         }
                     ]
                 },
@@ -429,7 +434,9 @@
                     "rule": "if_not_exists"
                 },
                 {
-                    "rule": "db_name"
+                    "repeat": "1",
+                    "rule": "db_name",
+                    "path": "schema"
                 },
                 {
                     "repeat": "0..1",
@@ -438,8 +445,6 @@
                 {
                     "rule": "end_sentence"
                 }
-            ],
-            "save": [
             ]
         },
 

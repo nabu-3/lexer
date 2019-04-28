@@ -185,11 +185,15 @@ class CNabuLexer extends CNabuObject implements INabuLexer
         foreach ($this->rules_proxy as $key => $rule) {
             if ($rule->isStarter() && $rule->applyRuleToContent($content)) {
                 $this->data->setMainRuleName($key);
-                $this->data->setTokens($rule->getValue());
+                $this->data->setTokens($rule->getTokens());
                 $this->data->setSourceLength($rule->getSourceLength());
                 $result = true;
                 break;
             }
+        }
+
+        if (!$result) {
+            $this->data->reset();
         }
 
         return $result;

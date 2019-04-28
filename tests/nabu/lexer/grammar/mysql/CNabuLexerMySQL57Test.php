@@ -150,12 +150,12 @@ class CNabuLexerMySQL57Test extends TestCase
         if ($success) {
             $applied = $rule->applyRuleToContent($sample);
             $this->assertTrue($applied);
-            $this->assertSame($result, $rule->getValue());
+            $this->assertSame($result, $rule->getTokens());
             $this->assertSame($length, $rule->getSourceLength());
         } else {
             $applied = $rule->applyRuleToContent($sample);
             $this->assertFalse($applied);
-            $this->assertNull($rule->getValue());
+            $this->assertNull($rule->getTokens());
             $this->assertSame(0, $rule->getSourceLength());
         }
     }

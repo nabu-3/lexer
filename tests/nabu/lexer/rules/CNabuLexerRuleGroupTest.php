@@ -152,16 +152,16 @@ class CNabuLexerRuleGroupTest extends TestCase
     public function testApplyRuleToContentCase(CNabuLexerRuleGroup $rule)
     {
         $this->assertTrue($rule->applyRuleToContent('CREATE TABLE'));
-        $this->assertSame(array('CREATE'), $rule->getValue());
+        $this->assertSame(array('CREATE'), $rule->getTokens());
         $this->assertSame(6, $rule->getSourceLength());
         $this->assertTrue($rule->applyRuleToContent('ALTER TABLE'));
-        $this->assertSame(array('ALTER'), $rule->getValue());
+        $this->assertSame(array('ALTER'), $rule->getTokens());
         $this->assertSame(5, $rule->getSourceLength());
         $this->assertTrue($rule->applyRuleToContent('DELETE FROM TABLE'));
-        $this->assertSame(array('DELETE'), $rule->getValue());
+        $this->assertSame(array('DELETE'), $rule->getTokens());
         $this->assertSame(6, $rule->getSourceLength());
         $this->assertTrue($rule->applyRuleToContent('DROP TABLE'));
-        $this->assertSame(array('DROP'), $rule->getValue());
+        $this->assertSame(array('DROP'), $rule->getTokens());
         $this->assertSame(4, $rule->getSourceLength());
     }
 
@@ -215,7 +215,7 @@ class CNabuLexerRuleGroupTest extends TestCase
     public function testApplyRuleToContentSequence(CNabuLexerRuleGroup $rule)
     {
         $this->assertTrue($rule->applyRuleToContent('CREATE TABLE IF NOT EXISTS'));
-        $this->assertSame(array('CREATE', 'TABLE', 'IF', 'NOT', 'EXISTS'), $rule->getValue());
+        $this->assertSame(array('CREATE', 'TABLE', 'IF', 'NOT', 'EXISTS'), $rule->getTokens());
     }
 
     /**
@@ -257,7 +257,7 @@ class CNabuLexerRuleGroupTest extends TestCase
         );
         $this->assertInstanceOf(CNabuLexerRuleGroup::class, $rule);
         $this->assertFalse($rule->applyRuleToContent('IF EXISTS'));
-        $this->assertSame(null, $rule->getValue());
+        $this->assertSame(null, $rule->getTokens());
         $this->assertSame(0, $rule->getSourceLength());
 
         return $rule;
