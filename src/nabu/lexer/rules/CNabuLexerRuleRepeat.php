@@ -21,8 +21,6 @@
 
 namespace nabu\lexer\rules;
 
-use nabu\lexer\exceptions\ENabuLexerException;
-
 use nabu\lexer\interfaces\INabuLexerRule;
 
 /**
@@ -108,6 +106,8 @@ class CNabuLexerRuleRepeat extends CNabuLexerAbstractRule
              )))
         ) {
             $this->clearTokens();
+        } else {
+            $this->setPathValue($this->getTokens());
         }
 
         return $success;

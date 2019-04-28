@@ -48,6 +48,8 @@ abstract class CNabuLexerAbstractRule implements INabuLexerRule
     const DESCRIPTOR_STARTER_NODE = 'starter';
     /** @var string Descriptor path node literal. */
     const DESCRIPTOR_PATH_NODE = 'path';
+    /** @var string Descriptor value node literal. */
+    const DESCRIPTOR_VALUE_NODE = 'value';
     /** @var string Descriptor hidden node literal. */
     const DESCRIPTOR_HIDDEN_NODE = 'hidden';
 
@@ -56,6 +58,9 @@ abstract class CNabuLexerAbstractRule implements INabuLexerRule
 
     /** @var string Path to store extracted value. */
     private $path = null;
+
+    /** @var mixed|null Fixed Path value. */
+    private $path_default_value = null;
 
     /** @var array|null $tokens Rule tokens extracted from content. */
     private $tokens = null;
@@ -91,6 +96,7 @@ abstract class CNabuLexerAbstractRule implements INabuLexerRule
     {
         $this->starter = $this->checkBooleanNode($descriptor, self::DESCRIPTOR_STARTER_NODE);
         $this->path = $this->checkStringNode($descriptor, self::DESCRIPTOR_PATH_NODE);
+        $this->path_default_value = $this->checkMixedNode($descriptor, self::DESCRIPTOR_VALUE_NODE);
         $this->hidden = $this->checkBooleanNode($descriptor, self::DESCRIPTOR_HIDDEN_NODE);
     }
 
@@ -144,13 +150,25 @@ abstract class CNabuLexerAbstractRule implements INabuLexerRule
         return $this;
     }
 
+    public function getPathDefaultValue()
+    {
+        return $this->path_default_value;
+    }
+
     public function setPathValue($value = null): INabuLexerRule
     {
         $data = $this->getLexer()->getData();
 
         if ($data instanceof CNabuLexerData) {
             if (is_string($this->path)) {
-                $data->setValue($this->path, $value);
+                if (is_null($this->path_default_value)) {
+                    if (is_array($value) && count($value) === 1) {
+                        $value = array_shift($value);
+                    }
+                    $data->setValue($this->path, $value);
+                } else {
+                    $data->setValue($this->path, $this->path_default_value);
+                }
             }
         } else {
             throw new ENabuLexerException(ENabuLexerException::ERROR_LEXER_DATA_INSTANCE_NOT_SET);

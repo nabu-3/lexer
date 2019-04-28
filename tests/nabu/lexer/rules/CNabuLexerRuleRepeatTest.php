@@ -27,6 +27,8 @@ use PHPUnit\Framework\TestCase;
 
 use nabu\lexer\CNabuCustomLexer;
 
+use nabu\lexer\data\CNabuLexerData;
+
 use nabu\lexer\exceptions\ENabuLexerException;
 
 use nabu\lexer\interfaces\INabuLexer;
@@ -40,6 +42,15 @@ use nabu\lexer\interfaces\INabuLexer;
  */
 class CNabuLexerRuleRepeatTest extends TestCase
 {
+    /** @var CNabuCustomLexer $lexer Lexer to perform tests. */
+    private static $lexer = null;
+
+    public static function setUpBeforeClass(): void
+    {
+        self::$lexer = CNabuCustomLexer::getLexer();
+        self::$lexer->setData(new CNabuLexerData());
+    }
+
     /**
      * @test __construct
      */
@@ -55,9 +66,8 @@ class CNabuLexerRuleRepeatTest extends TestCase
      */
     public function testCreateFromDescriptor()
     {
-        $lexer = CNabuCustomLexer::getLexer();
         $repeat = CNabuLexerRuleRepeat::createFromDescriptor(
-            $lexer,
+            self::$lexer,
             array(
                 'repeat' => '0..1',
                 'tokenizer' => array(
@@ -77,7 +87,7 @@ class CNabuLexerRuleRepeatTest extends TestCase
         $this->assertSame(16, $repeat->getSourceLength());
 
         $repeat = CNabuLexerRuleRepeat::createFromDescriptor(
-            $lexer,
+            self::$lexer,
             array(
                 'repeat' => '1..3',
                 'tokenizer' => array(
@@ -96,7 +106,7 @@ class CNabuLexerRuleRepeatTest extends TestCase
         $this->assertSame(48, $repeat->getSourceLength());
 
         $repeat = CNabuLexerRuleRepeat::createFromDescriptor(
-            $lexer,
+            self::$lexer,
             array(
                 'repeat' => '1..n',
                 'tokenizer' => array(
@@ -115,7 +125,7 @@ class CNabuLexerRuleRepeatTest extends TestCase
         $this->assertSame(48, $repeat->getSourceLength());
 
         $repeat = CNabuLexerRuleRepeat::createFromDescriptor(
-            $lexer,
+            self::$lexer,
             array(
                 'repeat' => '1..n',
                 'tokenizer' => array(
@@ -134,7 +144,7 @@ class CNabuLexerRuleRepeatTest extends TestCase
         $this->assertSame(48, $repeat->getSourceLength());
 
         $repeat = CNabuLexerRuleRepeat::createFromDescriptor(
-            $lexer,
+            self::$lexer,
             array(
                 'repeat' => '1-∞',
                 'tokenizer' => array(
@@ -153,7 +163,7 @@ class CNabuLexerRuleRepeatTest extends TestCase
         $this->assertSame(48, $repeat->getSourceLength());
 
         $repeat = CNabuLexerRuleRepeat::createFromDescriptor(
-            $lexer,
+            self::$lexer,
             array(
                 'repeat' => '1,infinity',
                 'tokenizer' => array(
@@ -172,7 +182,7 @@ class CNabuLexerRuleRepeatTest extends TestCase
         $this->assertSame(48, $repeat->getSourceLength());
 
         $repeat = CNabuLexerRuleRepeat::createFromDescriptor(
-            $lexer,
+            self::$lexer,
             array(
                 'repeat' => 'infinity',
                 'tokenizer' => array(
@@ -191,7 +201,7 @@ class CNabuLexerRuleRepeatTest extends TestCase
         $this->assertSame(48, $repeat->getSourceLength());
 
         $repeat = CNabuLexerRuleRepeat::createFromDescriptor(
-            $lexer,
+            self::$lexer,
             array(
                 'repeat' => '2..2',
                 'tokenizer' => array(
@@ -210,7 +220,7 @@ class CNabuLexerRuleRepeatTest extends TestCase
         $this->assertSame(30, $repeat->getSourceLength());
 
         $repeat = CNabuLexerRuleRepeat::createFromDescriptor(
-            $lexer,
+            self::$lexer,
             array(
                 'repeat' => '2',
                 'tokenizer' => array(
@@ -229,7 +239,7 @@ class CNabuLexerRuleRepeatTest extends TestCase
         $this->assertSame(30, $repeat->getSourceLength());
 
         $repeat = CNabuLexerRuleRepeat::createFromDescriptor(
-            $lexer,
+            self::$lexer,
             array(
                 'repeat' => '2',
                 'rule' => array(
@@ -247,34 +257,33 @@ class CNabuLexerRuleRepeatTest extends TestCase
      */
     public function testInitFromDescriptor()
     {
-        $lexer = CNabuCustomLexer::getLexer();
         $rule_1 = CNabuLexerRuleRegEx::createFromDescriptor(
-            $lexer,
+            self::$lexer,
             array(
                 'match' => '\\s*',
                 'method' => 'literal'
             )
         );
         $this->assertInstanceOf(CNabuLexerRuleRegEx::class, $rule_1);
-        $this->assertInstanceOf(INabuLexer::class, $lexer->registerRule('token', $rule_1));
+        $this->assertInstanceOf(INabuLexer::class, self::$lexer->registerRule('token', $rule_1));
         $rule_2 = CNabuLexerRuleRegEx::createFromDescriptor(
-            $lexer,
+            self::$lexer,
             array(
                 'match' => '\/\*(.*?)\*\/',
                 'method' => 'literal'
             )
         );
         $this->assertInstanceOf(CNabuLexerRuleRegEx::class, $rule_2);
-        $this->assertInstanceOf(INabuLexer::class, $lexer->registerRule('repeater', $rule_2));
+        $this->assertInstanceOf(INabuLexer::class, self::$lexer->registerRule('repeater', $rule_2));
         $rule_3 = CNabuLexerRuleRepeat::createFromDescriptor(
-            $lexer,
+            self::$lexer,
             array(
                 'repeat' => '1..3',
                 'tokenizer' => 'token',
                 'rule' => 'repeater'
             )
         );
-        $this->assertInstanceOf(INabuLexer::class, $lexer->registerRule('comment', $rule_3));
+        $this->assertInstanceOf(INabuLexer::class, self::$lexer->registerRule('comment', $rule_3));
         $this->assertTrue($rule_3->applyRuleToContent("    /* Test 1 */\n\r/* Test 2 */   /* Test /* 3 */   Test 4"));
         $this->assertSame(array('    ', ' Test 1 ', "\n\r", ' Test 2 ', '   ', ' Test /* 3 '), $rule_3->getTokens());
         $this->assertSame(48, $rule_3->getSourceLength());
@@ -282,7 +291,7 @@ class CNabuLexerRuleRepeatTest extends TestCase
         $this->expectException(ENabuLexerException::class);
         $this->expectExceptionCode(ENabuLexerException::ERROR_RULE_NOT_FOUND_FOR_DESCRIPTOR);
         $rule_4 = CNabuLexerRuleRepeat::createFromDescriptor(
-            $lexer,
+            self::$lexer,
             array(
                 'repeat' => '1..3',
                 'tokenizer' => null,
@@ -297,11 +306,10 @@ class CNabuLexerRuleRepeatTest extends TestCase
      */
     public function testInitFromDescriptorFails1()
     {
-        $lexer = CNabuCustomLexer::getLexer();
         $this->expectException(ENabuLexerException::class);
         $this->expectExceptionCode(ENabuLexerException::ERROR_RULE_NOT_FOUND_FOR_DESCRIPTOR);
         $rule_5 = CNabuLexerRuleRepeat::createFromDescriptor(
-            $lexer,
+            self::$lexer,
             array(
                 'repeat' => '1..3',
                 'rule' => null
@@ -315,11 +323,10 @@ class CNabuLexerRuleRepeatTest extends TestCase
      */
     public function testInitFromDescriptorFails2()
     {
-        $lexer = CNabuCustomLexer::getLexer();
         $this->expectException(ENabuLexerException::class);
         $this->expectExceptionCode(ENabuLexerException::ERROR_RULE_NOT_FOUND_FOR_DESCRIPTOR);
         $rule_5 = CNabuLexerRuleRepeat::createFromDescriptor(
-            $lexer,
+            self::$lexer,
             array(
                 'repeat' => '1..3',
                 'rule' => new stdClass()
@@ -333,11 +340,10 @@ class CNabuLexerRuleRepeatTest extends TestCase
      */
     public function testInitFromDescriptorFails3()
     {
-        $lexer = CNabuCustomLexer::getLexer();
         $this->expectException(ENabuLexerException::class);
         $this->expectExceptionCode(ENabuLexerException::ERROR_RULE_NODE_NOT_FOUND_IN_DESCRIPTOR);
         $rule_5 = CNabuLexerRuleRepeat::createFromDescriptor(
-            $lexer,
+            self::$lexer,
             array(
                 'repeat' => '1..3'
             )
@@ -349,9 +355,8 @@ class CNabuLexerRuleRepeatTest extends TestCase
      */
     public function testApplyRuleToContent()
     {
-        $lexer = CNabuCustomLexer::getLexer();
         $repeat = CNabuLexerRuleRepeat::createFromDescriptor(
-            $lexer,
+            self::$lexer,
             array(
                 'repeat' => '1..3',
                 'tokenizer' => array(

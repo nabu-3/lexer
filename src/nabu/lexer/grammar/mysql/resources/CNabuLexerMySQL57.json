@@ -362,7 +362,9 @@
                                 }
                             },
                             {
-                                "rule": "charset_name"
+                                "repeat": "1",
+                                "rule": "charset_name",
+                                "path": "charset"
                             }
                         ]
                     }
@@ -393,7 +395,9 @@
                                 }
                             },
                             {
-                                "rule": "collate_name"
+                                "repeat": "1",
+                                "rule": "collate_name",
+                                "path": "collate"
                             }
                         ]
                     }
@@ -405,11 +409,13 @@
         "create_schema": {
             "method": "sequence",
             "tokenizer": "comment",
+            "starter": true,
             "group": [
                 {
                     "keyword": "CREATE",
                     "method": "ignore case",
-                    "path": "action"
+                    "path": "action",
+                    "value": "create"
                 },
                 {
                     "method": "case",
