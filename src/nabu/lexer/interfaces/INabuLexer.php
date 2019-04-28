@@ -97,4 +97,10 @@ interface INabuLexer
      * @return INabuLexer Returns the self pointer to grant fluent implementation.
      */
     public function setData(CNabuLexerData $data): INabuLexer;
+    /**
+     * Analyzes a content string and extract all information available applying existing rules.
+     * @param string $content Content to analyze.
+     * @return bool Returns true if the content was fully analyzed.
+     */
+    public function analyze(string $content): bool;
 }

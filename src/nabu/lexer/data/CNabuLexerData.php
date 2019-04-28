@@ -35,4 +35,70 @@ use nabu\data\traits\TNabuNestedData;
 class CNabuLexerData extends CNabuDataObject
 {
     use TNabuNestedData;
+
+    /** @var array|null $tokens Token list after analyze a content */
+    protected $tokens = null;
+    /** @var int $source_length Content length parsed to obtain tokens. */
+    protected $source_length = 0;
+    /** @var string|null $main_rule_name Name of main rule applied to obtain data and tokens. */
+    protected $main_rule_name = null;
+
+    /**
+     * @return array|null
+     */
+    public function getTokens(): ?array
+    {
+        return $this->tokens;
+    }
+
+    /**
+     * @param array|null $tokens
+     *
+     * @return static
+     */
+    public function setTokens(?array $tokens)
+    {
+        $this->tokens = $tokens;
+
+        return $this;
+    }
+
+    /**
+     * @return int
+     */
+    public function getSourceLength(): int
+    {
+        return $this->source_length;
+    }
+
+    /**
+     * @param int $source_length
+     *
+     * @return static
+     */
+    public function setSourceLength(int $source_length)
+    {
+        $this->source_length = $source_length;
+
+        return $this;
+    }
+
+    /**
+     * @return string|null
+     */
+    public function getMainRulename(): ?string
+    {
+        return $this->main_rule_name;
+    }
+
+    /**
+     * @param string|null $main_rule_name
+     *
+     * @return static
+     */
+    public function setMainRuleName(?string $main_rule_name)
+    {
+        $this->main_rule_name = $main_rule_name;
+        return $this;
+    }
 }

@@ -25,6 +25,8 @@ use PHPUnit\Framework\TestCase;
 
 use nabu\lexer\CNabuLexer;
 
+use nabu\lexer\data\CNabuLexerData;
+
 use nabu\lexer\grammar\mysql\CNabuLexerMySQL57;
 
 use nabu\lexer\interfaces\INabuLexerRule;
@@ -39,12 +41,12 @@ use nabu\lexer\interfaces\INabuLexerRule;
 class CNabuLexerMySQL57Test extends TestCase
 {
     /** @var CNabuLexerMySQL57 $lexer Lexer to perform tests. */
-    private $lexer = null;
+    private static $lexer = null;
 
 
-    public function setUp(): void
+    public static function setUpBeforeClass(): void
     {
-        $this->lexer = CNabuLexer::getLexer('mysql', '5.7');
+        self::$lexer = CNabuLexer::getLexer('mysql', '5.7');
     }
 
     /**
@@ -54,20 +56,20 @@ class CNabuLexerMySQL57Test extends TestCase
     {
         /** @todo Review @url { https://dev.mysql.com/doc/refman/5.7/en/identifiers.html } to complete rule details. */
         return [
-            ["db_name", true, "ascii_schema", "ascii_schema", 12],
-            ["db_name", true, "dollar\$\$\$schema", "dollar\$\$\$schema", 15],
-            ["db_name", true, "unicode_schema\u{2605}", "unicode_schema\u{2605}", 15],
-            ["db_name", true, "unicode\u{1FFFF}", "unicode", 7],
-            ["db_name", true, "`ascii_schema`", "ascii_schema", 14],
-            ["db_name", true, "`dollar\$\$\$schema`", "dollar\$\$\$schema", 17],
-            ["db_name", true, "`unicode\u{2605}_test`", "unicode\u{2605}_test", 15],
-            ["db_name", true, "`nabu-3`", "nabu-3", 8],
+            ["db_name", true, "ascii_schema", array("ascii_schema"), 12],
+            ["db_name", true, "dollar\$\$\$schema", array("dollar\$\$\$schema"), 15],
+            ["db_name", true, "unicode_schema\u{2605}", array("unicode_schema\u{2605}"), 15],
+            ["db_name", true, "unicode\u{1FFFF}", array("unicode"), 7],
+            ["db_name", true, "`ascii_schema`", array("ascii_schema"), 14],
+            ["db_name", true, "`dollar\$\$\$schema`", array("dollar\$\$\$schema"), 17],
+            ["db_name", true, "`unicode\u{2605}_test`", array("unicode\u{2605}_test"), 15],
+            ["db_name", true, "`nabu-3`", array("nabu-3"), 8],
 
             ["db_name", false, "-ascii-error"],
             ["db_name", false, "\u{000A}unicode_error"],
 
-            ["comment", true, " ", " ", 1],
-            ["comment", true, "    ", "    ", 4],
+            ["comment", true, " ", array(" "), 1],
+            ["comment", true, "    ", array("    "), 4],
             ["comment", true, "    /* comment */", array("    ", " comment "), 17],
             ["comment", true, "/* comment */  ", array(" comment ", "  "), 15],
 
@@ -130,6 +132,7 @@ class CNabuLexerMySQL57Test extends TestCase
 
         ];
     }
+
     /**
      * Testing db_name Rule.
      * @dataProvider dbNameRuleDataProvider
@@ -142,7 +145,7 @@ class CNabuLexerMySQL57Test extends TestCase
     public function testDbNameRule(
         string $rule_name, bool $success = false, string $sample = null, $result = null, int $length = 0
     ): void {
-        $rule = $this->lexer->getRule($rule_name);
+        $rule = self::$lexer->getRule($rule_name);
         $this->assertInstanceOf(INabuLexerRule::class, $rule);
         if ($success) {
             $applied = $rule->applyRuleToContent($sample);
@@ -157,4 +160,95 @@ class CNabuLexerMySQL57Test extends TestCase
         }
     }
 
+    /**
+     * Data provider for testAnalyze.
+     */
+    public function analyzeDataProvider()
+    {
+        return [
+            [true, 'CREATE DATABASE IF NOT EXISTS `nabu-3`',
+                array('CREATE', 'DATABASE', 'IF', 'NOT', 'EXISTS', 'nabu-3'), 38],
+            [true, 'CREATE SCHEMA IF NOT EXISTS `nabu-3`',
+                array('CREATE', 'SCHEMA', 'IF', 'NOT', 'EXISTS', 'nabu-3'), 36],
+            [true, 'CREATE DATABASE `nabu-3`',
+                array('CREATE', 'DATABASE', 'nabu-3'), 24],
+            [true, 'CREATE SCHEMA `nabu-3`',
+                array('CREATE', 'SCHEMA', 'nabu-3'), 22],
+
+            [true, 'CREATE SCHEMA IF NOT EXISTS `nabu-3` DEFAULT CHARACTER SET = utf8',
+                array(
+                    'CREATE', 'SCHEMA', 'IF', 'NOT', 'EXISTS', 'nabu-3', 'DEFAULT', 'CHARACTER', 'SET', '=', 'utf8'
+                ),
+                65
+            ],
+            [true, 'CREATE SCHEMA IF NOT EXISTS `nabu-3` CHARACTER SET = utf8',
+                array(
+                    'CREATE', 'SCHEMA', 'IF', 'NOT', 'EXISTS', 'nabu-3', 'CHARACTER', 'SET', '=', 'utf8'
+                ),
+                57
+            ],
+            [true, 'CREATE SCHEMA IF NOT EXISTS `nabu-3` CHARACTER SET=utf8',
+                array(
+                    'CREATE', 'SCHEMA', 'IF', 'NOT', 'EXISTS', 'nabu-3', 'CHARACTER', 'SET', '=', 'utf8'
+                ),
+                55
+            ],
+            [true, 'CREATE SCHEMA `nabu-3` CHARACTER SET=utf8',
+                array(
+                    'CREATE', 'SCHEMA', 'nabu-3', 'CHARACTER', 'SET', '=', 'utf8'
+                ),
+                41
+            ],
+            [true, 'CREATE SCHEMA IF NOT EXISTS `nabu-3` DEFAULT COLLATE = utf8_general_ci',
+                array(
+                    'CREATE', 'SCHEMA', 'IF', 'NOT', 'EXISTS', 'nabu-3', 'DEFAULT', 'COLLATE', '=', 'utf8_general_ci'
+                ),
+                70
+            ],
+            [true, 'CREATE SCHEMA IF NOT EXISTS `nabu-3` DEFAULT CHARACTER SET = utf8 DEFAULT COLLATE = utf8_general_ci',
+                array(
+                    'CREATE', 'SCHEMA', 'IF', 'NOT', 'EXISTS', 'nabu-3',
+                    'DEFAULT', 'CHARACTER', 'SET', '=', 'utf8',
+                    'DEFAULT', 'COLLATE', '=', 'utf8_general_ci'
+                ),
+                99
+            ],
+
+            [true, 'CREATE SCHEMA test; CHARACTER SET', array('CREATE', 'SCHEMA', 'test'), 19],
+
+            [false, 'CREATE SCHEMA DEFAULT; CHARACTER SET', array('CREATE', 'SCHEMA', 'DEFAULT'), 22],
+            [false, 'CREATE SCHEMA DEFAULT CHARACTER SET'],
+            [false, 'CREATE SCHEMA test CHARACTER SET'],
+            [false, 'CREATE SCHEMA DEFAULT']
+        ];
+    }
+
+    /**
+     * Testing CNabuLexer::analyze method.
+     * @dataProvider dbNameRuleDataProvider
+     * @param string $rule_name Rule name to apply.
+     * @param bool $success Expected result: true => passed, false => fails.
+     * @param string|null $sample Sample string to test rule.
+     * @param null $result Result value after apply rule.
+     * @param int $length Expected source length after apply rule.
+     */
+    public function testAnalyze(
+        string $rule_name, bool $success = false, string $sample = null, $result = null, int $length = 0
+    ): void {
+        $rule = self::$lexer->getRule($rule_name);
+        $this->assertInstanceOf(INabuLexerRule::class, $rule);
+        if ($rule->isStarter()) {
+            $success = self::$lexer->analyze($sample);
+            $this->assertIsBool($success);
+            $data = self::$lexer->getData();
+            $this->assertInstanceOf(CNabuLexerData::class, $data);
+            if ($success) {
+                $this->assertSame($result, $data->getTokens());
+                $this->assertSame($length, $data->getSourceLength());
+            } else {
+                $this->assertNull($data->getTokens());
+                $this->assertSame(0, $data->getSourceLength());
+            }
+        }
+    }
 }

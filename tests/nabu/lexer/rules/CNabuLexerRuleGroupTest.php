@@ -152,16 +152,16 @@ class CNabuLexerRuleGroupTest extends TestCase
     public function testApplyRuleToContentCase(CNabuLexerRuleGroup $rule)
     {
         $this->assertTrue($rule->applyRuleToContent('CREATE TABLE'));
-        $this->assertSame('CREATE', $rule->getValue());
+        $this->assertSame(array('CREATE'), $rule->getValue());
         $this->assertSame(6, $rule->getSourceLength());
         $this->assertTrue($rule->applyRuleToContent('ALTER TABLE'));
-        $this->assertSame('ALTER', $rule->getValue());
+        $this->assertSame(array('ALTER'), $rule->getValue());
         $this->assertSame(5, $rule->getSourceLength());
         $this->assertTrue($rule->applyRuleToContent('DELETE FROM TABLE'));
-        $this->assertSame('DELETE', $rule->getValue());
+        $this->assertSame(array('DELETE'), $rule->getValue());
         $this->assertSame(6, $rule->getSourceLength());
         $this->assertTrue($rule->applyRuleToContent('DROP TABLE'));
-        $this->assertSame('DROP', $rule->getValue());
+        $this->assertSame(array('DROP'), $rule->getValue());
         $this->assertSame(4, $rule->getSourceLength());
     }
 

@@ -53,7 +53,7 @@ abstract class CNabuLexerAbstractRule implements INabuLexerRule
     /** @var string Path to store extracted value. */
     private $path = null;
 
-    /** @var mixed $value Rule value extrated from content. */
+    /** @var array|null $value Rule value extrated from content. */
     private $value = null;
 
     /** @var int $sourceLength Length of original string needed to detect the value. */
@@ -103,7 +103,11 @@ abstract class CNabuLexerAbstractRule implements INabuLexerRule
     public function setValue($value, int $sourceLength): INabuLexerRule
     {
         if (!$this->isHidden() && !is_null($value)) {
-            $this->value = $value;
+            if (is_array($value)) {
+                $this->value = $value;
+            } else {
+                $this->value = array($value);
+            }
         }
         $this->sourceLength = $sourceLength;
 
@@ -115,14 +119,12 @@ abstract class CNabuLexerAbstractRule implements INabuLexerRule
         if (!$this->isHidden() && !is_null($value)) {
             if (is_null($this->value)) {
                 $this->value = $value;
-            } elseif (is_array($this->value)) {
+            } else {
                 if (is_array($value)) {
                     $this->value = array_merge($this->value, $value);
                 } elseif (!is_string($value) || mb_strlen($value) > 0) {
                     $this->value[] = $value;
                 }
-            } else {
-                $this->value = array($this->value, $value);
             }
         }
         $this->sourceLength += $source_length;

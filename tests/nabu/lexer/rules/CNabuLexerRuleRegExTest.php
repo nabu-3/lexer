@@ -57,11 +57,11 @@ class CNabuLexerRuleRegExTest extends TestCase
     {
         return [
             [false, false, false, false, 'literal', "^''|'(.*?[^\\\\])'", null,
-                "'test \'with single quotes\' inside #0' and more test", "test \'with single quotes\' inside #0", 39, true],
+                "'test \'with single quotes\' inside #0' and more test", array("test \'with single quotes\' inside #0"), 39, true],
             [false, false, false, false, 'literal', "^'()'|'(.*?[^\\\\])'", null,
-                "'' and more test", "", 2, true],
+                "'' and more test", array(""), 2, true],
             [false, false, false, false, 'literal', "('\\s*'|'.*?[^\\\\]')", null,
-                "'test \'with single quotes\' inside #1' and more test", "'test \'with single quotes\' inside #1'", 39, true],
+                "'test \'with single quotes\' inside #1' and more test", array("'test \'with single quotes\' inside #1'"), 39, true],
             [false, false, false, false, 'literal', '([a-z]+) ([A-Z]+)', null,
                 "test CASE with multiple params", array('test', 'CASE'), 9, true],
 
@@ -71,7 +71,7 @@ class CNabuLexerRuleRegExTest extends TestCase
                 "test CASE", array('test'), 4, true],
 
             [false, false, false, true, 'literal', "([\x{0080}-\x{FFFF}]+)", null,
-                "\u{0080}\u{0100}\u{1FF00}", "\u{0080}\u{0100}", 2, true]
+                "\u{0080}\u{0100}\u{1FF00}", array("\u{0080}\u{0100}"), 2, true]
         ];
     }
 

@@ -54,29 +54,29 @@ class CNabuLexerRuleKeywordTest extends TestCase
     public function dataProviderCreateInitFromDescriptor()
     {
         return [
-            [false, false, false, 'literal', 'test', 'test data', 'test', true],
-            [false, false, false, 'literal', 'TEST', 'TEST data', 'TEST', true],
-            [false, false, false, 'literal', 'TEST', 'test data', 'test', false],
-            [false, false, false, 'literal', 'test', 'TEST data', 'TEST', false],
-            [false, false, false, 'literal', 'Test', 'TEst data', 'TEst', false],
-            [false, false, false, 'literal', 'Test', 'TEST data', 'TEST', false],
-            [false, true, false, 'literal', 'test', 'test data', 'test', true],
-            [false, null, false, 'literal', 'test', 'test data', 'test', true],
-            [false, false, null, 'literal', 'test', 'test data', 'test', true],
-            [false, false, null, 'literal', 'test', 'Other data', 'Other', false],
-            [false, false, true, 'ignore case', 'test', 'test data', 'test', true],
-            [false, false, true, 'ignore case', 'TEST', 'test data', 'test', true],
-            [false, false, true, 'ignore case', 'test', 'TEST data', 'TEST', true],
-            [false, false, true, 'ignore case', 'Test', 'TEST data', 'TEST', true],
-            [false, false, true, 'ignore case', 'Test', 'TeST data', 'TeST', true],
-            [false, false, true, 'ignore case', 'Test', 'Other data', 'Other', false],
-            [false, true, true, 'ignore case', 'test', 'test data', 'test', true],
-            [false, null, null, 'literal', 'test', 'test data', 'test', true],
+            [false, false, false, 'literal', 'test', 'test data', array('test'), true],
+            [false, false, false, 'literal', 'TEST', 'TEST data', array('TEST'), true],
+            [false, false, false, 'literal', 'TEST', 'test data', array('test'), false],
+            [false, false, false, 'literal', 'test', 'TEST data', array('TEST'), false],
+            [false, false, false, 'literal', 'Test', 'TEst data', array('TEst'), false],
+            [false, false, false, 'literal', 'Test', 'TEST data', array('TEST'), false],
+            [false, true, false, 'literal', 'test', 'test data', array('test'), true],
+            [false, null, false, 'literal', 'test', 'test data', array('test'), true],
+            [false, false, null, 'literal', 'test', 'test data', array('test'), true],
+            [false, false, null, 'literal', 'test', 'Other data', array('Other'), false],
+            [false, false, true, 'ignore case', 'test', 'test data', array('test'), true],
+            [false, false, true, 'ignore case', 'TEST', 'test data', array('test'), true],
+            [false, false, true, 'ignore case', 'test', 'TEST data', array('TEST'), true],
+            [false, false, true, 'ignore case', 'Test', 'TEST data', array('TEST'), true],
+            [false, false, true, 'ignore case', 'Test', 'TeST data', array('TeST'), true],
+            [false, false, true, 'ignore case', 'Test', 'Other data', array('Other'), false],
+            [false, true, true, 'ignore case', 'test', 'test data', array('test'), true],
+            [false, null, null, 'literal', 'test', 'test data', array('test'), true],
 
-            [true, false, false, 'literal', null, 'test', 'test', false],
-            [true, false, false, null, 'test', 'test', 'test', false],
-            [true, false, false, null, null, 'test', 'test', false],
-            [true, false, false, 'anything', 'test', 'test', 'test', false]
+            [true, false, false, 'literal', null, 'test', array('test'), false],
+            [true, false, false, null, 'test', 'test', array('test'), false],
+            [true, false, false, null, null, 'test', array('test'), false],
+            [true, false, false, 'anything', 'test', 'test', array('test'), false]
         ];
     }
 
@@ -124,12 +124,12 @@ class CNabuLexerRuleKeywordTest extends TestCase
      * @param string|null $method If null acts as not declared.
      * @param string|null $keyword If null acts as not declared.
      * @param string|null $content Content to test case.
-     * @param string|null $result Expected result.
+     * @param array|null $result Expected result.
      * @param bool $passed Apply Rule is passed.
      */
     public function testCreateInitFromDescriptor(
         bool $throwable, bool $starter = null, bool $case_ignored = null,
-        string $method = null, string $keyword = null, string $content = null, string $result = null,
+        string $method = null, string $keyword = null, string $content = null, array $result = null,
         bool $passed = false
     ) {
         $lexer = CNabuCustomLexer::getLexer();
@@ -178,12 +178,12 @@ class CNabuLexerRuleKeywordTest extends TestCase
      * @param string|null $method If null acts as not declared.
      * @param string|null $keyword If null acts as not declared.
      * @param string|null $content Content to test case.
-     * @param string|null $result Expected result.
+     * @param array|null $result Expected result.
      * @param bool $passed Apply Rule is passed.
      */
     public function testApplyRuleToContent(
         bool $throwable, bool $starter = null, bool $case_ignored = null,
-        string $method = null, string $keyword = null, string $content = null, string $result = null,
+        string $method = null, string $keyword = null, string $content = null, array $result = null,
         bool $passed = false
     ) {
         if ($throwable) {

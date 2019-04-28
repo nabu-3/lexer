@@ -57,11 +57,10 @@ class CNabuLexer extends CNabuObject implements INabuLexer
     /** @var string Language maximum version used by this lexer. */
     protected static $grammar_version_max = null;
 
-    /** @var CNabuLexerData Data storage for analysis. */
-    protected $data = null;
-
     /** @var CNabuLexerRuleProxy Proxy Rule instance to manage Lexer rules. */
     protected $rules_proxy = null;
+    /** @var CNabuLexerData $data Data obtained after analyze a content. */
+    protected $data = null;
 
     /**
      * Protects the constructor to force to be invoqued from the getLexer method.
@@ -176,5 +175,23 @@ class CNabuLexer extends CNabuObject implements INabuLexer
     {
         $loader = new CNabuLexerGrammarLoader($this);
         return $loader->loadFileResources($filename);
+    }
+
+    public function analyze(string $content): bool
+    {
+        $result = false;
+        $this->data = new CNabuLexerData();
+
+        foreach ($this->rules_proxy as $key => $rule) {
+            if ($rule->isStarter() && $rule->applyRuleToContent($content)) {
+                $this->data->setMainRuleName($key);
+                $this->data->setTokens($rule->getValue());
+                $this->data->setSourceLength($rule->getSourceLength());
+                $result = true;
+                break;
+            }
+        }
+
+        return $result;
     }
 }
