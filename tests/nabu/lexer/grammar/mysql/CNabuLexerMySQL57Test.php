@@ -313,9 +313,12 @@ class CNabuLexerMySQL57Test extends TestCase
             $this->assertSame($length, $data->getSourceLength());
             $data = self::$lexer->getData();
             if (is_array($rsdata)) {
+                $this->assertSame(count($rsdata), $data->count());
+                $this->assertSame(count($rsdata), count($data));
                 foreach ($rsdata as $key => $value) {
                     $this->assertSame($value, $data->getValue($key));
                 }
+                $this->assertSame($rsdata, $data->getValuesAsArray());
             }
         } else {
             $this->assertNull($data->getTokens());
