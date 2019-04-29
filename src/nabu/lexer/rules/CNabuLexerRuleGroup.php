@@ -32,7 +32,7 @@ use nabu\lexer\interfaces\INabuLexerRule;
  * @version 0.0.2
  * @package \nabu\lexer\rules
  */
-class CNabuLexerRuleGroup extends CNabuLexerAbstractRule
+class CNabuLexerRuleGroup extends CNabuLexerAbstractBlockRule
 {
     /** @var string Descriptor group node literal. */
     const DESCRIPTOR_GROUP_NODE = 'group';
@@ -158,6 +158,7 @@ class CNabuLexerRuleGroup extends CNabuLexerAbstractRule
             foreach ($this->group as $rule) {
                 if ($retval = $rule->applyRuleToContent($content)) {
                     $this->setToken($rule->getTokens(), $rule->getSourceLength());
+                    $this->setPathValue($rule->getTokens());
                     break;
                 }
             }
@@ -182,6 +183,10 @@ class CNabuLexerRuleGroup extends CNabuLexerAbstractRule
                     break;
                 }
             }
+        }
+
+        if ($retval) {
+            $this->setPathValue($this->getTokens());
         }
 
         return $retval;

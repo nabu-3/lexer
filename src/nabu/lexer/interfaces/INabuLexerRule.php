@@ -43,9 +43,15 @@ interface INabuLexerRule
     /**
      * Init the instance using a descriptor array info.
      * @param array $descriptor The descriptor array to init the instance.
-     * @throws ENabuLexerException Throws an exception if the descriptor is not valod.
+     * @throws ENabuLexerException Throws an exception if the descriptor is not valid.
      */
     public function initFromDescriptor(array $descriptor): void;
+    /**
+     * Overrides the instance using a descriptor array info.
+     * @param array $descriptor The descriptor array to override the instance.
+     * @throws ENabuLexerException Throws an exception if the descriptor is not valid.
+     */
+    public function overrideFromDescriptor(array $descriptor): void;
     /**
      * Applies the rule to a content string.
      * @param string $content The content to be analized.

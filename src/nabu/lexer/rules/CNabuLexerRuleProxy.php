@@ -43,6 +43,8 @@ class CNabuLexerRuleProxy extends CNabuObject implements Iterator
 {
     /** @var string Descriptor rule node literal. */
     const DESCRIPTOR_RULE_NODE = 'rule';
+    /** @var string Descriptor clone node literal. */
+    const DESCRIPTOR_CLONE_NODE = 'clone';
 
     /** @var CNabuLexer $lexer Lexer associated to this Proxy. */
     private $lexer = null;
@@ -90,13 +92,13 @@ class CNabuLexerRuleProxy extends CNabuObject implements Iterator
     public function valid()
     {
         $size = is_array($this->inventory) ? count($this->inventory) : 0;
-        
+
         return $this->inventory_position < $size;
     }
 
     public function rewind()
     {
-        $this->position = 0;
+        $this->inventory_position = 0;
     }
 
     /**
@@ -126,6 +128,13 @@ class CNabuLexerRuleProxy extends CNabuObject implements Iterator
                     ENabuLexerException::ERROR_RULE_NOT_FOUND_FOR_DESCRIPTOR,
                     array(var_export($descriptor[self::DESCRIPTOR_RULE_NODE], true))
                 );
+            }
+        } elseif (array_key_exists(self::DESCRIPTOR_CLONE_NODE, $descriptor)) {
+            if (is_string($descriptor[self::DESCRIPTOR_CLONE_NODE]) &&
+                ($source = $lexer->getRule($descriptor[self::DESCRIPTOR_CLONE_NODE])) instanceof INabuLexerRule
+            ) {
+                $rule = clone $source;
+                $rule->overrideFromDescriptor($descriptor);
             }
         }
 

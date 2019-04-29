@@ -266,7 +266,33 @@
         },
 
         "db_name": {
-            "rule": "object_name"
+            "clone": "object_name",
+            "path": "schema"
+        },
+
+        "tbl_name": {
+            "method": "sequence",
+            "group": [
+                {
+                    "repeat": "0..1",
+                    "rule": {
+                        "method": "sequence",
+                        "group": [
+                            {
+                                "rule": "db_name"
+                            },
+                            {
+                                "keyword": ".",
+                                "method": "literal"
+                            }
+                        ]
+                    }
+                },
+                {
+                    "clone": "object_name",
+                    "path": "table"
+                }
+            ]
         },
 
         "charset_name": {
@@ -440,9 +466,7 @@
                     "rule": "if_not_exists"
                 },
                 {
-                    "repeat": "1",
-                    "rule": "db_name",
-                    "path": "schema"
+                    "rule": "db_name"
                 },
                 {
                     "repeat": "0..1",
@@ -454,33 +478,80 @@
             ]
         },
 
-
-
-
         "create_table": {
-            "starter": true,
             "method": "sequence",
-            "tokenizer": {
-                "rule": "comment"
-            },
+            "tokenizer": "comment",
+            "starter": true,
             "group": [
                 {
+                    "keyword": "CREATE",
                     "method": "ignore case",
-                    "keyword": "CREATE"
+                    "path": "action",
+                    "value": "create"
                 },
                 {
                     "repeat": "0..1",
                     "rule": {
                             "method": "ignore case",
-                            "keyword": "TEMPORARY"
+                            "keyword": "TEMPORARY",
+                            "path": "temporary",
+                            "value": true
                     }
                 },
                 {
                     "method": "ignore case",
-                    "keyword": "TABLE"
+                    "keyword": "TABLE",
+                    "path": "type",
+                    "value": "table"
                 },
                 {
                     "rule": "if_not_exists"
+                },
+                {
+                    "rule": "tbl_name"
+                },
+                {
+                    "method": "case",
+                    "group": [
+                        {
+                            "method": "sequence",
+                            "tokenizer": "comment",
+                            "group": [
+                                {
+                                    "keyword": "LIKE",
+                                    "method": "ignore case"
+                                },
+                                {
+                                    "clone": "tbl_name",
+                                    "push": "like"
+                                }
+                            ]
+                        },
+                        {
+                            "method": "sequence",
+                            "tokenizer": "comment",
+                            "group": [
+                                {
+                                    "keyword": "(",
+                                    "method": "literal",
+                                    "hidden": true
+                                },
+                                {
+                                    "keyword": "LIKE",
+                                    "method": "ignore case"
+                                },
+                                {
+                                    "clone": "tbl_name",
+                                    "push": "like"
+                                },
+                                {
+                                    "keyword": ")",
+                                    "method": "literal",
+                                    "hidden": true
+                                }
+                            ]
+                        }
+                    ]
                 }
             ]
         }

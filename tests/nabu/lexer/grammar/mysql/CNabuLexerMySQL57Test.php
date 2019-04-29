@@ -57,7 +57,7 @@ class CNabuLexerMySQL57Test extends TestCase
     /**
      * Data Provider for testDbNameRule
      */
-    public function dbNameRuleDataProvider()
+    public function singleRuleDataProvider()
     {
         /** @todo Review @url { https://dev.mysql.com/doc/refman/5.7/en/identifiers.html } to complete rule details. */
         return [
@@ -72,6 +72,17 @@ class CNabuLexerMySQL57Test extends TestCase
 
             ["db_name", false, "-ascii-error"],
             ["db_name", false, "\u{000A}unicode_error"],
+
+            ["tbl_name", true, "test.test", array('test', '.', 'test'), 9],
+            ["tbl_name", true, "`test`.test", array('test', '.', 'test'), 11],
+            ["tbl_name", true, "test.`test`", array('test', '.', 'test'), 11],
+            ["tbl_name", true, "`test`.`test`", array('test', '.', 'test'), 13],
+            ["tbl_name", true, "test", array('test'), 4],
+            ["tbl_name", true, "`test`", array('test'), 6],
+            ["tbl_name", true, "test\u{7e}", array('test'), 4],
+            ["tbl_name", true, "`test\u{02}\u{2605}`.test", array("test\u{02}\u{2605}", '.', 'test'), 13],
+            ["tbl_name", true, "test.`test\u{02}\u{2605}`", array('test', '.', "test\u{02}\u{2605}"), 13],
+            ["tbl_name", true, "`test\u{02}\u{2605}`.`\u{02}\u{2605}test`", array("test\u{02}\u{2605}", '.', "\u{02}\u{2605}test"), 17],
 
             ["comment", true, " ", array(" "), 1],
             ["comment", true, "    ", array("    "), 4],
@@ -133,21 +144,35 @@ class CNabuLexerMySQL57Test extends TestCase
             ["create_schema", false, 'CREATE SCHEMA DEFAULT; CHARACTER SET', array('CREATE', 'SCHEMA', 'DEFAULT'), 22],
             ["create_schema", false, 'CREATE SCHEMA DEFAULT CHARACTER SET'],
             ["create_schema", false, 'CREATE SCHEMA test CHARACTER SET'],
-            ["create_schema", false, 'CREATE SCHEMA DEFAULT']
+            ["create_schema", false, 'CREATE SCHEMA DEFAULT'],
+
+            ["create_table", true, 'CREATE TEMPORARY TABLE IF NOT EXISTS sctest.sctable LIKE sctest.oldtable',
+                array(
+                    'CREATE', 'TEMPORARY', 'TABLE', 'IF', 'NOT', 'EXISTS', 'sctest', '.', 'sctable', 'LIKE', 'sctest', '.', 'oldtable'
+                ),
+                72
+            ],
+            ["create_table", true, 'CREATE TEMPORARY TABLE IF NOT EXISTS sctest.sctable (LIKE sctest.oldtable)',
+                array(
+                    'CREATE', 'TEMPORARY', 'TABLE', 'IF', 'NOT', 'EXISTS', 'sctest', '.', 'sctable', 'LIKE', 'sctest', '.', 'oldtable'
+                ),
+                74
+            ],
+
 
         ];
     }
 
     /**
      * Testing db_name Rule.
-     * @dataProvider dbNameRuleDataProvider
+     * @dataProvider singleRuleDataProvider
      * @param string $rule_name Rule name to apply.
      * @param bool $success Expected result: true => passed, false => fails.
      * @param string|null $sample Sample string to test rule.
      * @param null $result Result value after apply rule.
      * @param int $length Expected source length after apply rule.
      */
-    public function testDbNameRule(
+    public function testSingleRule(
         string $rule_name, bool $success = false, string $sample = null, $result = null, int $length = 0
     ): void {
         $rule = self::$lexer->getRule($rule_name);
@@ -288,7 +313,36 @@ class CNabuLexerMySQL57Test extends TestCase
             [false, 'CREATE SCHEMA DEFAULT; CHARACTER SET'],
             [false, 'CREATE SCHEMA DEFAULT CHARACTER SET'],
             [false, 'CREATE SCHEMA test CHARACTER SET'],
-            [false, 'CREATE SCHEMA DEFAULT']
+            [false, 'CREATE SCHEMA DEFAULT'],
+
+            [true, 'CREATE TEMPORARY TABLE IF NOT EXISTS sctest.sctable LIKE sctest.oldtable',
+                array(
+                    'CREATE', 'TEMPORARY', 'TABLE', 'IF', 'NOT', 'EXISTS', 'sctest', '.', 'sctable', 'LIKE', 'sctest', '.', 'oldtable'
+                ),
+                72,
+                array(
+                    'action' => 'create',
+                    'temporary' => true,
+                    'type' => 'table',
+                    'schema' => 'sctest',
+                    'table' => 'sctable',
+                    'like' => array('sctest', '.', 'oldtable')
+                )
+            ],
+            [true, 'CREATE TEMPORARY TABLE IF NOT EXISTS sctest.sctable (LIKE sctest.oldtable)',
+                array(
+                    'CREATE', 'TEMPORARY', 'TABLE', 'IF', 'NOT', 'EXISTS', 'sctest', '.', 'sctable', 'LIKE', 'sctest', '.', 'oldtable'
+                ),
+                74,
+                array(
+                    'action' => 'create',
+                    'temporary' => true,
+                    'type' => 'table',
+                    'schema' => 'sctest',
+                    'table' => 'sctable',
+                    'like' => array('sctest', '.', 'oldtable')
+                )
+            ],
         ];
     }
 
@@ -304,15 +358,17 @@ class CNabuLexerMySQL57Test extends TestCase
     public function testAnalyze(
         bool $success = false, string $sample = null, $result = null, int $length = 0, array $rsdata = null
     ): void {
-        $success = self::$lexer->analyze($sample);
+        $analyzed = self::$lexer->analyze($sample);
         $this->assertIsBool($success);
         $data = self::$lexer->getData();
         $this->assertInstanceOf(CNabuLexerData::class, $data);
         if ($success) {
+            $this->assertTrue($analyzed);
             $this->assertSame($result, $data->getTokens());
             $this->assertSame($length, $data->getSourceLength());
             $data = self::$lexer->getData();
             if (is_array($rsdata)) {
+                error_log($data->dump());
                 $this->assertSame(count($rsdata), $data->count());
                 $this->assertSame(count($rsdata), count($data));
                 foreach ($rsdata as $key => $value) {
@@ -321,6 +377,7 @@ class CNabuLexerMySQL57Test extends TestCase
                 $this->assertSame($rsdata, $data->getValuesAsArray());
             }
         } else {
+            $this->assertFalse($analyzed);
             $this->assertNull($data->getTokens());
             $this->assertSame(0, $data->getSourceLength());
         }

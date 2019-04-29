@@ -140,8 +140,10 @@ class CNabuLexerRuleRegEx extends CNabuLexerAbstractRule
             if (count($matches) === count($tokens)) {
                 if (count($tokens) < 2) {
                     $this->setToken($tokens[0], $len);
+                    $this->setPathValue($tokens[0]);
                 } else {
                     $this->setToken($tokens, $len);
+                    $this->setPathValue($tokens);
                 }
                 $result = true;
             }

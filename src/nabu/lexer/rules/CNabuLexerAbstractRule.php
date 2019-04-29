@@ -33,7 +33,7 @@ use nabu\lexer\interfaces\INabuLexer;
 use nabu\lexer\interfaces\INabuLexerRule;
 
 /**
- * Main class to implement a Lexer.
+ * Abstract base class to implement a Lexer Rule.
  * This class can also be extended by third party classes to inherit his functionality.
  * @author Rafael Gutierrez <rgutierrez@nabu-3.com>
  * @since 0.0.2
@@ -98,6 +98,14 @@ abstract class CNabuLexerAbstractRule implements INabuLexerRule
         $this->path = $this->checkStringNode($descriptor, self::DESCRIPTOR_PATH_NODE);
         $this->path_default_value = $this->checkMixedNode($descriptor, self::DESCRIPTOR_VALUE_NODE);
         $this->hidden = $this->checkBooleanNode($descriptor, self::DESCRIPTOR_HIDDEN_NODE);
+    }
+
+    public function overrideFromDescriptor(array $descriptor): void
+    {
+        $this->starter = $this->checkBooleanNode($descriptor, self::DESCRIPTOR_STARTER_NODE, $this->starter);
+        $this->path = $this->checkStringNode($descriptor, self::DESCRIPTOR_PATH_NODE, $this->path);
+        $this->path_default_value = $this->checkMixedNode($descriptor, self::DESCRIPTOR_VALUE_NODE, $this->path_default_value);
+        $this->hidden = $this->checkBooleanNode($descriptor, self::DESCRIPTOR_HIDDEN_NODE, $this->hidden);
     }
 
     public function getTokens()
