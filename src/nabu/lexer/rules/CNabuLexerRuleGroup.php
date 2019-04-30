@@ -123,6 +123,7 @@ class CNabuLexerRuleGroup extends CNabuLexerAbstractBlockRule
 
     public function applyRuleToContent(string $content): bool
     {
+        $pushed = $this->pushPath();
         $this->clearTokens();
 
         if (!is_array($this->group) || count($this->group) === 0) {
@@ -140,6 +141,8 @@ class CNabuLexerRuleGroup extends CNabuLexerAbstractBlockRule
                 $retval = $this->applyRuleToContentAsCase($content);
                 break;
         }
+
+        $pushed && $this->popPath();
 
         return $retval;
     }

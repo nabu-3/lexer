@@ -21,6 +21,10 @@
 
 namespace nabu\lexer\rules;
 
+use nabu\lexer\data\CNabuLexerData;
+
+use nabu\lexer\interfaces\INabuLexer;
+
 /**
  * Abstract base class to implement a Lexer BLock Rule.
  * This class can also be extended by third party classes to inherit his functionality.
@@ -42,5 +46,52 @@ abstract class CNabuLexerAbstractBlockRule extends CNabuLexerAbstractRule
         parent::initFromDescriptor($descriptor);
 
         $this->push_path = $this->checkStringNode($descriptor, self::DESCRIPTOR_PUSH_NODE);
+    }
+
+    /**
+     * Get the push path value (slug).
+     * @return string|null Returns current Push Path value (slug).
+     */
+    public function getPushPath(): ?string
+    {
+        return $this->push_path;
+    }
+
+    /**
+     * Push the path if exists.
+     * @return bool Returns true if the path was pushed.
+     */
+    public function pushPath(): bool
+    {
+        $retval = false;
+
+        if (($lexer = $this->getLexer()) instanceof INabuLexer) {
+            $data = $lexer->getData();
+            if ($data instanceof CNabuLexerData && is_string($this->push_path)) {
+                $data->pushPath($this->push_path);
+                $retval = true;
+            }
+        }
+
+        return $retval;
+    }
+
+    /**
+     * Pop the path if exists.
+     * @return bool Returns true if the path was popped.
+     */
+    public function popPath(): bool
+    {
+        $retval = false;
+
+        if (($lexer = $this->getLexer()) instanceof INabuLexer) {
+            $data = $lexer->getData();
+            if ($data instanceof CNabuLexerData && is_string($this->push_path)) {
+                $data->popPath();
+                $retval = true;
+            }
+        }
+
+        return $retval;
     }
 }

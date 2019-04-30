@@ -67,6 +67,7 @@ class CNabuLexerRuleRepeat extends CNabuLexerAbstractBlockRule
 
     public function applyRuleToContent(string $content): bool
     {
+        $pushed = $this->pushPath();
         $iteration = 0;
 
         $this->clearTokens();
@@ -91,6 +92,8 @@ class CNabuLexerRuleRepeat extends CNabuLexerAbstractBlockRule
         } else {
             $this->setPathValue($this->getTokens());
         }
+
+        $pushed && $this->popPath();
 
         return $success;
     }

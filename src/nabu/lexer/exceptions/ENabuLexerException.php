@@ -68,6 +68,8 @@ class ENabuLexerException extends ENabuException
     public const ERROR_INVALID_RANGE_VALUES                         = 0x0010;
     /** @var int Lexer Data instance not set. */
     public const ERROR_LEXER_DATA_INSTANCE_NOT_SET                  = 0x0011;
+    /** @var int Data Path is empty. */
+    public const ERROR_LEXER_DATA_PATH_IS_EMPTY                     = 0X0012;
 
     /** @var array English error messages array. */
     private static $error_messages = array(
@@ -104,7 +106,9 @@ class ENabuLexerException extends ENabuException
         ENabuLexerException::ERROR_INVALID_RANGE_VALUES =>
             'Invalid Range values [%s].',
         ENabuLexerException::ERROR_LEXER_DATA_INSTANCE_NOT_SET =>
-            'Lexer Data instance not set.'
+            'Lexer Data instance not set.',
+        ENabuLexerException::ERROR_LEXER_DATA_PATH_IS_EMPTY =>
+            'Lexer Data Path is empty.'
     );
 
     /**

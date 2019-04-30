@@ -326,7 +326,10 @@ class CNabuLexerMySQL57Test extends TestCase
                     'type' => 'table',
                     'schema' => 'sctest',
                     'table' => 'sctable',
-                    'like' => array('sctest', '.', 'oldtable')
+                    'like' => array(
+                        'schema' => 'sctest',
+                        'table' => 'oldtable'
+                    )
                 )
             ],
             [true, 'CREATE TEMPORARY TABLE IF NOT EXISTS sctest.sctable (LIKE sctest.oldtable)',
@@ -340,7 +343,10 @@ class CNabuLexerMySQL57Test extends TestCase
                     'type' => 'table',
                     'schema' => 'sctest',
                     'table' => 'sctable',
-                    'like' => array('sctest', '.', 'oldtable')
+                    'like' => array(
+                        'schema' => 'sctest',
+                        'table' => 'oldtable'
+                    )
                 )
             ],
         ];
@@ -368,7 +374,6 @@ class CNabuLexerMySQL57Test extends TestCase
             $this->assertSame($length, $data->getSourceLength());
             $data = self::$lexer->getData();
             if (is_array($rsdata)) {
-                error_log($data->dump());
                 $this->assertSame(count($rsdata), $data->count());
                 $this->assertSame(count($rsdata), count($data));
                 foreach ($rsdata as $key => $value) {

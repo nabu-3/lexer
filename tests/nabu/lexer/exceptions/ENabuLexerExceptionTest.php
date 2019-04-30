@@ -55,7 +55,8 @@ class ENabuLexerExceptionTest extends TestCase
             [ENabuLexerException::ERROR_RULE_ALREADY_EXISTS, array('rule key')],
             [ENabuLexerException::ERROR_RULE_DOES_NOT_EXISTS, array('rule_key')],
             [ENabuLexerException::ERROR_INVALID_RANGE_VALUES, array('2..1')],
-            [ENabuLexerException::ERROR_LEXER_DATA_INSTANCE_NOT_SET, null]
+            [ENabuLexerException::ERROR_LEXER_DATA_INSTANCE_NOT_SET, null],
+            [ENabuLexerException::ERROR_LEXER_DATA_PATH_IS_EMPTY, null]
         ];
     }
 
