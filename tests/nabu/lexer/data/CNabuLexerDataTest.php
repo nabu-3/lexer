@@ -23,6 +23,8 @@ namespace nabu\lexer\data;
 
 use PHPUnit\Framework\TestCase;
 
+use nabu\lexer\exceptions\ENabuLexerException;
+
 /**
  * Test class for @see { CNabuLexerData }.
  * @author Rafael Gutierrez <rgutierrez@nabu-3.com>
@@ -41,5 +43,34 @@ class CNabuLexerDataTest extends TestCase
         $data = new CNabuLexerData();
         $this->assertInstanceOf(CNabuLexerData::class, $data->setMainRuleName('rule_name'));
         $this->assertSame('rule_name', $data->getMainRuleName());
+    }
+
+    /**
+     * @test pushPath
+     * @test calculateBasePath
+     */
+    public function testPushAndCalculatePath()
+    {
+        $data = new CNabuLexerData();
+        $this->assertInstanceOf(CNabuLexerData::class, $data->pushPath('level1'));
+        $this->assertSame('level1', $data->getWithPreffix());
+        $this->assertInstanceOf(CNabuLexerData::class, $data->pushPath('level2'));
+        $this->assertSame('level1.level2', $data->getWithPreffix());
+        $this->assertInstanceOf(CNabuLexerData::class, $data->pushPath('.rewind1.rewind2'));
+        $this->assertSame('rewind1.rewind2', $data->getWithPreffix());
+        $this->assertInstanceOf(CNabuLexerData::class, $data->pushPath('level2'));
+        $this->assertSame('rewind1.rewind2.level2', $data->getWithPreffix());
+        $this->assertInstanceOf(CNabuLexerData::class, $data->popPath());
+        $this->assertSame('rewind1.rewind2', $data->getWithPreffix());
+        $this->assertInstanceOf(CNabuLexerData::class, $data->popPath());
+        $this->assertSame('level1.level2', $data->getWithPreffix());
+        $this->assertInstanceOf(CNabuLexerData::class, $data->popPath());
+        $this->assertSame('level1', $data->getWithPreffix());
+        $this->assertInstanceOf(CNabuLexerData::class, $data->popPath());
+        $this->assertNull($data->getWithPreffix());
+
+        $this->expectException(ENabuLexerException::class);
+        $this->expectExceptionCode(ENabuLexerException::ERROR_LEXER_DATA_PATH_IS_EMPTY);
+        $data->pushPath('');
     }
 }
