@@ -512,6 +512,7 @@
                 },
                 {
                     "method": "case",
+                    "push": "like",
                     "group": [
                         {
                             "method": "sequence",
@@ -522,8 +523,7 @@
                                     "method": "ignore case"
                                 },
                                 {
-                                    "clone": "tbl_name",
-                                    "push": "like"
+                                    "clone": "tbl_name"
                                 }
                             ]
                         },
