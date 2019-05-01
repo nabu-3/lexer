@@ -141,7 +141,11 @@ abstract class CNabuLexerAbstractRule implements INabuLexerRule
                 if (is_array($tokens)) {
                     $this->tokens = array_merge($this->tokens, $tokens);
                 } elseif (!is_string($tokens) || mb_strlen($tokens) > 0) {
-                    $this->tokens[] = $tokens;
+                    if (is_array($this->tokens)) {
+                        $this->tokens[] = $tokens;
+                    } else {
+                        $this->tokens = array($this->tokens, $tokens);
+                    }
                 }
             }
         }

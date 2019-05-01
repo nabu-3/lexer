@@ -945,6 +945,74 @@ class CNabuLexerAbstractRuleTest extends TestCase
             )
         );
     }
+
+    /**
+     * @test appendTokens
+     * @test getPathDefaultValue
+     */
+    public function testAppendTokens()
+    {
+        $rule = CNabuLexerAbstractRuleTestingNodes::createFromDescriptor(
+            $this->lexer,
+            array(
+                'bool_required' => true,
+                'string_required' => 'required',
+                'string_null' => 'nullable',
+                'enum_required' => 'literal',
+                'enum_null' => null,
+                'array_required' => array('value'),
+                'array_null' => null,
+                'mixed_required' => 'mixed',
+                'mixed_null' => null,
+                'regex_required' => '\s+',
+                'regex_null' => null,
+                'range_required' => '0..1',
+                'range_null' => null,
+                'path' => 'a.b.c',
+                'hidden' => false,
+                'value' => 'value_default'
+            )
+        );
+        $rule->appendTokens('test_1', 6);
+        $this->assertSame('test_1', $rule->getTokens());
+        $this->assertSame(6, $rule->getSourceLength());
+        $rule->appendTokens('test_2', 6);
+        $this->assertSame(array('test_1', 'test_2'), $rule->getTokens());
+        $this->assertSame(12, $rule->getSourceLength());
+        $rule->appendTokens('test_3', 6);
+        $this->assertSame(array('test_1', 'test_2', 'test_3'), $rule->getTokens());
+        $this->assertSame(18, $rule->getSourceLength());
+        $this->assertSame('value_default', $rule->getPathDefaultValue());
+    }
+
+    /**
+     * @test setPathValue
+     */
+    public function testSetPathValueFails()
+    {
+        $rule = CNabuLexerAbstractRuleTestingNodes::createFromDescriptor(
+            $this->lexer,
+            array(
+                'bool_required' => true,
+                'string_required' => 'required',
+                'string_null' => 'nullable',
+                'enum_required' => 'literal',
+                'enum_null' => null,
+                'array_required' => array('value'),
+                'array_null' => null,
+                'mixed_required' => 'mixed',
+                'mixed_null' => null,
+                'regex_required' => '\s+',
+                'regex_null' => null,
+                'range_required' => '0..1',
+                'range_null' => null,
+                'path' => 'a.b.c'
+            )
+        );
+        $this->expectException(ENabuLexerException::class);
+        $this->expectExceptionCode(ENabuLexerException::ERROR_LEXER_DATA_INSTANCE_NOT_SET);
+        $rule->setPathValue('fails');
+    }
 }
 
 class CNabuLexerAbstractRuleTestingNodes extends CNabuLexerAbstractRule
