@@ -77,10 +77,14 @@ class CNabuLexerGrammarLoader extends CNabuObject implements INabuLexerGrammarLo
     {
         $retval = false;
 
-        if (file_exists($filename)) {
+        if (strlen($filename) > 0 &&
+            is_string($realname = realpath($filename)) &&
+            file_exists($realname) &&
+            is_file($realname)
+        ) {
             try {
-                if (mime_content_type($filename) !== 'text/plain' ||
-                    ($raw = file_get_contents($filename)) === false ||
+                if (mime_content_type($realname) !== 'text/plain' ||
+                    ($raw = file_get_contents($realname)) === false ||
                     !($json = json_decode($raw, JSON_OBJECT_AS_ARRAY))
                 ) {
                     throw new ENabuLexerException(
