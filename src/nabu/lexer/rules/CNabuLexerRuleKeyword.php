@@ -99,7 +99,7 @@ class CNabuLexerRuleKeyword extends CNabuLexerAbstractRule
     public function applyRuleToContent(string $content): bool
     {
         $result = false;
-        $this->clearValue();
+        $this->clearTokens();
 
         if (is_string($this->keyword)) {
             $len = mb_strlen($this->keyword);
@@ -111,7 +111,9 @@ class CNabuLexerRuleKeyword extends CNabuLexerAbstractRule
                 $case = $this->keyword;
             }
             if (nb_strStartsWith($fragment, $case)) {
-                $this->setValue(mb_substr($content, 0, $len), $len);
+                $value = mb_substr($content, 0, $len);
+                $this->setToken($value, $len);
+                $this->setPathValue($value);
                 $result = true;
             }
         }

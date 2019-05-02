@@ -21,8 +21,6 @@
 
 namespace nabu\lexer\rules;
 
-use nabu\lexer\exceptions\ENabuLexerException;
-
 use nabu\lexer\interfaces\INabuLexerRule;
 
 /**
@@ -32,7 +30,7 @@ use nabu\lexer\interfaces\INabuLexerRule;
  * @version 0.0.2
  * @package \nabu\lexer\rules
  */
-class CNabuLexerRuleRepeat extends CNabuLexerAbstractRule
+class CNabuLexerRuleRepeat extends CNabuLexerAbstractBlockRule
 {
     /** @var string Descriptor repeat node literal. */
     const DESCRIPTOR_REPEAT_NODE = 'repeat';
@@ -69,37 +67,20 @@ class CNabuLexerRuleRepeat extends CNabuLexerAbstractRule
 
     public function applyRuleToContent(string $content): bool
     {
-        $cursor = $content;
+        $pushed = $this->pushPath();
         $iteration = 0;
 
-        $this->clearValue();
+        $this->clearTokens();
 
         do {
-            $token_found = false;
-            if ($this->tokenizer instanceof INabuLexerRule &&
-                $this->tokenizer->applyRuleToContent($cursor)
-            ) {
-                $tkv = $this->tokenizer->getValue();
-                $tkl = $this->tokenizer->getSourceLength();
-                $token_found = true;
-                $cursor = mb_substr($cursor, $tkl);
-            }
-            $this->repeater->clearValue();
-            if ($this->repeater->applyRuleToContent($cursor)) {
-                if ($token_found) {
-                    $this->appendValue($tkv, $tkl);
-                }
-                $v = $this->repeater->getValue();
-                $l = $this->repeater->getSourceLength();
-                $this->appendValue($v, $l);
-                $cursor = mb_substr($cursor, $l);
+            if ($this->applyRuleToContentIteration($content)) {
+                $iteration++;
             } else {
                 break;
             }
-            $iteration++;
         } while (
             ($this->max_repeat === NABU_LEXER_RANGE_N || $iteration < $this->max_repeat) &&
-            mb_strlen($cursor) > 0
+            mb_strlen($content) > 0
         );
 
         if (!($success = ($iteration >= $this->min_repeat &&
@@ -107,9 +88,46 @@ class CNabuLexerRuleRepeat extends CNabuLexerAbstractRule
                            $iteration <= $this->max_repeat
              )))
         ) {
-            $this->clearValue();
+            $this->clearTokens();
+        } else {
+            $this->setPathValue($this->getTokens());
         }
 
+        $pushed && $this->popPath();
+
         return $success;
+    }
+
+    /**
+     * Calculates an iteration of @see { CNabuLexerRuleRepeat::applyRuleToContent }.
+     * @param string &$cursor Current string to be parsed.
+     * @return bool Returns true if rule was applied or false otherwise.
+     */
+    private function applyRuleToContentIteration(string &$cursor): bool
+    {
+        $retval = false;
+
+        $token_found = false;
+        if ($this->tokenizer instanceof INabuLexerRule &&
+            $this->tokenizer->applyRuleToContent($cursor)
+        ) {
+            $tkv = $this->tokenizer->getTokens();
+            $tkl = $this->tokenizer->getSourceLength();
+            $token_found = true;
+            $cursor = mb_substr($cursor, $tkl);
+        }
+        $this->repeater->clearTokens();
+        if ($this->repeater->applyRuleToContent($cursor)) {
+            if ($token_found) {
+                $this->appendTokens($tkv, $tkl);
+            }
+            $v = $this->repeater->getTokens();
+            $l = $this->repeater->getSourceLength();
+            $this->appendTokens($v, $l);
+            $cursor = mb_substr($cursor, $l);
+            $retval = true;
+        }
+
+        return $retval;
     }
 }

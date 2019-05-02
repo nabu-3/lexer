@@ -66,6 +66,10 @@ class ENabuLexerException extends ENabuException
     public const ERROR_RULE_DOES_NOT_EXISTS                         = 0x000f;
     /** @var int Invalid Range values. Requires range as string. */
     public const ERROR_INVALID_RANGE_VALUES                         = 0x0010;
+    /** @var int Lexer Data instance not set. */
+    public const ERROR_LEXER_DATA_INSTANCE_NOT_SET                  = 0x0011;
+    /** @var int Data Path is empty. */
+    public const ERROR_LEXER_DATA_PATH_IS_EMPTY                     = 0X0012;
 
     /** @var array English error messages array. */
     private static $error_messages = array(
@@ -100,13 +104,17 @@ class ENabuLexerException extends ENabuException
         ENabuLexerException::ERROR_RULE_DOES_NOT_EXISTS =>
             'Rule [%s] does not exists.',
         ENabuLexerException::ERROR_INVALID_RANGE_VALUES =>
-            'Invalid Range values [%s].'
+            'Invalid Range values [%s].',
+        ENabuLexerException::ERROR_LEXER_DATA_INSTANCE_NOT_SET =>
+            'Lexer Data instance not set.',
+        ENabuLexerException::ERROR_LEXER_DATA_PATH_IS_EMPTY =>
+            'Lexer Data Path is empty.'
     );
 
     /**
      * Creates a Lexer Exception instance.
      * @param int $code Integer code of the exception.
-     * @param array|null $values Valus to be inserted in the translated message if needed.
+     * @param array|null $values Values to be inserted in the translated message if needed.
      * @throws ErrorException Trhos an exception if $code value is not supported.
      */
     public function __construct(int $code, array $values = null)

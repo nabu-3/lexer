@@ -21,6 +21,8 @@
 
 namespace nabu\lexer\rules;
 
+use Iterator;
+
 use nabu\lexer\CNabuLexer;
 
 use nabu\lexer\exceptions\ENabuLexerException;
@@ -37,20 +39,66 @@ use nabu\min\CNabuObject;
  * @version 0.0.2
  * @package \nabu\lexer\rules
  */
-class CNabuLexerRuleProxy extends CNabuObject
+class CNabuLexerRuleProxy extends CNabuObject implements Iterator
 {
     /** @var string Descriptor rule node literal. */
     const DESCRIPTOR_RULE_NODE = 'rule';
+    /** @var string Descriptor clone node literal. */
+    const DESCRIPTOR_CLONE_NODE = 'clone';
 
     /** @var CNabuLexer $lexer Lexer associated to this Proxy. */
     private $lexer = null;
-
     /** @var array $inventory Rules inventory associated to this Proxy instance. */
     private $inventory = null;
+    /** @var int $inventory_position Position for $inventory iterator. */
+    private $inventory_position = 0;
 
     public function __construct(CNabuLexer $lexer)
     {
         $this->lexer = $lexer;
+        $this->inventory = null;
+        $this->inventory_position = 0;
+    }
+
+    public function current()
+    {
+        $current = null;
+
+        if (is_array($this->inventory)) {
+            $keys = array_keys($this->inventory);
+            $current = $this->inventory[$keys[$this->inventory_position]];
+        }
+
+        return $current;
+    }
+
+    public function next()
+    {
+        $this->inventory_position++;
+    }
+
+    public function key()
+    {
+        $key = null;
+
+        if (is_array($this->inventory)) {
+            $keys = array_keys($this->inventory);
+            $key = $keys[$this->inventory_position];
+        }
+
+        return $key;
+    }
+
+    public function valid()
+    {
+        $size = is_array($this->inventory) ? count($this->inventory) : 0;
+
+        return $this->inventory_position < $size;
+    }
+
+    public function rewind()
+    {
+        $this->inventory_position = 0;
     }
 
     /**
@@ -80,6 +128,13 @@ class CNabuLexerRuleProxy extends CNabuObject
                     ENabuLexerException::ERROR_RULE_NOT_FOUND_FOR_DESCRIPTOR,
                     array(var_export($descriptor[self::DESCRIPTOR_RULE_NODE], true))
                 );
+            }
+        } elseif (array_key_exists(self::DESCRIPTOR_CLONE_NODE, $descriptor)) {
+            if (is_string($descriptor[self::DESCRIPTOR_CLONE_NODE]) &&
+                ($source = $lexer->getRule($descriptor[self::DESCRIPTOR_CLONE_NODE])) instanceof INabuLexerRule
+            ) {
+                $rule = clone $source;
+                $rule->overrideFromDescriptor($descriptor);
             }
         }
 

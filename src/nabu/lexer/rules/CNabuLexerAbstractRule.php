@@ -23,13 +23,17 @@ namespace nabu\lexer\rules;
 
 use nabu\lexer\CNabuLexer;
 
+use nabu\lexer\data\CNabuLexerData;
+
 use nabu\lexer\data\traits\TNabuLexerNodeChecker;
+
+use nabu\lexer\exceptions\ENabuLexerException;
 
 use nabu\lexer\interfaces\INabuLexer;
 use nabu\lexer\interfaces\INabuLexerRule;
 
 /**
- * Main class to implement a Lexer.
+ * Abstract base class to implement a Lexer Rule.
  * This class can also be extended by third party classes to inherit his functionality.
  * @author Rafael Gutierrez <rgutierrez@nabu-3.com>
  * @since 0.0.2
@@ -44,6 +48,8 @@ abstract class CNabuLexerAbstractRule implements INabuLexerRule
     const DESCRIPTOR_STARTER_NODE = 'starter';
     /** @var string Descriptor path node literal. */
     const DESCRIPTOR_PATH_NODE = 'path';
+    /** @var string Descriptor value node literal. */
+    const DESCRIPTOR_VALUE_NODE = 'value';
     /** @var string Descriptor hidden node literal. */
     const DESCRIPTOR_HIDDEN_NODE = 'hidden';
 
@@ -53,13 +59,16 @@ abstract class CNabuLexerAbstractRule implements INabuLexerRule
     /** @var string Path to store extracted value. */
     private $path = null;
 
-    /** @var mixed $value Rule value extrated from content. */
-    private $value = null;
+    /** @var mixed|null Fixed Path value. */
+    private $path_default_value = null;
 
-    /** @var int $sourceLength Length of original string needed to detect the value. */
+    /** @var array|null $tokens Rule tokens extracted from content. */
+    private $tokens = null;
+
+    /** @var int $sourceLength Length of original string needed to detect the tokens. */
     private $sourceLength = 0;
 
-    /** @var bool $hidden If true, methods setValue and appendValue only considers the source length. */
+    /** @var bool $hidden If true, methods setToken and appendTokens only considers the source length. */
     private $hidden = false;
 
     /** @var CNabuLexer $lexer Lexer that manages this rule. */
@@ -87,12 +96,21 @@ abstract class CNabuLexerAbstractRule implements INabuLexerRule
     {
         $this->starter = $this->checkBooleanNode($descriptor, self::DESCRIPTOR_STARTER_NODE);
         $this->path = $this->checkStringNode($descriptor, self::DESCRIPTOR_PATH_NODE);
+        $this->path_default_value = $this->checkMixedNode($descriptor, self::DESCRIPTOR_VALUE_NODE);
         $this->hidden = $this->checkBooleanNode($descriptor, self::DESCRIPTOR_HIDDEN_NODE);
     }
 
-    public function getValue()
+    public function overrideFromDescriptor(array $descriptor): void
     {
-        return $this->value;
+        $this->starter = $this->checkBooleanNode($descriptor, self::DESCRIPTOR_STARTER_NODE, $this->starter);
+        $this->path = $this->checkStringNode($descriptor, self::DESCRIPTOR_PATH_NODE, $this->path);
+        $this->path_default_value = $this->checkMixedNode($descriptor, self::DESCRIPTOR_VALUE_NODE, $this->path_default_value);
+        $this->hidden = $this->checkBooleanNode($descriptor, self::DESCRIPTOR_HIDDEN_NODE, $this->hidden);
+    }
+
+    public function getTokens()
+    {
+        return $this->tokens;
     }
 
     public function getSourceLength(): int
@@ -100,29 +118,35 @@ abstract class CNabuLexerAbstractRule implements INabuLexerRule
         return $this->sourceLength;
     }
 
-    public function setValue($value, int $sourceLength): INabuLexerRule
+    public function setToken($token, int $sourceLength): INabuLexerRule
     {
-        if (!$this->isHidden() && !is_null($value)) {
-            $this->value = $value;
+        if (!$this->isHidden() && !is_null($token)) {
+            if (is_array($token)) {
+                $this->tokens = $token;
+            } else {
+                $this->tokens = array($token);
+            }
         }
         $this->sourceLength = $sourceLength;
 
         return $this;
     }
 
-    public function appendValue($value, int $source_length): INabuLexerRule
+    public function appendTokens($tokens, int $source_length): INabuLexerRule
     {
-        if (!$this->isHidden() && !is_null($value)) {
-            if (is_null($this->value)) {
-                $this->value = $value;
-            } elseif (is_array($this->value)) {
-                if (is_array($value)) {
-                    $this->value = array_merge($this->value, $value);
-                } elseif (!is_string($value) || mb_strlen($value) > 0) {
-                    $this->value[] = $value;
-                }
+        if (!$this->isHidden() && !is_null($tokens)) {
+            if (is_null($this->tokens)) {
+                $this->tokens = $tokens;
             } else {
-                $this->value = array($this->value, $value);
+                if (is_array($tokens)) {
+                    $this->tokens = array_merge($this->tokens, $tokens);
+                } elseif (!is_string($tokens) || mb_strlen($tokens) > 0) {
+                    if (is_array($this->tokens)) {
+                        $this->tokens[] = $tokens;
+                    } else {
+                        $this->tokens = array($this->tokens, $tokens);
+                    }
+                }
             }
         }
         $this->sourceLength += $source_length;
@@ -130,10 +154,37 @@ abstract class CNabuLexerAbstractRule implements INabuLexerRule
         return $this;
     }
 
-    public function clearValue(): INabuLexerRule
+    public function clearTokens(): INabuLexerRule
     {
-        $this->value = null;
+        $this->tokens = null;
         $this->sourceLength = 0;
+
+        return $this;
+    }
+
+    public function getPathDefaultValue()
+    {
+        return $this->path_default_value;
+    }
+
+    public function setPathValue($value = null): INabuLexerRule
+    {
+        $data = $this->getLexer()->getData();
+
+        if ($data instanceof CNabuLexerData) {
+            if (is_string($this->path)) {
+                if (is_null($this->path_default_value)) {
+                    if (is_array($value) && count($value) === 1) {
+                        $value = array_shift($value);
+                    }
+                    $data->setValue($this->path, $value);
+                } else {
+                    $data->setValue($this->path, $this->path_default_value);
+                }
+            }
+        } else {
+            throw new ENabuLexerException(ENabuLexerException::ERROR_LEXER_DATA_INSTANCE_NOT_SET);
+        }
 
         return $this;
     }

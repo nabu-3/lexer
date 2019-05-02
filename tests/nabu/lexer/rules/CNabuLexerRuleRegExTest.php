@@ -27,6 +27,8 @@ use PHPUnit\Framework\TestCase;
 
 use nabu\lexer\CNabuCustomLexer;
 
+use nabu\lexer\data\CNabuLexerData;
+
 use nabu\lexer\exceptions\ENabuLexerException;
 
 use nabu\lexer\interfaces\INabuLexerRule;
@@ -40,6 +42,15 @@ use nabu\lexer\interfaces\INabuLexerRule;
  */
 class CNabuLexerRuleRegExTest extends TestCase
 {
+    /** @var CNabuCustomLexer Lexer used for tests. */
+    private $lexer = null;
+
+    public function setUp(): void
+    {
+        $this->lexer = CNabuCustomLexer::getLexer();
+        $this->lexer->setData(new CNabuLexerData());
+    }
+
     /**
      * @test __construct
      */
@@ -57,11 +68,11 @@ class CNabuLexerRuleRegExTest extends TestCase
     {
         return [
             [false, false, false, false, 'literal', "^''|'(.*?[^\\\\])'", null,
-                "'test \'with single quotes\' inside #0' and more test", "test \'with single quotes\' inside #0", 39, true],
+                "'test \'with single quotes\' inside #0' and more test", array("test \'with single quotes\' inside #0"), 39, true],
             [false, false, false, false, 'literal', "^'()'|'(.*?[^\\\\])'", null,
-                "'' and more test", "", 2, true],
+                "'' and more test", array(""), 2, true],
             [false, false, false, false, 'literal', "('\\s*'|'.*?[^\\\\]')", null,
-                "'test \'with single quotes\' inside #1' and more test", "'test \'with single quotes\' inside #1'", 39, true],
+                "'test \'with single quotes\' inside #1' and more test", array("'test \'with single quotes\' inside #1'"), 39, true],
             [false, false, false, false, 'literal', '([a-z]+) ([A-Z]+)', null,
                 "test CASE with multiple params", array('test', 'CASE'), 9, true],
 
@@ -71,7 +82,7 @@ class CNabuLexerRuleRegExTest extends TestCase
                 "test CASE", array('test'), 4, true],
 
             [false, false, false, true, 'literal', "([\x{0080}-\x{FFFF}]+)", null,
-                "\u{0080}\u{0100}\u{1FF00}", "\u{0080}\u{0100}", 2, true]
+                "\u{0080}\u{0100}\u{1FF00}", array("\u{0080}\u{0100}"), 2, true]
         ];
     }
 
@@ -139,14 +150,13 @@ class CNabuLexerRuleRegExTest extends TestCase
         string $method = null, string $match = null, $exclude = null, string $content = null,
         $result = null, int $length = 0, bool $passed = false
     ) {
-        $lexer = CNabuCustomLexer::getLexer();
         $params = $this->createDescriptor($starter, $case_ignored, $unicode, $method, $match, $exclude);
 
         if ($throwable) {
             $this->expectException(ENabuLexerException::class);
         }
 
-        $rule = CNabuLexerRuleRegEx::createFromDescriptor($lexer, $params);
+        $rule = CNabuLexerRuleRegEx::createFromDescriptor($this->lexer, $params);
         $this->assertInstanceOf(CNabuLexerRuleRegEx::class, $rule);
 
         if (is_bool($starter)) {
@@ -210,10 +220,9 @@ class CNabuLexerRuleRegExTest extends TestCase
         if ($throwable) {
             $this->assertTrue($throwable);
         } else {
-            $lexer = CNabuCustomLexer::getLexer();
             try {
                 $rule = CNabuLexerRuleRegEx::createFromDescriptor(
-                    $lexer,
+                    $this->lexer,
                     $this->createDescriptor($starter, $case_ignored, $unicode, $method, $match, $exclude)
                 );
             } catch (Exception $ex) {
@@ -230,11 +239,11 @@ class CNabuLexerRuleRegExTest extends TestCase
                 }
                 if ($passed) {
                     $this->assertTrue($rule->applyRuleToContent($content));
-                    $this->assertSame($result, $rule->getValue());
+                    $this->assertSame($result, $rule->getTokens());
                     $this->assertSame($length, $rule->getSourceLength());
                 } else {
                     $this->assertFalse($rule->applyRuleToContent($content));
-                    $this->assertNull($rule->getValue());
+                    $this->assertNull($rule->getTokens());
                     $this->assertSame(0, $rule->getSourceLength());
                 }
             }

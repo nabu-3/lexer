@@ -43,9 +43,15 @@ interface INabuLexerRule
     /**
      * Init the instance using a descriptor array info.
      * @param array $descriptor The descriptor array to init the instance.
-     * @throws ENabuLexerException Throws an exception if the descriptor is not valod.
+     * @throws ENabuLexerException Throws an exception if the descriptor is not valid.
      */
     public function initFromDescriptor(array $descriptor): void;
+    /**
+     * Overrides the instance using a descriptor array info.
+     * @param array $descriptor The descriptor array to override the instance.
+     * @throws ENabuLexerException Throws an exception if the descriptor is not valid.
+     */
+    public function overrideFromDescriptor(array $descriptor): void;
     /**
      * Applies the rule to a content string.
      * @param string $content The content to be analized.
@@ -56,7 +62,7 @@ interface INabuLexerRule
      * Returns the value stored in the last execution of the rule.
      * @return mixed Returns the value according to rule specifications. If case of no value setted, then returns null.
      */
-    public function getValue();
+    public function getTokens();
     /**
      * Returns the amount of characters needed in the source string to detect and extract the value.
      * @return int Returns the amount.
@@ -64,23 +70,30 @@ interface INabuLexerRule
     public function getSourceLength() : int;
     /**
      * Set the value of the rule.
-     * @param mixed $value The value to be stored. It can be of any type.
+     * @param mixed $token The value to be stored. It can be of any type.
      * @param int $source_length Amount of characters used to detect and extract the value in the source string.
      * @return INabuLexerRule Returns self pointer to grant fluent interface.
      */
-    public function setValue($value, int $source_length): INabuLexerRule;
+    public function setToken($token, int $source_length): INabuLexerRule;
     /**
      * Append a value of the rule.
-     * @param mixed $value The value to be stored. It can be of any type.
+     * @param mixed $token The value to be stored. It can be of any type.
      * @param int $source_length Amount of characters used to detect and extract the value in the source string.
      * @return INabuLexerRule Returns self pointer to grant fluent interface.
      */
-    public function appendValue($value, int $source_length): INabuLexerRule;
+    public function appendTokens($token, int $source_length): INabuLexerRule;
     /**
      * Clear previous stored value of the rule.
      * @return INabuLexerRule Returns self pointer to grant fluent interface.
      */
-    public function clearValue(): INabuLexerRule;
+    public function clearTokens(): INabuLexerRule;
+    /**
+     * Sets the Path value in the associated @see { CNabuLexerData } object.
+     * @param mixed|null $value Value to be setted.
+     * @return INabuLexerRule Returns the self pointer to grant fluent interfaces.
+     * @throws ENabuLexerException Throw an exception if something unexpected happens.
+     */
+    public function setPathValue($value = null): INabuLexerRule;
     /**
      * Check if the rule is a starter rule or could be placed in any moment.
      * @return bool Returns true if it is a starter rule.
@@ -91,6 +104,11 @@ interface INabuLexerRule
      * @return string|null Returns the path if setted or null otherwise.
      */
     public function getPath(): ?string;
+    /**
+     * Get the default path value setted in the rule descriptor.
+     * @return mixed|null Returns current default path value.
+     */
+    public function getPathDefaultValue();
     /**
      * Check if the rule have his value hidden or visible.
      * @return bool Returns true if the value is hidden.

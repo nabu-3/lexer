@@ -43,6 +43,9 @@
     <filter>
         <whitelist addUncoveredFilesFromWhitelist="true">
             <directory>./src</directory>
+            <exclude>
+               <file>./src/globals.php</file>
+           </exclude>
         </whitelist>
     </filter>
     <php>

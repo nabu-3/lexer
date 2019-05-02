@@ -24,7 +24,7 @@ namespace nabu\lexer\exceptions;
 use PHPUnit\Framework\TestCase;
 
 /**
- * Test class for @see ENabuLexerException.
+ * Test class for @see { ENabuLexerException }.
  * @author Rafael Gutierrez <rgutierrez@nabu-3.com>
  * @since 0.0.2
  * @version 0.0.2
@@ -54,7 +54,9 @@ class ENabuLexerExceptionTest extends TestCase
             [ENabuLexerException::ERROR_EMPTY_GROUP_RULE, null],
             [ENabuLexerException::ERROR_RULE_ALREADY_EXISTS, array('rule key')],
             [ENabuLexerException::ERROR_RULE_DOES_NOT_EXISTS, array('rule_key')],
-            [ENabuLexerException::ERROR_INVALID_RANGE_VALUES, array('2..1')]
+            [ENabuLexerException::ERROR_INVALID_RANGE_VALUES, array('2..1')],
+            [ENabuLexerException::ERROR_LEXER_DATA_INSTANCE_NOT_SET, null],
+            [ENabuLexerException::ERROR_LEXER_DATA_PATH_IS_EMPTY, null]
         ];
     }
 

@@ -24,5 +24,6 @@ script:
     - if [[ -a .git/shallow ]]; then git fetch --unshallow; fi
     - git fetch --no-tags https://github.com/nabu-3/lexer.git +refs/heads/master:refs/remotes/origin/master
     - chmod a-r ./tests/nabu/lexer/grammar/resources/test-write-only-file.json
-    - ./vendor/bin/phpunit
+    - ./vendor/bin/phpunit --dump-xdebug-filter ./tmp/xdebug-filter.php
+    - ./vendor/bin/phpunit --prepend ./tmp/xdebug-filter.php
     - sonar-scanner

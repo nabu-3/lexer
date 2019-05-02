@@ -266,7 +266,33 @@
         },
 
         "db_name": {
-            "rule": "object_name"
+            "clone": "object_name",
+            "path": "schema"
+        },
+
+        "tbl_name": {
+            "method": "sequence",
+            "group": [
+                {
+                    "repeat": "0..1",
+                    "rule": {
+                        "method": "sequence",
+                        "group": [
+                            {
+                                "rule": "db_name"
+                            },
+                            {
+                                "keyword": ".",
+                                "method": "literal"
+                            }
+                        ]
+                    }
+                },
+                {
+                    "clone": "object_name",
+                    "path": "table"
+                }
+            ]
         },
 
         "charset_name": {
@@ -362,7 +388,9 @@
                                 }
                             },
                             {
-                                "rule": "charset_name"
+                                "repeat": "1",
+                                "rule": "charset_name",
+                                "path": "charset"
                             }
                         ]
                     }
@@ -393,7 +421,9 @@
                                 }
                             },
                             {
-                                "rule": "collate_name"
+                                "repeat": "1",
+                                "rule": "collate_name",
+                                "path": "collate"
                             }
                         ]
                     }
@@ -405,10 +435,13 @@
         "create_schema": {
             "method": "sequence",
             "tokenizer": "comment",
+            "starter": true,
             "group": [
                 {
                     "keyword": "CREATE",
-                    "method": "ignore case"
+                    "method": "ignore case",
+                    "path": "action",
+                    "value": "create"
                 },
                 {
                     "method": "case",
@@ -416,11 +449,15 @@
                     "group": [
                         {
                             "keyword": "DATABASE",
-                            "method": "ignore case"
+                            "method": "ignore case",
+                            "path": "type",
+                            "value": "schema"
                         },
                         {
                             "keyword": "SCHEMA",
-                            "method": "ignore case"
+                            "method": "ignore case",
+                            "path": "type",
+                            "value": "schema"
                         }
                     ]
                 },
@@ -438,38 +475,83 @@
                 {
                     "rule": "end_sentence"
                 }
-            ],
-            "save": [
             ]
         },
 
-
-
-
         "create_table": {
-            "starter": true,
             "method": "sequence",
-            "tokenizer": {
-                "rule": "comment"
-            },
+            "tokenizer": "comment",
+            "starter": true,
             "group": [
                 {
+                    "keyword": "CREATE",
                     "method": "ignore case",
-                    "keyword": "CREATE"
+                    "path": "action",
+                    "value": "create"
                 },
                 {
                     "repeat": "0..1",
                     "rule": {
                             "method": "ignore case",
-                            "keyword": "TEMPORARY"
+                            "keyword": "TEMPORARY",
+                            "path": "temporary",
+                            "value": true
                     }
                 },
                 {
                     "method": "ignore case",
-                    "keyword": "TABLE"
+                    "keyword": "TABLE",
+                    "path": "type",
+                    "value": "table"
                 },
                 {
                     "rule": "if_not_exists"
+                },
+                {
+                    "rule": "tbl_name"
+                },
+                {
+                    "method": "case",
+                    "push": "like",
+                    "group": [
+                        {
+                            "method": "sequence",
+                            "tokenizer": "comment",
+                            "group": [
+                                {
+                                    "keyword": "LIKE",
+                                    "method": "ignore case"
+                                },
+                                {
+                                    "clone": "tbl_name"
+                                }
+                            ]
+                        },
+                        {
+                            "method": "sequence",
+                            "tokenizer": "comment",
+                            "group": [
+                                {
+                                    "keyword": "(",
+                                    "method": "literal",
+                                    "hidden": true
+                                },
+                                {
+                                    "keyword": "LIKE",
+                                    "method": "ignore case"
+                                },
+                                {
+                                    "clone": "tbl_name",
+                                    "push": "like"
+                                },
+                                {
+                                    "keyword": ")",
+                                    "method": "literal",
+                                    "hidden": true
+                                }
+                            ]
+                        }
+                    ]
                 }
             ]
         }

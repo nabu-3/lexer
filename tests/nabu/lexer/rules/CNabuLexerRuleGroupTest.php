@@ -27,6 +27,8 @@ use PHPUnit\Framework\TestCase;
 
 use nabu\lexer\CNabuCustomLexer;
 
+use nabu\lexer\data\CNabuLexerData;
+
 use nabu\lexer\exceptions\ENabuLexerException;
 
 /**
@@ -38,6 +40,15 @@ use nabu\lexer\exceptions\ENabuLexerException;
  */
 class CNabuLexerRuleGroupTest extends TestCase
 {
+    /** @var CNabuCustomLexer Lexer used for tests. */
+    private $lexer = null;
+
+    public function setUp(): void
+    {
+        $this->lexer = CNabuCustomLexer::getLexer();
+        $this->lexer->setData(new CNabuLexerData());
+    }
+
     /**
      * @test __construct
      */
@@ -56,10 +67,8 @@ class CNabuLexerRuleGroupTest extends TestCase
      */
     public function testCreateInitFromDescriptorCase(): CNabuLexerRuleGroup
     {
-        $lexer = CNabuCustomLexer::getLexer();
-
         $rule = CNabuLexerRuleRegEx::createFromDescriptor(
-            $lexer,
+            $this->lexer,
             array(
                 'starter' => false,
                 'method' => CNabuLexerRuleRegEx::METHOD_LITERAL,
@@ -67,10 +76,10 @@ class CNabuLexerRuleGroupTest extends TestCase
             )
         );
         $this->assertInstanceOf(CNabuLexerRuleRegEx::class, $rule);
-        $lexer->registerRule('token', $rule);
+        $this->lexer->registerRule('token', $rule);
 
         $rule = CNabuLexerRuleGroup::createFromDescriptor(
-            $lexer,
+            $this->lexer,
             array(
                 'starter' => false,
                 'method' => CNabuLexerRuleGroup::METHOD_SEQUENCE,
@@ -93,7 +102,7 @@ class CNabuLexerRuleGroupTest extends TestCase
         $this->assertInstanceOf(CNabuLexerRuleRegEx::class, $rule->getTokenizer());
 
         $rule = CNabuLexerRuleGroup::createFromDescriptor(
-            $lexer,
+            $this->lexer,
             array(
                 'starter' => false,
                 'method' => CNabuLexerRuleGroup::METHOD_CASE,
@@ -127,12 +136,11 @@ class CNabuLexerRuleGroupTest extends TestCase
      */
     public function testCreateFromDescriptorFails()
     {
-        $lexer = CNabuCustomLexer::getLexer();
         $this->expectException(ENabuLexerException::class);
         $this->expectExceptionCode(ENabuLexerException::ERROR_RULE_NODE_INVALID_VALUE);
         $this->expectExceptionMessage('[rule, descriptor]');
         $ule = CNabuLexerRuleGroup::createFromDescriptor(
-            $lexer,
+            $this->lexer,
             array(
                 'starter' => false,
                 'method' => CNabuLexerRuleGroup::METHOD_SEQUENCE,
@@ -152,16 +160,16 @@ class CNabuLexerRuleGroupTest extends TestCase
     public function testApplyRuleToContentCase(CNabuLexerRuleGroup $rule)
     {
         $this->assertTrue($rule->applyRuleToContent('CREATE TABLE'));
-        $this->assertSame('CREATE', $rule->getValue());
+        $this->assertSame(array('CREATE'), $rule->getTokens());
         $this->assertSame(6, $rule->getSourceLength());
         $this->assertTrue($rule->applyRuleToContent('ALTER TABLE'));
-        $this->assertSame('ALTER', $rule->getValue());
+        $this->assertSame(array('ALTER'), $rule->getTokens());
         $this->assertSame(5, $rule->getSourceLength());
         $this->assertTrue($rule->applyRuleToContent('DELETE FROM TABLE'));
-        $this->assertSame('DELETE', $rule->getValue());
+        $this->assertSame(array('DELETE'), $rule->getTokens());
         $this->assertSame(6, $rule->getSourceLength());
         $this->assertTrue($rule->applyRuleToContent('DROP TABLE'));
-        $this->assertSame('DROP', $rule->getValue());
+        $this->assertSame(array('DROP'), $rule->getTokens());
         $this->assertSame(4, $rule->getSourceLength());
     }
 
@@ -172,9 +180,8 @@ class CNabuLexerRuleGroupTest extends TestCase
      */
     public function testCreateInitFromDescriptorSequence(): CNabuLexerRuleGroup
     {
-        $lexer = CNabuCustomLexer::getLexer();
         $rule = CNabuLexerRuleGroup::createFromDescriptor(
-            $lexer,
+            $this->lexer,
             array(
                 'starter' => false,
                 'method' => CNabuLexerRuleGroup::METHOD_SEQUENCE,
@@ -215,7 +222,7 @@ class CNabuLexerRuleGroupTest extends TestCase
     public function testApplyRuleToContentSequence(CNabuLexerRuleGroup $rule)
     {
         $this->assertTrue($rule->applyRuleToContent('CREATE TABLE IF NOT EXISTS'));
-        $this->assertSame(array('CREATE', 'TABLE', 'IF', 'NOT', 'EXISTS'), $rule->getValue());
+        $this->assertSame(array('CREATE', 'TABLE', 'IF', 'NOT', 'EXISTS'), $rule->getTokens());
     }
 
     /**
@@ -223,8 +230,7 @@ class CNabuLexerRuleGroupTest extends TestCase
      */
     public function testApplyRuleToContentFails()
     {
-        $lexer = CNabuCustomLexer::getLexer();
-        $rule = new CNabuLexerRuleGroup($lexer);
+        $rule = new CNabuLexerRuleGroup($this->lexer);
 
         $this->expectException(ENabuLexerException::class);
         $this->expectExceptionCode(ENabuLexerException::ERROR_EMPTY_GROUP_RULE);
@@ -237,9 +243,8 @@ class CNabuLexerRuleGroupTest extends TestCase
      */
     public function testApplyRuleToContentAsSequence()
     {
-        $lexer = CNabuCustomLexer::getLexer();
         $rule = CNabuLexerRuleGroup::createFromDescriptor(
-            $lexer,
+            $this->lexer,
             array(
                 'starter' => false,
                 'method' => CNabuLexerRuleGroup::METHOD_SEQUENCE,
@@ -257,10 +262,9 @@ class CNabuLexerRuleGroupTest extends TestCase
         );
         $this->assertInstanceOf(CNabuLexerRuleGroup::class, $rule);
         $this->assertFalse($rule->applyRuleToContent('IF EXISTS'));
-        $this->assertSame(null, $rule->getValue());
+        $this->assertSame(null, $rule->getTokens());
         $this->assertSame(0, $rule->getSourceLength());
 
         return $rule;
     }
-
 }
