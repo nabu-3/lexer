@@ -71,9 +71,10 @@ class CNabuLexerRuleRepeat extends CNabuLexerAbstractBlockRule
         $iteration = 0;
 
         $this->clearTokens();
+        $first = true;
 
         do {
-            if ($this->applyRuleToContentIteration($content)) {
+            if ($this->applyRuleToContentIteration($content, $first)) {
                 $iteration++;
             } else {
                 break;
@@ -100,31 +101,37 @@ class CNabuLexerRuleRepeat extends CNabuLexerAbstractBlockRule
 
     /**
      * Calculates an iteration of @see { CNabuLexerRuleRepeat::applyRuleToContent }.
-     * @param string &$cursor Current string to be parsed.
+     * @param string &$content Current string to be parsed.
+     * @param bool &$first If true the call is the first of iterator and does not apply tokenizer rule.
      * @return bool Returns true if rule was applied or false otherwise.
      */
-    private function applyRuleToContentIteration(string &$cursor): bool
+    private function applyRuleToContentIteration(string &$content, bool &$first): bool
     {
         $retval = false;
+        $tkl = 0;
+        $tkv = null;
+        $cursor = $content;
 
-        $token_found = false;
-        if ($this->tokenizer instanceof INabuLexerRule &&
+        if (!$first &&
+            $this->tokenizer instanceof INabuLexerRule &&
             $this->tokenizer->applyRuleToContent($cursor)
         ) {
             $tkv = $this->tokenizer->getTokens();
             $tkl = $this->tokenizer->getSourceLength();
-            $token_found = true;
             $cursor = mb_substr($cursor, $tkl);
         }
-        $this->repeater->clearTokens();
+
         if ($this->repeater->applyRuleToContent($cursor)) {
-            if ($token_found) {
-                $this->appendTokens($tkv, $tkl);
+            if ($this->repeater->getSourceLength() > 0) {
+                if ($tkl > 0) {
+                    $this->appendTokens($tkv, $tkl);
+                }
+                $v = $this->repeater->getTokens();
+                $l = $this->repeater->getSourceLength();
+                $this->appendTokens($v, $l);
+                $content = mb_substr($content, $l + $tkl);
+                $first = false;
             }
-            $v = $this->repeater->getTokens();
-            $l = $this->repeater->getSourceLength();
-            $this->appendTokens($v, $l);
-            $cursor = mb_substr($cursor, $l);
             $retval = true;
         }
 
