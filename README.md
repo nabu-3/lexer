@@ -19,14 +19,10 @@ composer require nabu-3/lexer
 ## Basic usage
 To start using this library you need to include the standard _autoload.php_ file that is maintained by __composer__:
 ```php
-<?php
-
 require_once 'vendor/autoload.php';
 ```
 To start using this library, you can create a CNabuCustomLexer object and provide a Lexer Data storage as is:
 ```php
-<?php
-
 use nabu\lexer\CNabuCustomLexer;
 use nabu\lexer\data\CNabuLexerData;
 
@@ -39,8 +35,6 @@ The most basic rule, is the Keyword Rule. With it, you can parse a keyword and o
 
 Below, a basic sample using the __Keyword Rule__:
 ```php
-<?php
-
 require_once 'vendor/autoload.php';
 
 use nabu\lexer\CNabuCustomLexer;
@@ -84,8 +78,6 @@ This rule offers a wide application for polymorphic strings or dynamic structure
 
 Below, a basic example using the __Regular Expression Rule__:
 ```php
-<?php
-
 require_once 'vendor/autoload.php';
 
 use nabu\lexer\CNabuCustomLexer;
@@ -129,8 +121,6 @@ This rule allows to treat a list of rules as a switch/case sentence. Then, you c
 
 Below, a basic example using the __Case Rule__:
 ```php
-<?php
-
 require_once 'vendor/autoload.php';
 
 use nabu\lexer\CNabuCustomLexer;
@@ -187,8 +177,6 @@ Sequence rules are similar to Case Rules, but it's necessary to look at the meth
 
 Below, a basic example using the __Sequence Rule__:
 ```php
-<?php
-
 require_once 'vendor/autoload.php';
 
 use nabu\lexer\CNabuCustomLexer;
@@ -263,8 +251,6 @@ Like __Sequence Rules__, this kind of rules supports the use of a _tokenizer_ ac
 
 Below, a basic example using the __Repeat Rule__:
 ```php
-<?php
-
 require_once 'vendor/autoload.php';
 
 use nabu\lexer\CNabuCustomLexer;
