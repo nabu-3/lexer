@@ -388,13 +388,11 @@
                                 }
                             },
                             {
-                                "repeat": "1",
-                                "rule": "charset_name",
+                                "clone": "charset_name",
                                 "path": "charset"
                             }
                         ]
                     }
-
                 },
                 {
                     "repeat": "0..1",
@@ -421,8 +419,7 @@
                                 }
                             },
                             {
-                                "repeat": "1",
-                                "rule": "collate_name",
+                                "clone": "collate_name",
                                 "path": "collate"
                             }
                         ]
@@ -533,8 +530,7 @@
                             "group": [
                                 {
                                     "keyword": "(",
-                                    "method": "literal",
-                                    "hidden": true
+                                    "method": "literal"
                                 },
                                 {
                                     "keyword": "LIKE",
@@ -546,8 +542,7 @@
                                 },
                                 {
                                     "keyword": ")",
-                                    "method": "literal",
-                                    "hidden": true
+                                    "method": "literal"
                                 }
                             ]
                         }

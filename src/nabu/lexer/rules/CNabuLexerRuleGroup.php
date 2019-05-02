@@ -181,8 +181,9 @@ class CNabuLexerRuleGroup extends CNabuLexerAbstractBlockRule
         $this->clearTokens();
 
         if (is_array($this->group) && count($this->group) > 0) {
+            $first = true;
             foreach ($this->group as $rule) {
-                if (!($retval = $this->applyRuleToContentAsSequenceInternal($rule, $content))) {
+                if (!($retval = $this->applyRuleToContentAsSequenceInternal($rule, $content, $first))) {
                     break;
                 }
             }
@@ -199,24 +200,35 @@ class CNabuLexerRuleGroup extends CNabuLexerAbstractBlockRule
      * Subprocess to aply Rule to content as Sequence.
      * @param INabuLexerRule $rule Rule to be applied.
      * @param string &$content Current content buffer to be analized.
+     * @param bool &$first If true then this call is the first and does not apply the tokenizer.
      * @return bool Returns true if Rule was applied.
      */
-    private function applyRuleToContentAsSequenceInternal(INabuLexerRule $rule, string &$content): bool
+    private function applyRuleToContentAsSequenceInternal(INabuLexerRule $rule, string &$content, bool &$first): bool
     {
         $retval = false;
-        $len_token = 0;
+        $tkl = 0;
+        $tkv = null;
+        $cursor = $content;
 
-        if ($this->tokenizer instanceof INabuLexerRule &&
-            $this->tokenizer->applyRuleToContent($content)
+        if (!$first &&
+            $this->tokenizer instanceof INabuLexerRule &&
+            $this->tokenizer->applyRuleToContent($cursor)
         ) {
-            $len_token = $this->tokenizer->getSourceLength();
-            $content = mb_substr($content, $len_token);
+            $tkv = $this->tokenizer->getTokens();
+            $tkl = $this->tokenizer->getSourceLength();
+            $cursor = mb_substr($cursor, $tkl);
         }
 
-        if ($rule->applyRuleToContent($content)) {
-            $len = $rule->getSourceLength();
-            $this->appendTokens($rule->getTokens(), $len_token + $len);
-            $content = mb_substr($content, $len);
+        if ($rule->applyRuleToContent($cursor)) {
+            $l = $rule->getSourceLength();
+            if ($l > 0) {
+                if ($tkl > 0) {
+                    $this->appendTokens($tkv, $tkl);
+                }
+                $this->appendTokens($rule->getTokens(), $l);
+                $content = mb_substr($content, $tkl + $l);
+                $first = false;
+            }
             $retval = true;
         } else {
             $this->clearTokens();

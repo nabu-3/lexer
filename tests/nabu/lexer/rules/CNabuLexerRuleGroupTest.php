@@ -222,7 +222,7 @@ class CNabuLexerRuleGroupTest extends TestCase
     public function testApplyRuleToContentSequence(CNabuLexerRuleGroup $rule)
     {
         $this->assertTrue($rule->applyRuleToContent('CREATE TABLE IF NOT EXISTS'));
-        $this->assertSame(array('CREATE', 'TABLE', 'IF', 'NOT', 'EXISTS'), $rule->getTokens());
+        $this->assertSame(array('CREATE', ' ', 'TABLE', ' ', 'IF', ' ', 'NOT', ' ', 'EXISTS'), $rule->getTokens());
     }
 
     /**
