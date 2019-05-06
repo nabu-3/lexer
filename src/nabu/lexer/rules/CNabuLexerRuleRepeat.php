@@ -21,6 +21,9 @@
 
 namespace nabu\lexer\rules;
 
+use nabu\lexer\data\CNabuLexerData;
+
+use nabu\lexer\interfaces\INabuLexer;
 use nabu\lexer\interfaces\INabuLexerRule;
 
 /**
@@ -36,6 +39,10 @@ class CNabuLexerRuleRepeat extends CNabuLexerAbstractBlockRule
     const DESCRIPTOR_REPEAT_NODE = 'repeat';
     /** @var string Descriptor tokenizer node literal. */
     const DESCRIPTOR_TOKENIZER_NODE = 'tokenizer';
+    /** @var string Descriptor indexed node literal. */
+    const DESCRIPTOR_INDEXED_NODE = 'indexed';
+    /** @var string Descriptor index field node literal. */
+    const DESCRIPTOR_INDEX_FIELD_NODE = 'index_field';
 
     /** @var INabuLexerRule $tokenizer Rule that acts as separator between sequenced items. */
     private $tokenizer = null;
@@ -45,6 +52,10 @@ class CNabuLexerRuleRepeat extends CNabuLexerAbstractBlockRule
     private $max_repeat = 'n';
     /** @var INabuLexerRule $repeater Rule to repeat in each iteration. */
     private $repeater = null;
+    /** @var bool $indexed If true, the path is indexed by his iteration number. */
+    private $indexed = false;
+    /** @var string|null $index_field Index field in each iteration to be used as iteration index name. */
+    private $index_field = null;
 
     /**
      * Get the tokenizer attribute.
@@ -63,6 +74,61 @@ class CNabuLexerRuleRepeat extends CNabuLexerAbstractBlockRule
             $this->checkRangeNode($descriptor, self::DESCRIPTOR_REPEAT_NODE, null, false, true);
         $this->tokenizer = $this->checkRuleNode($descriptor, self::DESCRIPTOR_TOKENIZER_NODE);
         $this->repeater = $this->checkRuleNode($descriptor, CNabuLexerRuleProxy::DESCRIPTOR_RULE_NODE, null, false, true);
+        $this->indexed = $this->checkBooleanNode($descriptor, self::DESCRIPTOR_INDEXED_NODE);
+        if ($this->indexed) {
+            $this->index_field = $this->checkStringNode($descriptor, self::DESCRIPTOR_INDEX_FIELD_NODE);
+        }
+    }
+
+    /**
+     * Push the index if it applies.
+     * @param int $index Index number to push.
+     * @return bool Returns true if the path was pushed.
+     */
+    public function pushIndex(int $index): bool
+    {
+        $retval = false;
+
+        if ((($lexer = $this->getLexer()) instanceof INabuLexer) && $this->indexed) {
+            $data = $lexer->getData();
+            if ($data instanceof CNabuLexerData) {
+                $data->pushPath($index);
+                $retval = true;
+            }
+        }
+
+        return $retval;
+    }
+
+    /**
+     * Pop the index if it applies.
+     * @param int $index Index of previously pushed index.
+     * @param bool $clear If true, then erases all stored data in the index and removes the index.
+     * @return bool Returns true if the path was popped.
+     */
+    public function popIndex(int $index, bool $clear): bool
+    {
+        $retval = false;
+
+        if ((($lexer = $this->getLexer()) instanceof INabuLexer) && $this->indexed) {
+            $data = $lexer->getData();
+            if ($data instanceof CNabuLexerData) {
+                $data->popPath();
+                $retval = true;
+                if ($clear) {
+                    $data->removeValue($index);
+                } else {
+                    if (is_string($this->index_field) &&
+                        strlen($this->index_field) > 0 &&
+                        $data->hasValue("$index.$this->index_field")
+                    ) {
+                        $data->renameValue($index, $data->getValue("$index.$this->index_field"));
+                    }
+                }
+            }
+        }
+
+        return $retval;
     }
 
     public function applyRuleToContent(string $content): bool
@@ -74,7 +140,7 @@ class CNabuLexerRuleRepeat extends CNabuLexerAbstractBlockRule
         $first = true;
 
         do {
-            if ($this->applyRuleToContentIteration($content, $first)) {
+            if ($this->applyRuleToContentIteration($content, $first, $iteration)) {
                 $iteration++;
             } else {
                 break;
@@ -103,15 +169,17 @@ class CNabuLexerRuleRepeat extends CNabuLexerAbstractBlockRule
      * Calculates an iteration of @see { CNabuLexerRuleRepeat::applyRuleToContent }.
      * @param string &$content Current string to be parsed.
      * @param bool &$first If true the call is the first of iterator and does not apply tokenizer rule.
+     * @param int $iteration Iteration number to be applied if the loop is indexing data adquisition.
      * @return bool Returns true if rule was applied or false otherwise.
      */
-    private function applyRuleToContentIteration(string &$content, bool &$first): bool
+    private function applyRuleToContentIteration(string &$content, bool &$first, int $iteration): bool
     {
         $retval = false;
         $tkl = 0;
         $tkv = null;
         $cursor = $content;
 
+        $this->pushIndex($iteration);
         if (!$first &&
             $this->tokenizer instanceof INabuLexerRule &&
             $this->tokenizer->applyRuleToContent($cursor)
@@ -134,6 +202,7 @@ class CNabuLexerRuleRepeat extends CNabuLexerAbstractBlockRule
             }
             $retval = true;
         }
+        $this->popIndex($iteration, !$retval);
 
         return $retval;
     }

@@ -28,8 +28,8 @@ require_once 'vendor/autoload.php';
 $lexer = CNabuLexer::getLexer(CNabuLexer::GRAMMAR_MYSQL, '5.7');
 $lexer->setData(new CNabuLexerData());
 
-$sample = "CREATE SCHEMA lexer_text DEFAULT CHARACTER SET=utf8 DEFAULT COLLATE=utf8_general_ci";
-$rule_name = "create_schema";
+$sample = "CREATE TABLE IF NOT EXISTS lexer_text.sample_table LIKE sample_original";
+$rule_name = "create_table";
 
 $rule = $lexer->getRule($rule_name);
 

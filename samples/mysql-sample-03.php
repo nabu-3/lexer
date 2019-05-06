@@ -28,8 +28,11 @@ require_once 'vendor/autoload.php';
 $lexer = CNabuLexer::getLexer(CNabuLexer::GRAMMAR_MYSQL, '5.7');
 $lexer->setData(new CNabuLexerData());
 
-$sample = "CREATE SCHEMA lexer_text DEFAULT CHARACTER SET=utf8 DEFAULT COLLATE=utf8_general_ci";
-$rule_name = "create_schema";
+$sample = "CREATE TABLE lexer_text.sample_table (
+               field_1 BIT(4)
+               field_2 BIT(2)
+           )";
+$rule_name = "create_table";
 
 $rule = $lexer->getRule($rule_name);
 
@@ -39,6 +42,6 @@ echo "\n------\n";
 echo "Sample string: " . $sample . "\n";
 echo "Parsed fragment: " . mb_substr($sample, 0, $rule->getSourceLength()) . "\n";
 echo "Parsed size: " . $rule->getSourceLength() . "\n";
-echo "Tokens: " . var_export($rule->getTokens(), true) . "\n";
-echo "Data: " . var_export($lexer->getData()->getValuesAsArray(), true) . "\n";
+echo "Tokens:\n" . var_export($rule->getTokens(), true) . "\n";
+echo "Data:\n" . var_export($lexer->getData()->getValuesAsArray(), true) . "\n";
 echo "\n------\n\n";

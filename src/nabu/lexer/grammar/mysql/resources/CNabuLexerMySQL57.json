@@ -295,6 +295,11 @@
             ]
         },
 
+        "col_name": {
+            "clone": "object_name",
+            "path": "name"
+        },
+
         "charset_name": {
             "rule": "object_name"
         },
@@ -323,6 +328,28 @@
                     }
                 ]
             }
+        },
+
+        "data_type": {
+            "method": "case",
+            "group": [
+                {
+                    "method": "sequence",
+                    "group": [
+                        {
+                            "keyword": "BIT",
+                            "method": "ignore case",
+                            "path": "data_type",
+                            "value": "bit"
+                        },
+                        {
+                            "match": "\\(([1-6]{0,1}[0-9])\\)",
+                            "method": "literal",
+                            "path": "precision"
+                        }
+                    ]
+                }
+            ]
         },
 
         "end_sentence": {
@@ -442,7 +469,6 @@
                 },
                 {
                     "method": "case",
-                    "tokenizer": "comment",
                     "group": [
                         {
                             "keyword": "DATABASE",
@@ -475,6 +501,40 @@
             ]
         },
 
+        "column_definition": {
+            "method": "case",
+            "group": [
+                {
+                    "method": "sequence",
+                    "tokenizer": "comment",
+                    "group": [
+                        {
+                            "rule": "data_type"
+                        }
+                    ]
+                }
+            ]
+        },
+
+        "create_definition": {
+            "repeat": "1..n",
+            "tokenizer": "comment",
+            "push": "fields",
+            "indexed": true,
+            "rule": {
+                "method": "sequence",
+                "tokenizer": "comment",
+                "group": [
+                    {
+                        "rule": "col_name"
+                    },
+                    {
+                        "rule": "column_definition"
+                    }
+                ]
+            }
+        },
+
         "create_table": {
             "method": "sequence",
             "tokenizer": "comment",
@@ -502,6 +562,7 @@
                     "value": "table"
                 },
                 {
+                    "repeat": "0..1",
                     "rule": "if_not_exists"
                 },
                 {
@@ -509,18 +570,45 @@
                 },
                 {
                     "method": "case",
-                    "push": "like",
                     "group": [
                         {
-                            "method": "sequence",
-                            "tokenizer": "comment",
+                            "method": "case",
+                            "push": "like",
                             "group": [
                                 {
-                                    "keyword": "LIKE",
-                                    "method": "ignore case"
+                                    "method": "sequence",
+                                    "tokenizer": "comment",
+                                    "group": [
+                                        {
+                                            "keyword": "LIKE",
+                                            "method": "ignore case"
+                                        },
+                                        {
+                                            "clone": "tbl_name"
+                                        }
+                                    ]
                                 },
                                 {
-                                    "clone": "tbl_name"
+                                    "method": "sequence",
+                                    "tokenizer": "comment",
+                                    "group": [
+                                        {
+                                            "keyword": "(",
+                                            "method": "literal"
+                                        },
+                                        {
+                                            "keyword": "LIKE",
+                                            "method": "ignore case"
+                                        },
+                                        {
+                                            "clone": "tbl_name",
+                                            "push": "like"
+                                        },
+                                        {
+                                            "keyword": ")",
+                                            "method": "literal"
+                                        }
+                                    ]
                                 }
                             ]
                         },
@@ -533,13 +621,14 @@
                                     "method": "literal"
                                 },
                                 {
-                                    "keyword": "LIKE",
-                                    "method": "ignore case"
+                                    "repeat": "1..n",
+                                    "tokenizer": "comment",
+                                    "rule": "create_definition"
                                 },
-                                {
-                                    "clone": "tbl_name",
-                                    "push": "like"
-                                },
+
+
+
+
                                 {
                                     "keyword": ")",
                                     "method": "literal"
@@ -547,6 +636,9 @@
                             ]
                         }
                     ]
+                },
+                {
+                    "rule": "end_sentence"
                 }
             ]
         }
