@@ -105,10 +105,15 @@ interface INabuLexerRule
      */
     public function getPath(): ?string;
     /**
-     * Get the default path value setted in the rule descriptor.
-     * @return mixed|null Returns current default path value.
+     * Get the path value setted in the rule descriptor.
+     * @return mixed|null Returns path value.
      */
-    public function getPathDefaultValue();
+    public function getPathValue();
+    /**
+     * Get the default path value setted in the rule descriptor.
+     * @return mixed|null Returns default path value.
+     */
+    public function getPathDefault();
     /**
      * Check if the rule have his value hidden or visible.
      * @return bool Returns true if the value is hidden.

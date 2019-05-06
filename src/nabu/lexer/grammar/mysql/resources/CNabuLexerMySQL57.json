@@ -352,6 +352,26 @@
             ]
         },
 
+        "default_value": {
+            "method": "case",
+            "path": "default_value",
+            "group": [
+                {
+                    "keyword": "CURRENT_TIMESTAMP",
+                    "method": "ignore case"
+                },
+                {
+                    "match": "[-+]{0,1}[0-9]+",
+                    "method": "literal"
+                },
+                {
+                    "match": "'(.*?[^\\\\])'",
+                    "method": "ignore case",
+                    "unicode": true
+                }
+            ]
+        },
+
         "end_sentence": {
             "starter": true,
             "repeat": "1..n",
@@ -510,6 +530,67 @@
                     "group": [
                         {
                             "rule": "data_type"
+                        },
+                        {
+                            "repeat": "0..1",
+                            "path": "is_nullable",
+                            "default": true,
+                            "rule": {
+                                "method": "case",
+                                "group": [
+                                    {
+                                        "keyword": "NULL",
+                                        "method": "ignore case",
+                                        "path": "is_nullable",
+                                        "value": true
+                                    },
+                                    {
+                                        "method": "sequence",
+                                        "tokenizer": "comment",
+                                        "path": "is_nullable",
+                                        "value": false,
+                                        "group": [
+                                            {
+                                                "keyword": "NOT",
+                                                "method": "ignore case"
+                                            },
+                                            {
+                                                "keyword": "NULL",
+                                                "method": "ignore case"
+                                            }
+                                        ]
+                                    }
+                                ]
+                            }
+                        },
+                        {
+                            "repeat": "0..1",
+                            "path": "default",
+                            "default": null,
+                            "rule": {
+                                "method": "sequence",
+                                "tokenizer": "comment",
+                                "group": [
+                                    {
+                                        "keyword": "DEFAULT",
+                                        "method": "ignore case"
+                                    },
+                                    {
+                                        "rule": "default_value"
+                                    }
+                                ]
+                            }
+                        },
+                        {
+                            "repeat": "0..1",
+                            "path": "auto_increment",
+                            "default": false,
+                            "rule": {
+                                "keyword": "AUTO_INCREMENT",
+                                "method": "ignore case",
+                                "path": "auto_increment",
+                                "value": true
+                            }
                         }
                     ]
                 }
@@ -521,6 +602,8 @@
             "tokenizer": "comment",
             "push": "fields",
             "indexed": true,
+            "index_field3": "name",
+            "iteration_target3": "ordinal",
             "rule": {
                 "method": "sequence",
                 "tokenizer": "comment",
@@ -621,8 +704,6 @@
                                     "method": "literal"
                                 },
                                 {
-                                    "repeat": "1..n",
-                                    "tokenizer": "comment",
                                     "rule": "create_definition"
                                 },
 

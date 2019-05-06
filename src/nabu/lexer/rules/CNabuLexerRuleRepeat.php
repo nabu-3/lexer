@@ -43,6 +43,8 @@ class CNabuLexerRuleRepeat extends CNabuLexerAbstractBlockRule
     const DESCRIPTOR_INDEXED_NODE = 'indexed';
     /** @var string Descriptor index field node literal. */
     const DESCRIPTOR_INDEX_FIELD_NODE = 'index_field';
+    /** @var string Descriptor iteration target node literal. */
+    const DESCRIPTOR_ITERATION_TARGET_NODE = 'iteration_target';
 
     /** @var INabuLexerRule $tokenizer Rule that acts as separator between sequenced items. */
     private $tokenizer = null;
@@ -54,8 +56,10 @@ class CNabuLexerRuleRepeat extends CNabuLexerAbstractBlockRule
     private $repeater = null;
     /** @var bool $indexed If true, the path is indexed by his iteration number. */
     private $indexed = false;
-    /** @var string|null $index_field Index field in each iteration to be used as iteration index name. */
+    /** @var string|null $index_field Index node in each iteration to be used as iteration index name. */
     private $index_field = null;
+    /** @var string|null $iteration_target Target node to store iteration number in each iteration. */
+    private $iteration_target = null;
 
     /**
      * Get the tokenizer attribute.
@@ -77,6 +81,7 @@ class CNabuLexerRuleRepeat extends CNabuLexerAbstractBlockRule
         $this->indexed = $this->checkBooleanNode($descriptor, self::DESCRIPTOR_INDEXED_NODE);
         if ($this->indexed) {
             $this->index_field = $this->checkStringNode($descriptor, self::DESCRIPTOR_INDEX_FIELD_NODE);
+            $this->iteration_target = $this->checkStringNode($descriptor, self::DESCRIPTOR_ITERATION_TARGET_NODE);
         }
     }
 
@@ -93,6 +98,7 @@ class CNabuLexerRuleRepeat extends CNabuLexerAbstractBlockRule
             $data = $lexer->getData();
             if ($data instanceof CNabuLexerData) {
                 $data->pushPath($index);
+                error_log("****> $index " . $data->getWithPreffix());
                 $retval = true;
             }
         }
@@ -113,11 +119,14 @@ class CNabuLexerRuleRepeat extends CNabuLexerAbstractBlockRule
         if ((($lexer = $this->getLexer()) instanceof INabuLexer) && $this->indexed) {
             $data = $lexer->getData();
             if ($data instanceof CNabuLexerData) {
+                !$clear && is_string($this->iteration_target) && $data->setValue($this->iteration_target, $index + 1);
                 $data->popPath();
                 $retval = true;
                 if ($clear) {
+                    error_log("----> $index " . $data->getWithPreffix());
                     $data->removeValue($index);
                 } else {
+                    error_log("++++> $index " . $data->getWithPreffix());
                     if (is_string($this->index_field) &&
                         strlen($this->index_field) > 0 &&
                         $data->hasValue("$index.$this->index_field")
@@ -179,7 +188,7 @@ class CNabuLexerRuleRepeat extends CNabuLexerAbstractBlockRule
         $tkv = null;
         $cursor = $content;
 
-        $this->pushIndex($iteration);
+        $pushed = $this->pushIndex($iteration);
         if (!$first &&
             $this->tokenizer instanceof INabuLexerRule &&
             $this->tokenizer->applyRuleToContent($cursor)
@@ -200,9 +209,11 @@ class CNabuLexerRuleRepeat extends CNabuLexerAbstractBlockRule
                 $content = mb_substr($content, $l + $tkl);
                 $first = false;
             }
+            $pushed && $this->popIndex($iteration, false);
             $retval = true;
+        } else {
+            $pushed && $this->popIndex($iteration, true);
         }
-        $this->popIndex($iteration, !$retval);
 
         return $retval;
     }

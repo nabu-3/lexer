@@ -52,24 +52,23 @@ abstract class CNabuLexerAbstractRule implements INabuLexerRule
     const DESCRIPTOR_VALUE_NODE = 'value';
     /** @var string Descriptor hidden node literal. */
     const DESCRIPTOR_HIDDEN_NODE = 'hidden';
+    /** @var string Descriptor default node literal. */
+    const DESCRIPTOR_DEFAULT_NODE = 'default';
 
     /** @var bool If true, the Rule is an starter rule and can be placed at the begin of a sequence. */
     private $starter = false;
-
     /** @var string Path to store extracted value. */
     private $path = null;
-
     /** @var mixed|null Fixed Path value. */
-    private $path_default_value = null;
-
+    private $path_value = null;
     /** @var array|null $tokens Rule tokens extracted from content. */
     private $tokens = null;
-
     /** @var int $sourceLength Length of original string needed to detect the tokens. */
     private $sourceLength = 0;
-
     /** @var bool $hidden If true, methods setToken and appendTokens only considers the source length. */
     private $hidden = false;
+    /** @var mixed|null Default Path value in case that path is not setted by other rules previously evaluated. */
+    private $path_default = null;
 
     /** @var CNabuLexer $lexer Lexer that manages this rule. */
     private $lexer = null;
@@ -96,16 +95,18 @@ abstract class CNabuLexerAbstractRule implements INabuLexerRule
     {
         $this->starter = $this->checkBooleanNode($descriptor, self::DESCRIPTOR_STARTER_NODE);
         $this->path = $this->checkStringNode($descriptor, self::DESCRIPTOR_PATH_NODE);
-        $this->path_default_value = $this->checkMixedNode($descriptor, self::DESCRIPTOR_VALUE_NODE);
+        $this->path_value = $this->checkMixedNode($descriptor, self::DESCRIPTOR_VALUE_NODE);
         $this->hidden = $this->checkBooleanNode($descriptor, self::DESCRIPTOR_HIDDEN_NODE);
+        $this->path_default = $this->checkMixedNode($descriptor, self::DESCRIPTOR_DEFAULT_NODE);
     }
 
     public function overrideFromDescriptor(array $descriptor): void
     {
         $this->starter = $this->checkBooleanNode($descriptor, self::DESCRIPTOR_STARTER_NODE, $this->starter);
         $this->path = $this->checkStringNode($descriptor, self::DESCRIPTOR_PATH_NODE, $this->path);
-        $this->path_default_value = $this->checkMixedNode($descriptor, self::DESCRIPTOR_VALUE_NODE, $this->path_default_value);
+        $this->path_value = $this->checkMixedNode($descriptor, self::DESCRIPTOR_VALUE_NODE, $this->path_value);
         $this->hidden = $this->checkBooleanNode($descriptor, self::DESCRIPTOR_HIDDEN_NODE, $this->hidden);
+        $this->path_default = $this->checkMixedNode($descriptor, self::DESCRIPTOR_DEFAULT_NODE, $this->path_default);
     }
 
     public function getTokens()
@@ -162,9 +163,14 @@ abstract class CNabuLexerAbstractRule implements INabuLexerRule
         return $this;
     }
 
-    public function getPathDefaultValue()
+    public function getPathValue()
     {
-        return $this->path_default_value;
+        return $this->path_value;
+    }
+
+    public function getPathDefault()
+    {
+        return $this->path_default;
     }
 
     public function setPathValue($value = null): INabuLexerRule
@@ -173,13 +179,17 @@ abstract class CNabuLexerAbstractRule implements INabuLexerRule
 
         if ($data instanceof CNabuLexerData) {
             if (is_string($this->path)) {
-                if (is_null($this->path_default_value)) {
-                    if (is_array($value) && count($value) === 1) {
-                        $value = array_shift($value);
+                if (is_null($this->path_default)) {
+                    if (is_null($this->path_value)) {
+                        if (is_array($value) && count($value) === 1) {
+                            $value = array_shift($value);
+                        }
+                        $data->setValue($this->path, $value);
+                    } else {
+                        $data->setValue($this->path, $this->path_value);
                     }
-                    $data->setValue($this->path, $value);
-                } else {
-                    $data->setValue($this->path, $this->path_default_value);
+                } elseif (!$data->hasValue($this->path)) {
+                    $data->setValue($this->path, $this->path_default);
                 }
             }
         } else {

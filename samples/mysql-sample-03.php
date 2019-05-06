@@ -29,8 +29,10 @@ $lexer = CNabuLexer::getLexer(CNabuLexer::GRAMMAR_MYSQL, '5.7');
 $lexer->setData(new CNabuLexerData());
 
 $sample = "CREATE TABLE lexer_text.sample_table (
-               field_1 BIT(4)
-               field_2 BIT(2)
+               field_1 BIT(4) NULL AUTO_INCREMENT
+               field_2 BIT(2) NOT NULL DEFAULT CURRENT_TIMESTAMP
+               field_3 BIT(8) DEFAULT 34
+               field_4 BIT(6) DEFAULT 'string'
            )";
 $rule_name = "create_table";
 

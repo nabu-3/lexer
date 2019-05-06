@@ -948,7 +948,7 @@ class CNabuLexerAbstractRuleTest extends TestCase
 
     /**
      * @test appendTokens
-     * @test getPathDefaultValue
+     * @test getPathValue
      */
     public function testAppendTokens()
     {
@@ -982,7 +982,7 @@ class CNabuLexerAbstractRuleTest extends TestCase
         $rule->appendTokens('test_3', 6);
         $this->assertSame(array('test_1', 'test_2', 'test_3'), $rule->getTokens());
         $this->assertSame(18, $rule->getSourceLength());
-        $this->assertSame('value_default', $rule->getPathDefaultValue());
+        $this->assertSame('value_default', $rule->getPathValue());
     }
 
     /**
