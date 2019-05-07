@@ -21,15 +21,9 @@
 
 namespace nabu\lexer\rules;
 
-use nabu\lexer\CNabuLexer;
-
 use nabu\lexer\base\CNabuAbstractLexerChild;
 
-use nabu\lexer\data\CNabuLexerData;
-
 use nabu\lexer\data\traits\TNabuLexerNodeChecker;
-
-use nabu\lexer\exceptions\ENabuLexerException;
 
 use nabu\lexer\interfaces\INabuLexer;
 use nabu\lexer\interfaces\INabuLexerRule;
@@ -225,7 +219,7 @@ abstract class CNabuLexerAbstractRule extends CNabuAbstractLexerChild implements
     {
         return $this->optional;
     }
-    
+
     public function getPath(): ?string
     {
         return $this->path;

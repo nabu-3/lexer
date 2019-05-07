@@ -21,9 +21,6 @@
 
 namespace nabu\lexer\rules;
 
-use nabu\lexer\data\CNabuLexerData;
-
-use nabu\lexer\interfaces\INabuLexer;
 use nabu\lexer\interfaces\INabuLexerRule;
 
 /**
@@ -95,7 +92,7 @@ class CNabuLexerRuleRepeat extends CNabuLexerAbstractBlockRule
         $retval = false;
         $data = $this->getLexerData();
 
-        if ($this->indexed && $data instanceof CNabuLexerData) {
+        if ($this->indexed) {
             $data->pushPath($index);
             $retval = true;
         }
