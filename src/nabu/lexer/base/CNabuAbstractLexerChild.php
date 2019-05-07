@@ -62,11 +62,13 @@ abstract class CNabuAbstractLexerChild extends CNabuObject
 
     /**
      * Get the Lexer Data instance. If she does not exists throws an exception.
+     * @param bool $throwable If true and Lexer Data is not assigned (null), then throws an exception.
      * @return CNabuLexerData Returns the data instance.
+     * @throws ENabuLexerException Throws an exception if data instance is not assigned.
      */
-    public function getLexerData(): CNabuLexerData
+    public function getLexerData(bool $throwable = true): CNabuLexerData
     {
-        if (is_null($data = $this->lexer->getData())) {
+        if (is_null($data = $this->lexer->getData()) && $throwable) {
             throw new ENabuLexerException(ENabuLexerException::ERROR_LEXER_DATA_INSTANCE_NOT_SET);
         }
 

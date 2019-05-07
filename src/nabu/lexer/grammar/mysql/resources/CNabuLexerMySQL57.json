@@ -591,6 +591,150 @@
                                 "path": "auto_increment",
                                 "value": true
                             }
+                        },
+                        {
+                            "method": "sequence",
+                            "tokenizer": "comment",
+                            "path": "unique_key",
+                            "default": false,
+                            "optional": true,
+                            "group": [
+                                {
+                                    "keyword": "UNIQUE",
+                                    "method": "ignore case",
+                                    "path": "unique_key",
+                                    "value": true
+                                },
+                                {
+                                    "keyword": "KEY",
+                                    "method": "ignore case",
+                                    "optional": true
+                                }
+                            ]
+                        },
+                        {
+                            "method": "sequence",
+                            "tokenizer": "comment",
+                            "path": "primary_key",
+                            "default": false,
+                            "optional": true,
+                            "group": [
+                                {
+                                    "keyword": "PRIMARY",
+                                    "method": "ignore case",
+                                    "optional": true
+                                },
+                                {
+                                    "keyword": "KEY",
+                                    "method": "ignore case",
+                                    "path": "primary_key",
+                                    "value": true
+                                }
+                            ]
+                        },
+                        {
+                            "method": "sequence",
+                            "tokenizer": "comment",
+                            "optional": true,
+                            "group": [
+                                {
+                                    "keyword": "COMMENT",
+                                    "method": "ignore case"
+                                },
+                                {
+                                    "method": "case",
+                                    "group": [
+                                        {
+                                            "keyword": "''",
+                                            "method": "literal",
+                                            "path": "comment",
+                                            "value": ""
+                                        },
+                                        {
+                                            "match": "'(.*?[^\\\\])'",
+                                            "method": "ignore case",
+                                            "path": "comment"
+                                        }
+                                    ]
+                                }
+                            ]
+                        },
+                        {
+                            "method": "sequence",
+                            "tokenizer": "comment",
+                            "optional": true,
+                            "group": [
+                                {
+                                    "keyword": "COLLATE",
+                                    "method": "ignore case"
+                                },
+                                {
+                                    "clone": "collate_name",
+                                    "path": "collation"
+                                }
+                            ]
+                        },
+                        {
+                            "method": "sequence",
+                            "tokenizer": "comment",
+                            "optional": true,
+                            "group": [
+                                {
+                                    "keyword": "COLUMN_FORMAT",
+                                    "method": "ignore case"
+                                },
+                                {
+                                    "method": "case",
+                                    "group": [
+                                        {
+                                            "keyword": "FIXED",
+                                            "method": "ignore case",
+                                            "path": "column_format",
+                                            "value": "fixed"
+                                        },
+                                        {
+                                            "keyword": "DYNAMIC",
+                                            "method": "ignore case",
+                                            "path": "column_format",
+                                            "value": "dynamic"
+                                        },
+                                        {
+                                            "keyword": "DEFAULT",
+                                            "method": "ignore case",
+                                            "path": "column_format",
+                                            "value": "default"
+                                        }
+                                    ]
+                                }
+                            ]
+                        },
+                        {
+                            "method": "sequence",
+                            "tokenizer": "comment",
+                            "optional": true,
+                            "group": [
+                                {
+                                    "keyword": "STORAGE",
+                                    "method": "ignore case"
+                                },
+                                {
+                                    "method": "case",
+                                    "group": [
+                                        {
+                                            "keyword": "DISK",
+                                            "method": "ignore case",
+                                            "path": "storage",
+                                            "value": "disk"
+                                        },
+                                        {
+                                            "keyword": "MEMORY",
+                                            "method": "ignore case",
+                                            "path": "storage",
+                                            "value": "memory"
+                                        }
+                                    ]
+                                }
+                            ]
                         }
                     ]
                 }

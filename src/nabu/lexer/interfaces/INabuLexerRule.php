@@ -100,6 +100,16 @@ interface INabuLexerRule
      */
     public function isStarter() : bool;
     /**
+     * Check if the rule have his value hidden or visible.
+     * @return bool Returns true if the value is hidden.
+     */
+    public function isHidden(): bool;
+    /**
+     * Check if the rule is optional or mandatory.
+     * @return bool Returns true if the rule is optional.
+     */
+    public function isOptional(): bool;
+    /**
      * Get the path of the value repressenting this rule.
      * @return string|null Returns the path if setted or null otherwise.
      */
@@ -114,11 +124,6 @@ interface INabuLexerRule
      * @return mixed|null Returns default path value.
      */
     public function getPathDefault();
-    /**
-     * Check if the rule have his value hidden or visible.
-     * @return bool Returns true if the value is hidden.
-     */
-    public function isHidden(): bool;
     /**
      * Get the Lexer that governs this Rule.
      * @return INabuLexer Returns assigned Lexer.

@@ -28,12 +28,14 @@ require_once 'vendor/autoload.php';
 $lexer = CNabuLexer::getLexer(CNabuLexer::GRAMMAR_MYSQL, '5.7');
 $lexer->setData(new CNabuLexerData());
 
-$sample = "CREATE TABLE lexer_text.sample_table (
-               field_1 BIT(4) NULL AUTO_INCREMENT
-               field_2 BIT(2) NOT NULL DEFAULT CURRENT_TIMESTAMP
-               field_3 BIT(8) DEFAULT 34
-               field_4 BIT(6) DEFAULT 'string'
-           )";
+$sample = <<<'SQL'
+CREATE TABLE lexer_text.sample_table (
+    field_1 BIT(4) NULL AUTO_INCREMENT KEY COMMENT 'test commented' STORAGE MEMORY
+    field_2 BIT(2) NOT NULL DEFAULT CURRENT_TIMESTAMP UNIQUE PRIMARY KEY
+    field_3 BIT(8) DEFAULT 34 UNIQUE KEY comment '' COLLATE utf8_general_ci
+    field_4 BIT(6) DEFAULT 'string' PRIMARY KEY COMMENT '\'' COLUMN_FORMAT DYNAMIC
+SQL;
+
 $rule_name = "create_table";
 
 $rule = $lexer->getRule($rule_name);

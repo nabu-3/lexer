@@ -93,14 +93,11 @@ class CNabuLexerRuleRepeat extends CNabuLexerAbstractBlockRule
     public function pushIndex(int $index): bool
     {
         $retval = false;
+        $data = $this->getLexerData();
 
-        if ((($lexer = $this->getLexer()) instanceof INabuLexer) && $this->indexed) {
-            $data = $lexer->getData();
-            if ($data instanceof CNabuLexerData) {
-                $data->pushPath($index);
-                error_log("****> $index " . $data->getWithPreffix());
-                $retval = true;
-            }
+        if ($this->indexed && $data instanceof CNabuLexerData) {
+            $data->pushPath($index);
+            $retval = true;
         }
 
         return $retval;
@@ -115,24 +112,20 @@ class CNabuLexerRuleRepeat extends CNabuLexerAbstractBlockRule
     public function popIndex(int $index, bool $clear): bool
     {
         $retval = false;
+        $data = $this->getLexerData();
 
-        if ((($lexer = $this->getLexer()) instanceof INabuLexer) && $this->indexed) {
-            $data = $lexer->getData();
-            if ($data instanceof CNabuLexerData) {
-                !$clear && is_string($this->iteration_target) && $data->setValue($this->iteration_target, $index + 1);
-                $data->popPath();
-                $retval = true;
-                if ($clear) {
-                    error_log("----> $index " . $data->getWithPreffix());
-                    $data->removeValue($index);
-                } else {
-                    error_log("++++> $index " . $data->getWithPreffix());
-                    if (is_string($this->index_field) &&
-                        strlen($this->index_field) > 0 &&
-                        $data->hasValue("$index.$this->index_field")
-                    ) {
-                        $data->renameValue($index, $data->getValue("$index.$this->index_field"));
-                    }
+        if ($this->indexed) {
+            !$clear && is_string($this->iteration_target) && $data->setValue($this->iteration_target, $index + 1);
+            $data->popPath();
+            $retval = true;
+            if ($clear) {
+                $data->removeValue($index);
+            } else {
+                if (is_string($this->index_field) &&
+                    strlen($this->index_field) > 0 &&
+                    $data->hasValue("$index.$this->index_field")
+                ) {
+                    $data->renameValue($index, $data->getValue("$index.$this->index_field"));
                 }
             }
         }

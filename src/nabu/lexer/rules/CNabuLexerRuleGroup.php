@@ -142,6 +142,10 @@ class CNabuLexerRuleGroup extends CNabuLexerAbstractBlockRule
                 break;
         }
 
+        if (!$retval && $this->isOptional()) {
+            $retval = true;
+        }
+
         $pushed && $this->popPath();
 
         return $retval;

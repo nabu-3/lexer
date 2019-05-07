@@ -56,9 +56,15 @@ abstract class CNabuLexerAbstractRule extends CNabuAbstractLexerChild implements
     const DESCRIPTOR_HIDDEN_NODE = 'hidden';
     /** @var string Descriptor default node literal. */
     const DESCRIPTOR_DEFAULT_NODE = 'default';
+    /** @var string Descriptor optional node literal. */
+    const DESCRIPTOR_OPTIONAL_NODE = 'optional';
 
     /** @var bool If true, the Rule is an starter rule and can be placed at the begin of a sequence. */
     private $starter = false;
+    /** @var bool $hidden If true, methods setToken and appendTokens only considers the source length. */
+    private $hidden = false;
+    /** @var bool $optional If true, the rule is evaluated as valid even if not complies. */
+    private $optional = false;
     /** @var string Path to store extracted value. */
     private $path = null;
     /** @var mixed|null Fixed Path value. */
@@ -69,8 +75,6 @@ abstract class CNabuLexerAbstractRule extends CNabuAbstractLexerChild implements
     private $tokens = null;
     /** @var int $sourceLength Length of original string needed to detect the tokens. */
     private $sourceLength = 0;
-    /** @var bool $hidden If true, methods setToken and appendTokens only considers the source length. */
-    private $hidden = false;
     /** @var mixed|null Default Path value in case that path is not setted by other rules previously evaluated. */
     private $path_default = null;
     /** @var bool If true, the Default Path is setted. */
@@ -89,7 +93,9 @@ abstract class CNabuLexerAbstractRule extends CNabuAbstractLexerChild implements
     {
         $this->starter = $this->checkBooleanNode($descriptor, self::DESCRIPTOR_STARTER_NODE);
         $this->hidden = $this->checkBooleanNode($descriptor, self::DESCRIPTOR_HIDDEN_NODE);
+        $this->optional = $this->checkBooleanNode($descriptor, self::DESCRIPTOR_OPTIONAL_NODE);
         $this->path = $this->checkStringNode($descriptor, self::DESCRIPTOR_PATH_NODE);
+
         if (array_key_exists(self::DESCRIPTOR_VALUE_NODE, $descriptor)) {
             $this->path_value = $this->checkMixedNode($descriptor, self::DESCRIPTOR_VALUE_NODE);
             $this->path_value_exists = true;
@@ -97,6 +103,7 @@ abstract class CNabuLexerAbstractRule extends CNabuAbstractLexerChild implements
             $this->path_value = null;
             $this->path_value_exists = false;
         }
+
         if (array_key_exists(self::DESCRIPTOR_DEFAULT_NODE, $descriptor)) {
             $this->path_default = $this->checkMixedNode($descriptor, self::DESCRIPTOR_DEFAULT_NODE);
             $this->path_default_exists = true;
@@ -110,7 +117,9 @@ abstract class CNabuLexerAbstractRule extends CNabuAbstractLexerChild implements
     {
         $this->starter = $this->checkBooleanNode($descriptor, self::DESCRIPTOR_STARTER_NODE, $this->starter);
         $this->hidden = $this->checkBooleanNode($descriptor, self::DESCRIPTOR_HIDDEN_NODE, $this->hidden);
+        $this->optional = $this->checkBooleanNode($descriptor, self::DESCRIPTOR_OPTIONAL_NODE, $this->optional);
         $this->path = $this->checkStringNode($descriptor, self::DESCRIPTOR_PATH_NODE, $this->path);
+
         if (array_key_exists(self::DESCRIPTOR_VALUE_NODE, $descriptor)) {
             $this->path_value = $this->checkMixedNode($descriptor, self::DESCRIPTOR_VALUE_NODE, $this->path_value);
             $this->path_value_exists = true;
@@ -118,6 +127,7 @@ abstract class CNabuLexerAbstractRule extends CNabuAbstractLexerChild implements
             $this->path_value = null;
             $this->path_value_exists = false;
         }
+
         if (array_key_exists(self::DESCRIPTOR_DEFAULT_NODE, $descriptor)) {
             $this->path_default = $this->checkMixedNode($descriptor, self::DESCRIPTOR_DEFAULT_NODE, $this->path_default);
             $this->path_default_exists = true;
@@ -206,6 +216,16 @@ abstract class CNabuLexerAbstractRule extends CNabuAbstractLexerChild implements
         return $this->starter;
     }
 
+    public function isHidden(): bool
+    {
+        return $this->hidden;
+    }
+
+    public function isOptional(): bool
+    {
+        return $this->optional;
+    }
+    
     public function getPath(): ?string
     {
         return $this->path;
@@ -219,10 +239,5 @@ abstract class CNabuLexerAbstractRule extends CNabuAbstractLexerChild implements
     public function getPathDefault()
     {
         return $this->path_default;
-    }
-
-    public function isHidden(): bool
-    {
-        return $this->hidden;
     }
 }

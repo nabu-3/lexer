@@ -115,6 +115,8 @@ class CNabuLexerRuleKeyword extends CNabuLexerAbstractRule
                 $this->setToken($value, $len);
                 $this->setPathValue($value);
                 $result = true;
+            } elseif ($this->isOptional()) {
+                $result = true;
             }
         }
 
