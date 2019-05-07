@@ -565,7 +565,7 @@
                         },
                         {
                             "repeat": "0..1",
-                            "path": "default",
+                            "path": "default_value",
                             "default": null,
                             "rule": {
                                 "method": "sequence",

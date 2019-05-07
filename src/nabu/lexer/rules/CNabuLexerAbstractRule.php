@@ -23,6 +23,8 @@ namespace nabu\lexer\rules;
 
 use nabu\lexer\CNabuLexer;
 
+use nabu\lexer\base\CNabuAbstractLexerChild;
+
 use nabu\lexer\data\CNabuLexerData;
 
 use nabu\lexer\data\traits\TNabuLexerNodeChecker;
@@ -40,7 +42,7 @@ use nabu\lexer\interfaces\INabuLexerRule;
  * @version 0.0.2
  * @package \nabu\lexer\rules
  */
-abstract class CNabuLexerAbstractRule implements INabuLexerRule
+abstract class CNabuLexerAbstractRule extends CNabuAbstractLexerChild implements INabuLexerRule
 {
     use TNabuLexerNodeChecker;
 
@@ -61,6 +63,8 @@ abstract class CNabuLexerAbstractRule implements INabuLexerRule
     private $path = null;
     /** @var mixed|null Fixed Path value. */
     private $path_value = null;
+    /** @var bool If trhe the Value Path is setted. */
+    private $path_value_exists = false;
     /** @var array|null $tokens Rule tokens extracted from content. */
     private $tokens = null;
     /** @var int $sourceLength Length of original string needed to detect the tokens. */
@@ -69,18 +73,8 @@ abstract class CNabuLexerAbstractRule implements INabuLexerRule
     private $hidden = false;
     /** @var mixed|null Default Path value in case that path is not setted by other rules previously evaluated. */
     private $path_default = null;
-
-    /** @var CNabuLexer $lexer Lexer that manages this rule. */
-    private $lexer = null;
-
-    /**
-     * Creates the instance and sets initial attributes.
-     * @param INabuLexer $lexer Lexer that governs this Rule,
-     */
-    public function __construct(INabuLexer $lexer)
-    {
-        $this->lexer = $lexer;
-    }
+    /** @var bool If true, the Default Path is setted. */
+    private $path_default_exists = false;
 
     public static function createFromDescriptor(INabuLexer $lexer, array $descriptor): INabuLexerRule
     {
@@ -94,19 +88,43 @@ abstract class CNabuLexerAbstractRule implements INabuLexerRule
     public function initFromDescriptor(array $descriptor): void
     {
         $this->starter = $this->checkBooleanNode($descriptor, self::DESCRIPTOR_STARTER_NODE);
-        $this->path = $this->checkStringNode($descriptor, self::DESCRIPTOR_PATH_NODE);
-        $this->path_value = $this->checkMixedNode($descriptor, self::DESCRIPTOR_VALUE_NODE);
         $this->hidden = $this->checkBooleanNode($descriptor, self::DESCRIPTOR_HIDDEN_NODE);
-        $this->path_default = $this->checkMixedNode($descriptor, self::DESCRIPTOR_DEFAULT_NODE);
+        $this->path = $this->checkStringNode($descriptor, self::DESCRIPTOR_PATH_NODE);
+        if (array_key_exists(self::DESCRIPTOR_VALUE_NODE, $descriptor)) {
+            $this->path_value = $this->checkMixedNode($descriptor, self::DESCRIPTOR_VALUE_NODE);
+            $this->path_value_exists = true;
+        } else {
+            $this->path_value = null;
+            $this->path_value_exists = false;
+        }
+        if (array_key_exists(self::DESCRIPTOR_DEFAULT_NODE, $descriptor)) {
+            $this->path_default = $this->checkMixedNode($descriptor, self::DESCRIPTOR_DEFAULT_NODE);
+            $this->path_default_exists = true;
+        } else {
+            $this->path_default = null;
+            $this->path_default_exists = false;
+        }
     }
 
     public function overrideFromDescriptor(array $descriptor): void
     {
         $this->starter = $this->checkBooleanNode($descriptor, self::DESCRIPTOR_STARTER_NODE, $this->starter);
-        $this->path = $this->checkStringNode($descriptor, self::DESCRIPTOR_PATH_NODE, $this->path);
-        $this->path_value = $this->checkMixedNode($descriptor, self::DESCRIPTOR_VALUE_NODE, $this->path_value);
         $this->hidden = $this->checkBooleanNode($descriptor, self::DESCRIPTOR_HIDDEN_NODE, $this->hidden);
-        $this->path_default = $this->checkMixedNode($descriptor, self::DESCRIPTOR_DEFAULT_NODE, $this->path_default);
+        $this->path = $this->checkStringNode($descriptor, self::DESCRIPTOR_PATH_NODE, $this->path);
+        if (array_key_exists(self::DESCRIPTOR_VALUE_NODE, $descriptor)) {
+            $this->path_value = $this->checkMixedNode($descriptor, self::DESCRIPTOR_VALUE_NODE, $this->path_value);
+            $this->path_value_exists = true;
+        } else {
+            $this->path_value = null;
+            $this->path_value_exists = false;
+        }
+        if (array_key_exists(self::DESCRIPTOR_DEFAULT_NODE, $descriptor)) {
+            $this->path_default = $this->checkMixedNode($descriptor, self::DESCRIPTOR_DEFAULT_NODE, $this->path_default);
+            $this->path_default_exists = true;
+        } else {
+            $this->path_default = null;
+            $this->path_default_exists = false;
+        }
     }
 
     public function getTokens()
@@ -163,37 +181,21 @@ abstract class CNabuLexerAbstractRule implements INabuLexerRule
         return $this;
     }
 
-    public function getPathValue()
-    {
-        return $this->path_value;
-    }
-
-    public function getPathDefault()
-    {
-        return $this->path_default;
-    }
-
     public function setPathValue($value = null): INabuLexerRule
     {
-        $data = $this->getLexer()->getData();
+        $data = $this->getLexerData();
 
-        if ($data instanceof CNabuLexerData) {
-            if (is_string($this->path)) {
-                if (is_null($this->path_default)) {
-                    if (is_null($this->path_value)) {
-                        if (is_array($value) && count($value) === 1) {
-                            $value = array_shift($value);
-                        }
-                        $data->setValue($this->path, $value);
-                    } else {
-                        $data->setValue($this->path, $this->path_value);
-                    }
-                } elseif (!$data->hasValue($this->path)) {
-                    $data->setValue($this->path, $this->path_default);
+        if (is_string($this->path)) {
+            if ($this->path_default_exists && !$data->hasValue($this->path)) {
+                 $data->setValue($this->path, $this->path_default);
+            } elseif (!$this->path_default_exists && $this->path_value_exists) {
+                $data->setValue($this->path, $this->path_value);
+            } elseif (!$this->path_default_exists && !$this->path_value_exists) {
+                if (is_array($value) && count($value) === 1) {
+                    $value = array_shift($value);
                 }
+                $data->setValue($this->path, $value);
             }
-        } else {
-            throw new ENabuLexerException(ENabuLexerException::ERROR_LEXER_DATA_INSTANCE_NOT_SET);
         }
 
         return $this;
@@ -209,13 +211,18 @@ abstract class CNabuLexerAbstractRule implements INabuLexerRule
         return $this->path;
     }
 
+    public function getPathValue()
+    {
+        return $this->path_value;
+    }
+
+    public function getPathDefault()
+    {
+        return $this->path_default;
+    }
+
     public function isHidden(): bool
     {
         return $this->hidden;
-    }
-
-    public function getLexer(): INabuLexer
-    {
-        return $this->lexer;
     }
 }
