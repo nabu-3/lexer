@@ -65,35 +65,37 @@ class CNabuLexerRuleKeywordTest extends TestCase
     public function dataProviderCreateInitFromDescriptor()
     {
         return [
-            [false, false, false, 'literal', 'test', 'test data', array('test'), true],
-            [false, false, false, 'literal', 'TEST', 'TEST data', array('TEST'), true],
-            [false, false, false, 'literal', 'TEST', 'test data', array('test'), false],
-            [false, false, false, 'literal', 'test', 'TEST data', array('TEST'), false],
-            [false, false, false, 'literal', 'Test', 'TEst data', array('TEst'), false],
-            [false, false, false, 'literal', 'Test', 'TEST data', array('TEST'), false],
-            [false, true, false, 'literal', 'test', 'test data', array('test'), true],
-            [false, null, false, 'literal', 'test', 'test data', array('test'), true],
-            [false, false, null, 'literal', 'test', 'test data', array('test'), true],
-            [false, false, null, 'literal', 'test', 'Other data', array('Other'), false],
-            [false, false, true, 'ignore case', 'test', 'test data', array('test'), true],
-            [false, false, true, 'ignore case', 'TEST', 'test data', array('test'), true],
-            [false, false, true, 'ignore case', 'test', 'TEST data', array('TEST'), true],
-            [false, false, true, 'ignore case', 'Test', 'TEST data', array('TEST'), true],
-            [false, false, true, 'ignore case', 'Test', 'TeST data', array('TeST'), true],
-            [false, false, true, 'ignore case', 'Test', 'Other data', array('Other'), false],
-            [false, true, true, 'ignore case', 'test', 'test data', array('test'), true],
-            [false, null, null, 'literal', 'test', 'test data', array('test'), true],
+            [false, false, false, false, 'literal', 'test', 'test data', array('test'), true],
+            [false, false, false, false, 'literal', 'TEST', 'TEST data', array('TEST'), true],
+            [false, false, false, false, 'literal', 'TEST', 'test data', array('test'), false],
+            [false, false, false, false, 'literal', 'test', 'TEST data', array('TEST'), false],
+            [false, false, false, false, 'literal', 'Test', 'TEst data', array('TEst'), false],
+            [false, false, false, false, 'literal', 'Test', 'TEST data', array('TEST'), false],
+            [false, true, false, false, 'literal', 'test', 'test data', array('test'), true],
+            [false, null, null, false, 'literal', 'test', 'test data', array('test'), true],
+            [false, false, false, null, 'literal', 'test', 'test data', array('test'), true],
+            [false, false, false, null, 'literal', 'test', 'Other data', array('Other'), false],
+            [false, false, false, true, 'ignore case', 'test', 'test data', array('test'), true],
+            [false, false, false, true, 'ignore case', 'TEST', 'test data', array('test'), true],
+            [false, false, false, true, 'ignore case', 'test', 'TEST data', array('TEST'), true],
+            [false, false, false, true, 'ignore case', 'Test', 'TEST data', array('TEST'), true],
+            [false, false, false, true, 'ignore case', 'Test', 'TeST data', array('TeST'), true],
+            [false, false, false, true, 'ignore case', 'Test', 'Other data', array('Other'), false],
+            [false, false, true, true, 'ignore case', 'test', 'test data', array('test'), true],
+            [false, null, null, null, 'literal', 'test', 'test data', array('test'), true],
+            [false, null, true, true, 'ignore case', 'Test', 'Other data', null, true],
 
-            [true, false, false, 'literal', null, 'test', array('test'), false],
-            [true, false, false, null, 'test', 'test', array('test'), false],
-            [true, false, false, null, null, 'test', array('test'), false],
-            [true, false, false, 'anything', 'test', 'test', array('test'), false]
+            [true, false, false, false, 'literal', null, 'test', array('test'), false],
+            [true, false, false, false, null, 'test', 'test', array('test'), false],
+            [true, false, false, false, null, null, 'test', array('test'), false],
+            [true, false, false, false, 'anything', 'test', 'test', array('test'), false]
         ];
     }
 
     /**
      * Private method to create a Descriptor structure by parameters.
      * @param bool|null $starter If null acts as not declared.
+     * @param bool|null $optional If null acts as not declared.
      * @param bool|null $case_ignored If null acts as not declared.
      * @param string|null $method If null acts as not declared.
      * @param string|null $keyword If null acts as not declared.
@@ -101,11 +103,14 @@ class CNabuLexerRuleKeywordTest extends TestCase
      * Otherwise, returns null.
      */
     private function createDescriptor(
-        bool $starter = null, bool $case_ignored = null, string $method = null, string $keyword = null
+        bool $starter = null, bool $optional = null, bool $case_ignored = null, string $method = null, string $keyword = null
     ) {
         $params = array();
         if (is_bool($starter)) {
             $params['starter'] = $starter;
+        }
+        if (is_bool($optional)) {
+            $params['optional'] = $optional;
         }
         if (is_bool($case_ignored)) {
             $params['case_ignored'] = $case_ignored;
@@ -131,6 +136,7 @@ class CNabuLexerRuleKeywordTest extends TestCase
      * @dataProvider dataProviderCreateInitFromDescriptor
      * @param bool $throwable If true expects that this test throws an exception in any moment.
      * @param bool|null $starter If null acts as not declared.
+     * @param bool|null $optional If null acts as not declared.
      * @param bool|null $case_ignored If null acts as not declared.
      * @param string|null $method If null acts as not declared.
      * @param string|null $keyword If null acts as not declared.
@@ -139,11 +145,11 @@ class CNabuLexerRuleKeywordTest extends TestCase
      * @param bool $passed Apply Rule is passed.
      */
     public function testCreateInitFromDescriptor(
-        bool $throwable, bool $starter = null, bool $case_ignored = null,
+        bool $throwable, bool $starter = null, bool $optional = null, bool $case_ignored = null,
         string $method = null, string $keyword = null, string $content = null, array $result = null,
         bool $passed = false
     ) {
-        $params = $this->createDescriptor($starter, $case_ignored, $method, $keyword);
+        $params = $this->createDescriptor($starter, $optional, $case_ignored, $method, $keyword);
 
         if ($throwable) {
             $this->expectException(ENabuLexerException::class);
@@ -173,32 +179,7 @@ class CNabuLexerRuleKeywordTest extends TestCase
         $this->assertSame($method, $rule->getMethod());
         $this->assertSame($keyword, $rule->getKeyword());
 
-        if ($throwable) {
-            $this->expectException(null);
-        }
-    }
-
-    /**
-     * @test applyRuleToContent
-     * @depends testCreateInitFromDescriptor
-     * @dataProvider dataProviderCreateInitFromDescriptor
-     * @param bool $throwable If true expects that this test throws an exception in any moment.
-     * @param bool|null $starter If null acts as not declared.
-     * @param bool|null $case_ignored If null acts as not declared.
-     * @param string|null $method If null acts as not declared.
-     * @param string|null $keyword If null acts as not declared.
-     * @param string|null $content Content to test case.
-     * @param array|null $result Expected result.
-     * @param bool $passed Apply Rule is passed.
-     */
-    public function testApplyRuleToContent(
-        bool $throwable, bool $starter = null, bool $case_ignored = null,
-        string $method = null, string $keyword = null, string $content = null, array $result = null,
-        bool $passed = false
-    ) {
-        if ($throwable) {
-            $this->assertTrue($throwable);
-        } else {
+        if (!$throwable) {
             try {
                 $rule = CNabuLexerRuleKeyword::createFromDescriptor(
                     $this->lexer,

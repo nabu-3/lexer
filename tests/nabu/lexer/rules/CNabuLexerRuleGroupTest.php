@@ -264,7 +264,34 @@ class CNabuLexerRuleGroupTest extends TestCase
         $this->assertFalse($rule->applyRuleToContent('IF EXISTS'));
         $this->assertSame(null, $rule->getTokens());
         $this->assertSame(0, $rule->getSourceLength());
+    }
 
-        return $rule;
+    /**
+     * @test applyRuleToContent
+     */
+    public function testApplyRuleToContentOptional()
+    {
+        $rule = CNabuLexerRuleGroup::createFromDescriptor(
+            $this->lexer,
+            array(
+                'starter' => false,
+                'method' => CNabuLexerRuleGroup::METHOD_CASE,
+                'optional' => true,
+                'group' => array(
+                    array(
+                        'keyword' => 'First',
+                        'method' => 'ignore case'
+                    ),
+                    array(
+                        'keyword' => 'Optional',
+                        'method' => 'ignore case'
+                    )
+                )
+            )
+        );
+        $this->assertInstanceOf(CNabuLexerRuleGroup::class, $rule);
+        $this->assertTrue($rule->applyRuleToContent('Not an option'));
+        $this->assertSame(null, $rule->getTokens());
+        $this->assertSame(0, $rule->getSourceLength());
     }
 }
