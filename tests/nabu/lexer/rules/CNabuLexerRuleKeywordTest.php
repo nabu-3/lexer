@@ -81,7 +81,7 @@ class CNabuLexerRuleKeywordTest extends TestCase
             [false, false, false, true, 'ignore case', 'Test', 'TEST data', array('TEST'), true],
             [false, false, false, true, 'ignore case', 'Test', 'TeST data', array('TeST'), true],
             [false, false, false, true, 'ignore case', 'Test', 'Other data', array('Other'), false],
-            [false, false, true, true, 'ignore case', 'test', 'test data', array('test'), true],
+            [false, false, true, true, 'ignore case', 'test', 'Other data', array('test'), true],
             [false, null, null, null, 'literal', 'test', 'test data', array('test'), true],
             [false, null, true, true, 'ignore case', 'Test', 'Other data', null, true],
 
