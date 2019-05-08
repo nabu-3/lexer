@@ -330,24 +330,20 @@
             }
         },
 
-        "data_type": {
-            "method": "case",
+        "comma_separator": {
+            "method": "sequence",
             "group": [
                 {
-                    "method": "sequence",
-                    "group": [
-                        {
-                            "keyword": "BIT",
-                            "method": "ignore case",
-                            "path": "data_type",
-                            "value": "bit"
-                        },
-                        {
-                            "match": "\\(([1-6]{0,1}[0-9])\\)",
-                            "method": "literal",
-                            "path": "precision"
-                        }
-                    ]
+                    "clone": "comment",
+                    "optional": true
+                },
+                {
+                    "keyword": ",",
+                    "method": "literal"
+                },
+                {
+                    "clone": "comment",
+                    "optional": true
                 }
             ]
         },
@@ -361,6 +357,10 @@
                     "method": "ignore case"
                 },
                 {
+                    "keyword": "NULL",
+                    "method": "ignore case"
+                },
+                {
                     "match": "[-+]{0,1}[0-9]+",
                     "method": "literal"
                 },
@@ -368,6 +368,102 @@
                     "match": "'(.*?[^\\\\])'",
                     "method": "ignore case",
                     "unicode": true
+                }
+            ]
+        },
+
+        "string_value": {
+            "match": "'(.*?[^\\\\])'",
+            "method": "ignore case",
+            "unicode": true
+        },
+
+        "data_type": {
+            "method": "case",
+            "group": [
+                {
+                    "method": "sequence",
+                    "group": [
+                        {
+                            "method": "case",
+                            "group": [
+                                {
+                                    "keyword": "BIT",
+                                    "method": "ignore case",
+                                    "path": "data_type",
+                                    "value": "bit"
+                                },
+                                {
+                                    "keyword": "INT",
+                                    "method": "ignore case",
+                                    "path": "data_type",
+                                    "value": "int"
+                                },
+                                {
+                                    "keyword": "BIGBIT",
+                                    "method": "ignore case",
+                                    "path": "data_type",
+                                    "value": "bigint"
+                                },
+                                {
+                                    "keyword": "TINYINT",
+                                    "method": "ignore case",
+                                    "path": "data_type",
+                                    "value": "tinyint"
+                                },
+                                {
+                                    "keyword": "SMALLINT",
+                                    "method": "ignore case",
+                                    "path": "data_type",
+                                    "value": "smallint"
+                                },
+                                {
+                                    "keyword": "MEDIUMINT",
+                                    "method": "ignore case",
+                                    "path": "data_type",
+                                    "value": "mediumint"
+                                },
+                                {
+                                    "keyword": "VARCHAR",
+                                    "method": "ignore case",
+                                    "path": "data_type",
+                                    "value": "varchar"
+                                }
+                            ]
+                        },
+                        {
+                            "match": "\\(([1-9]{1}[0-9]*)\\)",
+                            "method": "literal",
+                            "path": "precision"
+                        }
+                    ]
+                },
+                {
+                    "method": "sequence",
+                    "path": "data_type",
+                    "value": "enum",
+                    "group": [
+                        {
+                            "keyword": "ENUM",
+                            "method": "ignore case"
+                        },
+                        {
+                            "keyword": "(",
+                            "method": "literal"
+                        },
+                        {
+                            "repeat": "1..n",
+                            "tokenizer": "comma_separator",
+                            "push": "enum_values",
+                            "indexed": true,
+                            "rule": "string_value"
+                        },
+                        {
+                            "keyword": ")",
+                            "method": "literal"
+                        }
+                    ]
+
                 }
             ]
         },
@@ -517,6 +613,45 @@
                 },
                 {
                     "rule": "end_sentence"
+                }
+            ]
+        },
+
+        "key_part": {
+            "method": "sequence",
+            "tokenizer": "comment",
+            "group": [
+                {
+                    "rule": "col_name"
+                }
+            ]
+        },
+
+        "reference_definition": {
+            "method": "sequence",
+            "tokenizer": "comment",
+            "push": "references",
+            "optional": true,
+            "group": [
+                {
+                    "keyword": "REFERENCES",
+                    "method": "ignore case"
+                },
+                {
+                    "rule": "tbl_name"
+                },
+                {
+                    "keyword": "(",
+                    "method": "literal"
+                },
+                {
+                    "repeat": "1..n",
+                    "tokenizer": "comma_separator",
+                    "rule": "key_part"
+                },
+                {
+                    "keyword": ")",
+                    "method": "literal"
                 }
             ]
         },
@@ -735,6 +870,9 @@
                                     ]
                                 }
                             ]
+                        },
+                        {
+                            "rule": "reference_definition"
                         }
                     ]
                 }
@@ -743,11 +881,11 @@
 
         "create_definition": {
             "repeat": "1..n",
-            "tokenizer": "comment",
+            "tokenizer": "comma_separator",
             "push": "fields",
             "indexed": true,
-            "index_field3": "name",
-            "iteration_target3": "ordinal",
+            "index_field": "name",
+            "iteration_target": "ordinal",
             "rule": {
                 "method": "sequence",
                 "tokenizer": "comment",
@@ -774,13 +912,11 @@
                     "value": "create"
                 },
                 {
-                    "repeat": "0..1",
-                    "rule": {
-                            "method": "ignore case",
-                            "keyword": "TEMPORARY",
-                            "path": "temporary",
-                            "value": true
-                    }
+                    "keyword": "TEMPORARY",
+                    "method": "ignore case",
+                    "path": "temporary",
+                    "value": true,
+                    "optional": true
                 },
                 {
                     "method": "ignore case",
@@ -789,8 +925,8 @@
                     "value": "table"
                 },
                 {
-                    "repeat": "0..1",
-                    "rule": "if_not_exists"
+                    "clone": "if_not_exists",
+                    "optional": true
                 },
                 {
                     "rule": "tbl_name"

@@ -152,7 +152,10 @@ class CNabuLexerRuleRepeat extends CNabuLexerAbstractBlockRule
         if (!($success = ($iteration >= $this->min_repeat &&
                           ($this->max_repeat === NABU_LEXER_RANGE_N ||
                            $iteration <= $this->max_repeat
-             )))
+                          )
+                         ) ||
+                         ($iteration === 0 && $this->isOptional())
+             )
         ) {
             $this->clearTokens();
         } else {
