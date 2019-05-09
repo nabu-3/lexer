@@ -52,6 +52,8 @@ abstract class CNabuLexerAbstractRule extends CNabuAbstractLexerChild implements
     const DESCRIPTOR_DEFAULT_NODE = 'default';
     /** @var string Descriptor optional node literal. */
     const DESCRIPTOR_OPTIONAL_NODE = 'optional';
+    /** @var string Descriptor root node literal. */
+    const DESCRIPTOR_LEAF_NODE = 'leaf';
 
     /** @var bool If true, the Rule is an starter rule and can be placed at the begin of a sequence. */
     private $starter = false;
@@ -59,6 +61,8 @@ abstract class CNabuLexerAbstractRule extends CNabuAbstractLexerChild implements
     private $hidden = false;
     /** @var bool $optional If true, the rule is evaluated as valid even if not complies. */
     private $optional = false;
+    /** @var bool $leaf If true, the rule puts evaluated value as leaf. */
+    private $leaf = false;
     /** @var string Path to store extracted value. */
     private $path = null;
     /** @var mixed|null Fixed Path value. */
@@ -88,6 +92,7 @@ abstract class CNabuLexerAbstractRule extends CNabuAbstractLexerChild implements
         $this->starter = $this->checkBooleanNode($descriptor, self::DESCRIPTOR_STARTER_NODE);
         $this->hidden = $this->checkBooleanNode($descriptor, self::DESCRIPTOR_HIDDEN_NODE);
         $this->optional = $this->checkBooleanNode($descriptor, self::DESCRIPTOR_OPTIONAL_NODE);
+        $this->leaf = $this->checkBooleanNode($descriptor, self::DESCRIPTOR_LEAF_NODE);
         $this->path = $this->checkStringNode($descriptor, self::DESCRIPTOR_PATH_NODE);
 
         if (array_key_exists(self::DESCRIPTOR_VALUE_NODE, $descriptor)) {
@@ -112,6 +117,7 @@ abstract class CNabuLexerAbstractRule extends CNabuAbstractLexerChild implements
         $this->starter = $this->checkBooleanNode($descriptor, self::DESCRIPTOR_STARTER_NODE, $this->starter);
         $this->hidden = $this->checkBooleanNode($descriptor, self::DESCRIPTOR_HIDDEN_NODE, $this->hidden);
         $this->optional = $this->checkBooleanNode($descriptor, self::DESCRIPTOR_OPTIONAL_NODE, $this->optional);
+        $this->leaf = $this->checkBooleanNode($descriptor, self::DESCRIPTOR_LEAF_NODE, $this->leaf);
         $this->path = $this->checkStringNode($descriptor, self::DESCRIPTOR_PATH_NODE, $this->path);
 
         if (array_key_exists(self::DESCRIPTOR_VALUE_NODE, $descriptor)) {
@@ -189,11 +195,16 @@ abstract class CNabuLexerAbstractRule extends CNabuAbstractLexerChild implements
     {
         $data = $this->getLexerData();
 
-        if (is_string($this->path)) {
-            if ($this->path_default_exists && !$data->hasValue($this->path)) {
-                 $data->setValue($this->path, $this->path_default);
-            } elseif (!$this->path_default_exists && $this->path_value_exists) {
+        if ($this->leaf) {
+            $current_path = $data->getWithPreffix();
+            error_log('====> ' . $current_path . ' ' . var_export($value, true));
+            $data->with()->setValue($current_path, $value);
+            $data->with($current_path);
+        } elseif (is_string($this->path)) {
+            if ($this->path_value_exists && $this->getSourceLength() > 0) {
                 $data->setValue($this->path, $this->path_value);
+            } elseif ($this->path_default_exists && !$data->hasValue($this->path)) {
+                 $data->setValue($this->path, $this->path_default);
             } elseif (!$this->path_default_exists && !$this->path_value_exists) {
                 if (is_array($value) && count($value) === 1) {
                     $value = array_shift($value);
@@ -220,9 +231,19 @@ abstract class CNabuLexerAbstractRule extends CNabuAbstractLexerChild implements
         return $this->optional;
     }
 
+    public function isLeaf(): bool
+    {
+        return $this->leaf;
+    }
+
     public function getPath(): ?string
     {
         return $this->path;
+    }
+
+    public function hasPathValue(): bool
+    {
+        return $this->path_value_exists;
     }
 
     public function getPathValue()
@@ -230,7 +251,12 @@ abstract class CNabuLexerAbstractRule extends CNabuAbstractLexerChild implements
         return $this->path_value;
     }
 
-    public function getPathDefault()
+    public function hasPathDefaultValue(): bool
+    {
+        return $this->path_default_exists;
+    }
+
+    public function getPathDefaultValue()
     {
         return $this->path_default;
     }

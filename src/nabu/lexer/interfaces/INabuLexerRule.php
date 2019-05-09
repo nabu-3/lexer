@@ -110,20 +110,35 @@ interface INabuLexerRule
      */
     public function isOptional(): bool;
     /**
+     * Check if the rule puts value as leaf in the Data object.
+     * @return bool Returns true if root is enabled.
+     */
+    public function isLeaf(): bool;
+    /**
      * Get the path of the value repressenting this rule.
      * @return string|null Returns the path if setted or null otherwise.
      */
     public function getPath(): ?string;
+    /**
+     * Check it the Path Value is setted.
+     * @return bool Return true if setted.
+     */
+    public function hasPathValue(): bool;
     /**
      * Get the path value setted in the rule descriptor.
      * @return mixed|null Returns path value.
      */
     public function getPathValue();
     /**
+     * Check it the Path Default Value is setted.
+     * @return bool Return true if setted.
+     */
+    public function hasPathDefaultValue(): bool;
+    /**
      * Get the default path value setted in the rule descriptor.
      * @return mixed|null Returns default path value.
      */
-    public function getPathDefault();
+    public function getPathDefaultValue();
     /**
      * Get the Lexer that governs this Rule.
      * @return INabuLexer Returns assigned Lexer.

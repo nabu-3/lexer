@@ -116,6 +116,9 @@ class CNabuLexerRuleKeyword extends CNabuLexerAbstractRule
                 $this->setPathValue($value);
                 $result = true;
             } elseif ($this->isOptional()) {
+                if ($this->hasPathDefaultValue()) {
+                    $this->setPathValue();
+                }
                 $result = true;
             }
         }

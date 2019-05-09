@@ -112,7 +112,8 @@ class CNabuLexerRuleRepeat extends CNabuLexerAbstractBlockRule
         $data = $this->getLexerData();
 
         if ($this->indexed) {
-            !$clear && is_string($this->iteration_target) && $data->setValue($this->iteration_target, $index + 1);
+            $path = $data->getWithPreffix();
+            !$clear && $data->hasValue($path) && is_string($this->iteration_target) && $data->setValue($this->iteration_target, $index + 1);
             $data->popPath();
             $retval = true;
             if ($clear) {

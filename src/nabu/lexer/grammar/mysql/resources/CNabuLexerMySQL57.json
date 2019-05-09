@@ -274,19 +274,17 @@
             "method": "sequence",
             "group": [
                 {
-                    "repeat": "0..1",
-                    "rule": {
-                        "method": "sequence",
-                        "group": [
-                            {
-                                "rule": "db_name"
-                            },
-                            {
-                                "keyword": ".",
-                                "method": "literal"
-                            }
-                        ]
-                    }
+                    "method": "sequence",
+                    "optional": true,
+                    "group": [
+                        {
+                            "rule": "db_name"
+                        },
+                        {
+                            "keyword": ".",
+                            "method": "literal"
+                        }
+                    ]
                 },
                 {
                     "clone": "object_name",
@@ -358,7 +356,9 @@
                 },
                 {
                     "keyword": "NULL",
-                    "method": "ignore case"
+                    "method": "ignore case",
+                    "path": "default_value",
+                    "value": null
                 },
                 {
                     "match": "[-+]{0,1}[0-9]+",
@@ -440,12 +440,12 @@
                 },
                 {
                     "method": "sequence",
-                    "path": "data_type",
-                    "value": "enum",
                     "group": [
                         {
                             "keyword": "ENUM",
-                            "method": "ignore case"
+                            "method": "ignore case",
+                            "path": "data_type",
+                            "value": "enum"
                         },
                         {
                             "keyword": "(",
@@ -454,9 +454,12 @@
                         {
                             "repeat": "1..n",
                             "tokenizer": "comma_separator",
-                            "push": "enum_values",
+                            "push": "enum",
                             "indexed": true,
-                            "rule": "string_value"
+                            "rule": {
+                                "clone": "string_value",
+                                "leaf": true
+                            }
                         },
                         {
                             "keyword": ")",
@@ -503,71 +506,58 @@
             "tokenizer": "comment",
             "group": [
                 {
-                    "repeat": "0..1",
-                    "rule": {
-                        "method": "sequence",
-                        "tokenizer": "comment",
-                        "group": [
-                            {
-                                "repeat": "0..1",
-                                "rule": {
-                                    "keyword": "DEFAULT",
-                                    "method": "ignore case"
-                                }
-                            },
-                            {
-                                "keyword": "CHARACTER",
-                                "method": "ignore case"
-                            },
-                            {
-                                "keyword": "SET",
-                                "method": "ignore case"
-                            },
-                            {
-                                "repeat": "0..1",
-                                "rule": {
-                                    "keyword": "=",
-                                    "method": "ignore case"
-                                }
-                            },
-                            {
-                                "clone": "charset_name",
-                                "path": "charset"
-                            }
-                        ]
-                    }
+                    "method": "sequence",
+                    "tokenizer": "comment",
+                    "optional": true,
+                    "group": [
+                        {
+                            "keyword": "DEFAULT",
+                            "method": "ignore case",
+                            "optional": true
+                        },
+                        {
+                            "keyword": "CHARACTER",
+                            "method": "ignore case"
+                        },
+                        {
+                            "keyword": "SET",
+                            "method": "ignore case"
+                        },
+                        {
+                            "keyword": "=",
+                            "method": "ignore case",
+                            "optional": true
+                        },
+                        {
+                            "clone": "charset_name",
+                            "path": "charset"
+                        }
+                    ]
                 },
                 {
-                    "repeat": "0..1",
-                    "rule": {
-                        "method": "sequence",
-                        "tokenizer": "comment",
-                        "group": [
-                            {
-                                "repeat": "0..1",
-                                "rule": {
-                                    "keyword": "DEFAULT",
-                                    "method": "ignore case"
-                                }
-                            },
-                            {
-                                "keyword": "COLLATE",
-                                "method": "ignore case"
-                            },
-                            {
-                                "repeat": "0..1",
-                                "rule": {
-                                    "keyword": "=",
-                                    "method": "ignore case"
-                                }
-                            },
-                            {
-                                "clone": "collate_name",
-                                "path": "collate"
-                            }
-                        ]
-                    }
-
+                    "method": "sequence",
+                    "tokenizer": "comment",
+                    "optional": true,
+                    "group": [
+                        {
+                            "keyword": "DEFAULT",
+                            "method": "ignore case",
+                            "optional": true
+                        },
+                        {
+                            "keyword": "COLLATE",
+                            "method": "ignore case"
+                        },
+                        {
+                            "keyword": "=",
+                            "method": "ignore case",
+                            "optional": true
+                        },
+                        {
+                            "clone": "collate_name",
+                            "path": "collate"
+                        }
+                    ]
                 }
             ]
         },
@@ -601,15 +591,15 @@
                     ]
                 },
                 {
-                    "repeat": "0..1",
-                    "rule": "if_not_exists"
+                    "clone": "if_not_exists",
+                    "optional": true
                 },
                 {
                     "rule": "db_name"
                 },
                 {
-                    "repeat": "0..1",
-                    "rule": "create_specification"
+                    "clone": "create_specification",
+                    "optional": true
                 },
                 {
                     "rule": "end_sentence"
@@ -717,15 +707,12 @@
                             }
                         },
                         {
-                            "repeat": "0..1",
+                            "keyword": "AUTO_INCREMENT",
+                            "method": "ignore case",
                             "path": "auto_increment",
+                            "optional": true,
                             "default": false,
-                            "rule": {
-                                "keyword": "AUTO_INCREMENT",
-                                "method": "ignore case",
-                                "path": "auto_increment",
-                                "value": true
-                            }
+                            "value": true
                         },
                         {
                             "method": "sequence",

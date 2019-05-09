@@ -98,6 +98,6 @@ echo "\n------\n";
 echo "Sample string: " . $sample . "\n";
 echo "Parsed fragment: " . mb_substr($sample, 0, $rule->getSourceLength()) . "\n";
 echo "Parsed size: " . $rule->getSourceLength() . "\n";
-echo "Tokens:\n" . var_export($rule->getTokens(), true) . "\n";
+//echo "Tokens:\n" . var_export($rule->getTokens(), true) . "\n";
 echo "Data:\n" . var_export($lexer->getData()->getValuesAsArray(), true) . "\n";
 echo "\n------\n\n";
