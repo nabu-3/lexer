@@ -193,7 +193,7 @@ class CNabuLexer extends CNabuObject implements INabuLexer
         }
 
         if (!$result) {
-            $this->data->reset();
+            $this->data->clear();
         }
 
         return $result;
