@@ -21,7 +21,7 @@
 
 namespace nabu\lexer\data;
 
-use nabu\data\CNabuDataObject;
+use nabu\data\CNabuAbstractDataObject;
 
 use nabu\data\traits\TNabuNestedData;
 
@@ -34,7 +34,7 @@ use nabu\lexer\exceptions\ENabuLexerException;
  * @version 0.0.2
  * @package \nabu\lexer\data
  */
-class CNabuLexerData extends CNabuDataObject
+class CNabuLexerData extends CNabuAbstractDataObject
 {
     use TNabuNestedData;
 
